@@ -1,7 +1,15 @@
 @extends("layouts.app")
 
+@section("metas")
+    <meta name="lesson-id" content="{{ $lesson->id }}">
+@endsection
+
 @section("links")
     <link rel="stylesheet" href="{{ asset("css/development.css") }}">
+@endsection
+
+@section("scripts")
+    <script src="{{ asset("js/development.js") }}" defer></script>
 @endsection
 
 @section("app-content")
@@ -16,16 +24,15 @@
                 <button class="ml-2" type="button">ファイル</button>
             </div>
             <div class="ml-auto d-flex align-items-center">
-                <a href="{{ route("home.materials") }}" class="btn text-secondary">ホーム</a>
+                <a href="{{ route("dashboard.materials") }}" class="btn text-secondary">ホーム</a>
             </div>
         </div>
         <div id="body" class="row">
-            <div class="col-9">
+            <div class="col-9 h-100 p-0">
                 <div class="h-75 d-flex">
-                    <div class="w-25 bg-primary resizable">
-                        ファイル
+                    <div id="folder-view" class="w-25 h-100 bg-primary">
                     </div>
-                    <div class="w-75 bg-danger">
+                    <div class="w-75 h-100 bg-danger">
                         コード
                     </div>
                 </div>
@@ -38,7 +45,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3 h-100 bg-dark">
+            <div class="col p-0 h-100 bg-dark">
                 
             </div>
         </div>

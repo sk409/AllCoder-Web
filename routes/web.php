@@ -17,9 +17,12 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home/materials', 'HomeController@materials')->name('home.materials');
-Route::get("/home/lessons", "HomeController@lessons")->name("home.lessons");
+Route::get('/dashboard/materials', 'DashboardController@materials')->name('dashboard.materials');
+Route::get("/dashboard/lessons", "DashboardController@lessons")->name("dashboard.lessons");
 
 Route::resource("lessons", "LessonsController");
 
 Route::get("/development/{lessonId}", "DevelopmentController@index")->name("development");
+
+Route::get("/folders/select", "FoldersController@select")->name("folders.select");
+Route::post("/folders", "FoldersController@store")->name("folders.store");

@@ -6,3 +6,12 @@
 #body {
     height: 95vh;
 }
+
+#folder-view {
+    overflow: scroll;
+}
+
+.folder {
+    padding-left: 16px;
+    white-space: nowrap;
+}

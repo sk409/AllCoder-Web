@@ -22,16 +22,16 @@
                 </div>
                 <div class="mt-3">
                     <ul class="nav nav-tabs">
-                        <li class="nav-item"><a class="nav-link {{ Request::is("home/materials") ? "active" : "" }}" href="{{ route("home.materials") }}">教材</a></li>
-                        <li class="nav-item"><a class="nav-link {{ Request::is("home/lessons") ? "active" : "" }}" href="{{ route("home.lessons") }}">レッスン</a></li>
+                        <li class="nav-item"><a class="nav-link {{ Request::is("dashboard/materials") ? "active" : "" }}" href="{{ route("dashboard.materials") }}">教材</a></li>
+                        <li class="nav-item"><a class="nav-link {{ Request::is("dashboard/lessons") ? "active" : "" }}" href="{{ route("dashboard.lessons") }}">レッスン</a></li>
                     </ul>
                     @yield("dashboard-content")
                 </div>
             </div>
             <div class="col-3">
                 <div class="d-flex flex-column">
-                    <a href="#" class="btn btn-primary mx-auto w-50">教材作成</a>
-                    <a href="{{ route("lessons.create") }}" class="btn btn-primary mx-auto mt-3 w-50">レッスン作成</a>
+                    <a class="btn btn-primary mx-auto w-50" href="#" target="_blank">教材作成</a>
+                    <a class="btn btn-primary mx-auto mt-3 w-50" href="{{ route("lessons.create") }}" target="_blank">レッスン作成</a>
                 </div>
             </div>
         </div>

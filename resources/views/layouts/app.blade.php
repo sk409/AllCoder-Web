@@ -6,6 +6,8 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    @yield("metas")
+
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -16,6 +18,7 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     @yield("links")
+
 </head>
 <body>
     <div id="app">

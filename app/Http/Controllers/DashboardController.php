@@ -7,7 +7,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Auth;
 use App\Lesson;
 
-class HomeController extends Controller
+class DashboardController extends Controller
 {
     
     public function __construct()
@@ -19,13 +19,13 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         $materials = [];
-        return view('home/materials', ["user" => $user, "materials" => $materials]);
+        return view('dashboard/materials', ["user" => $user, "materials" => $materials]);
     }
 
     public function lessons(): Renderable {
         $user = Auth::user();
         $lessons = Lesson::where("user_id", $user->id)->get()->all();
-        return view('home/lessons', ["user" => $user, "lessons" => $lessons]);
+        return view('dashboard/lessons', ["user" => $user, "lessons" => $lessons]);
     }
 
 }
