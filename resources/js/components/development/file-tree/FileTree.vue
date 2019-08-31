@@ -1,7 +1,7 @@
 <template>
     <div @contextmenu.stop.prevent="oncontextmenu">
         <ul>
-            <file-tree-item :item="rootItem" @show-context-menu="showContextMenu"></file-tree-item>
+            <file-tree-item :item="rootItem" @show-context-menu="showContextMenu" @set-file="setFile"></file-tree-item>
         </ul>
     </div>
 </template>
@@ -18,11 +18,14 @@
         },
         methods:  {
             oncontextmenu: function(e) { 
-                this.showContextMenu(e, this.rootItem.id, this.rootItem.children);
+                this.showContextMenu(false, e, this.rootItem.id, this.rootItem.children);
             },
-            showContextMenu(e, id, children) {
-                this.$emit("show-context-menu", e.pageX, e.pageY, id, children);
+            showContextMenu(isFile, e, id, children) {
+                this.$emit("show-context-menu", isFile, e.pageX, e.pageY, id, children);
             },
+            setFile(file) {
+                this.$emit("set-file", file);
+            }
         },
     }
 </script>

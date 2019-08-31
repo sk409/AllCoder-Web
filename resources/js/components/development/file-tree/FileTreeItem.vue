@@ -1,8 +1,8 @@
 <template>
     <li>
-        <div v-if="doesHaveItemName" @contextmenu.stop.prevent="oncontextmenu">{{item.name}}</div>
+        <div v-if="doesHaveItemName" @click="onclick" @contextmenu.stop.prevent="oncontextmenu">{{item.name}}</div>
         <ul v-if="doesHaveItemChildren" class="file-tree-item">
-            <file-tree-item v-for="child in item.children" :item="child" :key="child.id" @show-context-menu="showContextMenu"></file-tree-item>
+            <file-tree-item v-for="child in item.children" :item="child" :key="child.id" @show-context-menu="showContextMenu" @set-file="setFile"></file-tree-item>
         </ul>
     </li>
 </template>
@@ -22,12 +22,22 @@
             },
         },
         methods: {
+            onclick() {
+                if (this.item.isFile) {
+                    this.$emit("set-file", this.item);
+                } else {
+
+                }
+            },
             oncontextmenu(e) {
-                this.showContextMenu(e, this.item.id, this.item.children);
+                this.showContextMenu(this.item.isFile, e, this.item.id, this.item.children);
             },
-            showContextMenu(e, id, children) {
-                this.$emit('show-context-menu', e, id, children);
+            showContextMenu(isFile, e, id, children) {
+                this.$emit('show-context-menu', isFile, e, id, children);
             },
+            setFile(file) {
+                this.$emit("set-file", file);
+            }
         }
     }
 </script>

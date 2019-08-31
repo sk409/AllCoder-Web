@@ -1,3 +1,12 @@
+$file-creation-view-height: 80vh;
+$file-creation-view-width: $file-creation-view-height;
+$file-creation-view-margin: $file-creation-view-width * 0.01;
+$file-creation-view-component-margin: $file-creation-view-margin;
+$file-creation-view-file-name-width: $file-creation-view-width * 0.6;
+$file-creation-view-button-width: ($file-creation-view-width - $file-creation-view-file-name-width - $file-creation-view-margin * 2 - $file-creation-view-component-margin * 2) / 2 * 0.9;
+$file-creation-view-item-width: $file-creation-view-width * 0.2;
+$file-creation-view-item-height: $file-creation-view-item-width;
+
 #header {
     height: 5vh;
 }
@@ -10,6 +19,50 @@
     overflow: scroll;
 }
 
+#file-creation-view {
+    width: $file-creation-view-width;
+    height: $file-creation-view-height;
+    padding: 0 $file-creation-view-margin;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#file-creation-view-header {
+    height: 8vh;
+}
+
+#file-creation-view-body {
+    height: 92vh;
+}
+
+#file-creation-view-file-name {
+    width: $file-creation-view-file-name-width;
+}
+
+#code-editor {
+    resize: none;
+}
+
+.file-creation-view-button {
+    width: $file-creation-view-button-width;
+    margin-left: $file-creation-view-component-margin;
+}
+
+.file-creation-view-file-item {
+    width: $file-creation-view-item-width;
+    height: $file-creation-view-item-height;
+}
+
 .file-tree-item {
     padding-left: 16px;
+}
+
+.fade-enter-active, .fade-enter-leave {
+    transition: opacity 0.5s;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
 }

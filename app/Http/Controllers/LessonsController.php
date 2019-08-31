@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Support\Renderable;
 use Auth;
 use App\Lesson;
-use App\Http\Requests\CreateLessonRequest;
+use App\Http\Requests\LessonCreationRequest;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
 
 class LessonsController extends Controller
 {
@@ -19,7 +19,7 @@ class LessonsController extends Controller
         ]);
     }
 
-    public function store(CreateLessonRequest $request) {
+    public function store(LessonCreationRequest $request) {
         $user = Auth::user();
         $lesson = Lesson::create($request->all());
         return redirect("development/" . $lesson->id);
