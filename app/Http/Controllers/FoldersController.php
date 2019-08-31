@@ -11,10 +11,10 @@ class FoldersController extends Controller
 
     public function store(CreateFolderRequest $request) {
         $folder = Folder::create($request->all());
-        echo $folder->id;
+        return $folder->id;
     }
 
-    public function select(Request $request) {
+    public function fetch(Request $request) {
         $folders = Folder::all();
         if ($request->has("id")) {
             $folders = $folders->where("id", $request->id);

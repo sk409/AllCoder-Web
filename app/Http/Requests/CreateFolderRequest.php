@@ -24,8 +24,7 @@ class CreateFolderRequest extends FormRequest
     public function rules()
     {
         return [
-            "name" => "required|max:128",
-            "lesson_id" => "required",
+            
         ];
     }
 }

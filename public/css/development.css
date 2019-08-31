@@ -6,12 +6,11 @@
   height: 95vh;
 }
 
-#folder-view {
+#file-tree {
   overflow: scroll;
 }
 
-.folder {
+.file-tree-item {
   padding-left: 16px;
-  white-space: nowrap;
 }
 

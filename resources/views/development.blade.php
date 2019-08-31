@@ -1,9 +1,5 @@
 @extends("layouts.app")
 
-@section("metas")
-    <meta name="lesson-id" content="{{ $lesson->id }}">
-@endsection
-
 @section("links")
     <link rel="stylesheet" href="{{ asset("css/development.css") }}">
 @endsection
@@ -13,7 +9,14 @@
 @endsection
 
 @section("app-content")
-    <div class="container-fluid vh-100">
+    <div id="development">
+        <development-view
+            :lesson-id="{{$lesson->id}}"
+            lesson-title="{{$lesson->title}}"
+            dashboard-url="{{route("dashboard.materials")}}"
+        ></development-view>
+    </div>
+    {{-- <div id="development" class="container-fluid vh-100" v-on:click="onclick">
         <div id="header" class="d-flex bg-light border-bottom p-2">
             <div class="d-flex align-items-center" contenteditable="true">
                 {{ $lesson->title }}
@@ -30,7 +33,14 @@
         <div id="body" class="row">
             <div class="col-9 h-100 p-0">
                 <div class="h-75 d-flex">
-                    <div id="folder-view" class="w-25 h-100 bg-primary">
+                    <div id="file-tree" class="w-25 h-100 bg-primary">
+                        <ul class="w-100 h-100">
+                            <file-tree 
+                                class="w-100 h-100"
+                                :root-item="fileTree.rootItem"
+                                v-on:show-context-menu="showContextMenu"
+                            ></file-tree>
+                        </ul>
                     </div>
                     <div class="w-75 h-100 bg-danger">
                         コード
@@ -49,5 +59,11 @@
                 
             </div>
         </div>
-    </div>
+        <file-tree-context-menu
+            v-show="fileTree.contextMenu.isShown"
+            :left="fileTree.contextMenu.left"
+            :top="fileTree.contextMenu.top"
+            v-on:append-folder="onAppendFolder"
+        ></file-tree-context-menu>
+    </div> --}}
 @endsection

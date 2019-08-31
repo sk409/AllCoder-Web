@@ -24,5 +24,5 @@ Route::resource("lessons", "LessonsController");
 
 Route::get("/development/{lessonId}", "DevelopmentController@index")->name("development");
 
-Route::get("/folders/select", "FoldersController@select")->name("folders.select");
+Route::get("/folders/fetch", "FoldersController@fetch")->name("folders.fetch");
 Route::post("/folders", "FoldersController@store")->name("folders.store");
