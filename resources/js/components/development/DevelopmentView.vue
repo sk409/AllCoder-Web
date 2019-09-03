@@ -14,9 +14,6 @@
                 <button class="ml-2" type="button">ファイル</button>
                 <button class="ml-2" type="button">ファイル</button>
             </div>
-            <div class="ml-auto d-flex align-items-center">
-                <a :href="dashboardUrl" class="btn text-secondary">ホーム</a>
-            </div>
         </div>
         <div id="body" class="row">
             <div class="col-9 h-100 p-0">
@@ -27,8 +24,8 @@
                                 id="file-tree"
                                 class="w-100 h-100"
                                 :root-item="fileTree.rootItem"
-                                v-on:show-context-menu="showFileTreeContextMenu"
-                                v-on:set-file="setFile"
+                                @show-context-menu="showFileTreeContextMenu"
+                                @set-file="setFile"
                             ></file-tree>
                         </ul>
                     </div>
@@ -38,6 +35,7 @@
                             class="w-100 h-100"
                             :text="file ? file.text : ''"
                             :questions="questions"
+                            :disabled="sourceCodeEditor.disabled"
                             @update-file-text="onUpdateFileText"
                             @show-context-menu.stop.prevent="showSourceCodeEditorContextMenu"
                             @set-is-clicked-to-false="setIsClickedToFalse"
@@ -50,8 +48,12 @@
                     <div id="questions-view" class="w-25">
                         <question-item v-for="question in questions" :key="question.id" :answer="question.answer"></question-item>
                     </div>
-                    <div class="w-75 bg-secondary">
-                        説明文
+                    <div class="w-75">
+                        <description
+                            v-show="file"
+                            :file-id="file ? file.id : null"
+                            :descriptions="descriptions"
+                        ></description>
                     </div>
                 </div>
             </div>
@@ -101,13 +103,14 @@
     import QuestionAddable from "./question/QuestionAddable.js";
     import QuestionFetchable from "./question/QuestionFetchable.js";
     import QuestionUpdatable from "./question/QuestionUpdatable.js";
+    import Description from "./description/Description.vue";
+    import DescriptionFetchable from "./description/DescriptionFetchable.js";
 
     export default {
             name: "development-view",
             props: {
                 lessonId: Number,
                 lessonTitle: String,
-                dashboardUrl: String,
             },
             data: function() {
                 return {
@@ -131,6 +134,7 @@
                         }
                     },
                     sourceCodeEditor: {
+                        disabled: true,
                         contextMenu: {
                             isShown: false,
                             left: 0,
@@ -140,6 +144,7 @@
                     },
                     questions: [],
                     isFetchingQuestions: false,
+                    descriptions: null,
                 }
             },
             mixins: [
@@ -149,6 +154,7 @@
                 QuestionAddable,
                 QuestionFetchable,
                 QuestionUpdatable,
+                DescriptionFetchable,
             ],
             components: {
                 FileTreeContextMenu,
@@ -157,6 +163,7 @@
                 SourceCodeEditorContextMenu,
                 QuestionItem,
                 SourceCodeEditor,
+                Description,
             },
             created() {
                 this.buildFileTree(this.lessonId, this.fileTree.rootItem);
@@ -227,6 +234,10 @@
                     const that = this;
                     const deleter = function(item) {
                         if (item.isFile) {
+                            if (that.file.id === item.id) {
+                                that.file = null;
+                                that.sourceCodeEditor.disabled = true;
+                            }
                             that.deleteFile(item.id);
                         } else {
                             that.deleteFolder(item.id);
@@ -290,6 +301,10 @@
                         }));
                         that.isFetchingQuestions = false;
                     }));
+                    this.fetchDescriptions(file.id, descriptions => {
+                        that.descriptions = descriptions;
+                    });
+                    this.sourceCodeEditor.disabled = false;
                 },
                 setIsClickedToFalse() {
                     this.sourceCodeEditor.isClicked = false;

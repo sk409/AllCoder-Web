@@ -3,6 +3,7 @@
         id="source-code-editor"
         class="w-100 h-100"
         :value="text"
+        :disabled="disabled"
         @input="oninput"
         @click="onclick"
         @select="onselect"
@@ -25,6 +26,7 @@
         props: {
             text: String,
             questions: Array,
+            disabled: Boolean,
         },
         mixins: [
             QuestionUpdatable,

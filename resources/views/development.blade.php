@@ -13,7 +13,6 @@
         <development-view
             :lesson-id="{{$lesson->id}}"
             lesson-title="{{$lesson->title}}"
-            dashboard-url="{{route("dashboard.materials")}}"
         ></development-view>
     </div>
     {{-- <div id="development" class="container-fluid vh-100" v-on:click="onclick">

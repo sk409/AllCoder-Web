@@ -37,3 +37,6 @@ Route::get("/questions/fetch", "QuestionsController@fetch")->name("questions.fet
 Route::post("/questions", "QuestionsController@store")->name("questions.store");
 Route::put("/questions/{question}", "QuestionsController@update")->name("questions.update");
 Route::delete("/questions/{question}", "QuestionsController@destroy")->name("questions.destroy");
+
+Route::get("/descriptions/fetch", "DescriptionsController@fetch")->name("descriptions.fetch");
+Route::post("/descriptions", "DescriptionsController@store")->name("descriptions.store");

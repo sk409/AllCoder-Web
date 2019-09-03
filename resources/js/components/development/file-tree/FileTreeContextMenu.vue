@@ -2,8 +2,8 @@
     <div id="file-tree-context-menu" class="btn-group-vertical border bg-white" :style="style">
         <button type="button" class="btn btn-light" v-show="isFolder" @click="onAppendFolder">フォルダを追加</button>
         <button type="button" class="btn btn-light" v-show="isFolder" @click="onShowFileCreationView">ファイルを追加</button>
-        <button type="button" class="btn btn-light">名前を変更</button>
-        <button type="button" class="btn btn-light" @click="onRemove">削除</button>
+        <button type="button" class="btn btn-light" v-show="itemId">名前を変更</button>
+        <button type="button" class="btn btn-light" v-show="itemId" @click="onRemove">削除</button>
     </div>
 </template>
 

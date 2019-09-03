@@ -56,6 +56,20 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     overflow: scroll;
 }
 
+#description {
+    overflow: hidden;
+    position: relative;
+}
+
+#description-list {
+    overflow: scroll;
+    height: 80%;
+}
+
+#description-tools {
+    height: 30%;
+}
+
 .file-creation-view-button {
     width: $file-creation-view-button-width;
     margin-left: $file-creation-view-component-margin;
@@ -70,10 +84,18 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     padding-left: 16px;
 }
 
-.fade-enter-active, .fade-enter-leave {
+.fade-enter-active, .fade-leave-active {
     transition: opacity 0.5s;
 }
 
 .fade-enter, .fade-leave-to {
     opacity: 0;
+}
+
+.slide-up-enter-active, .slide-up-leave-active {
+    transition: transform .5s;
+}
+
+.slide-up-enter, .slide-up-leave-to {
+    transform: translate(0, 100%);
 }

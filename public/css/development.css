@@ -48,6 +48,20 @@
   overflow: scroll;
 }
 
+#description {
+  overflow: hidden;
+  position: relative;
+}
+
+#description-list {
+  overflow: scroll;
+  height: 80%;
+}
+
+#description-tools {
+  height: 30%;
+}
+
 .file-creation-view-button {
   width: 14.72vh;
   margin-left: 0.8vh;
@@ -63,12 +77,22 @@
 }
 
 .fade-enter-active,
-.fade-enter-leave {
+.fade-leave-active {
   transition: opacity 0.5s;
 }
 
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: transform 0.5s;
+}
+
+.slide-up-enter,
+.slide-up-leave-to {
+  transform: translate(0, 100%);
 }
 
