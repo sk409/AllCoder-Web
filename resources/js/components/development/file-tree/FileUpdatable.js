@@ -6,7 +6,7 @@ const fileTextUpdatable = {
             Axios.put("/files/" + fileId, {
                 text: fileText
             }).then(response => {
-                console.log(response);
+                //console.log(response);
             });
         },
     }

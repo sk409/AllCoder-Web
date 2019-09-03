@@ -29,15 +29,25 @@
 }
 
 #file-creation-view-file-name {
-  width: 48vh;
+  width: 40vh;
 }
 
-#code-editor {
+#source-code-editor {
   resize: none;
+  white-space: nowrap;
+}
+
+#file-tree-context-menu,
+#source-code-editor-context-menu {
+  position: absolute;
+}
+
+#questions-view {
+  overflow: scroll;
 }
 
 .file-creation-view-button {
-  width: 12.96vh;
+  width: 14.72vh;
   margin-left: 0.8vh;
 }
 

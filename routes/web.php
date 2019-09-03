@@ -30,3 +30,8 @@ Route::post("/folders", "FoldersController@store")->name("folders.store");
 Route::get("/files/fetch", "FilesController@fetch")->name("files.fetch");
 Route::post("/files", "FilesController@store")->name("files.store");
 Route::put("/files/{file}", "FilesController@update")->name("files.update");
+
+Route::get("/questions/fetch", "QuestionsController@fetch")->name("questions.fetch");
+Route::post("/questions", "QuestionsController@store")->name("questions.store");
+Route::put("/questions/{question}", "QuestionsController@update")->name("questions.update");
+Route::delete("/questions/{question}", "QuestionsController@destroy")->name("questions.destroy");

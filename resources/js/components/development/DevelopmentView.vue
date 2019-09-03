@@ -1,5 +1,10 @@
 <template>
-    <div id="development" class="container-fluid vh-100" v-on:click="onclick">
+    <div 
+        id="development"
+        class="container-fluid vh-100"
+        v-on:click="onclick"
+        v-on:keydown.meta.90.stop.prevent="onundo"
+    >
         <div id="header" class="d-flex bg-light border-bottom p-2">
             <div class="d-flex align-items-center" contenteditable="true">
                 {{ lessonTitle }}
@@ -16,24 +21,33 @@
         <div id="body" class="row">
             <div class="col-9 h-100 p-0">
                 <div class="h-75 d-flex">
-                    <div id="file-tree" class="w-25 h-100 bg-primary">
+                    <div id="file-tree" class="w-25 h-100">
                         <ul class="w-100 h-100">
                             <file-tree 
                                 class="w-100 h-100"
                                 :root-item="fileTree.rootItem"
-                                v-on:show-context-menu="showContextMenu"
+                                v-on:show-context-menu="showFileTreeContextMenu"
                                 v-on:set-file="setFile"
                             ></file-tree>
                         </ul>
                     </div>
                     <div class="w-75 h-100">
-                        <textarea id="code-editor" class="w-100 h-100" :value="file ? file.text : ''" v-on:change="onSourceCodeChange">
-                        </textarea>
+                        <source-code-editor
+                            id="source-code-editor"
+                            class="w-100 h-100"
+                            :text="file ? file.text : ''"
+                            :questions="questions"
+                            @update-file-text="onUpdateFileText"
+                            @show-context-menu.stop.prevent="showSourceCodeEditorContextMenu"
+                            @set-is-clicked-to-false="setIsClickedToFalse"
+                            @remove-questions="onRemoveQuestions"
+                            @update-question="onUpdateQuestion"
+                        ></source-code-editor>
                     </div>
                 </div>
                 <div class="h-25 d-flex">
-                    <div class="w-25 bg-info">
-                        問題
+                    <div id="questions-view" class="w-25">
+                        <question-item v-for="question in questions" :key="question.id" :answer="question.answer"></question-item>
                     </div>
                     <div class="w-75 bg-secondary">
                         説明文
@@ -59,6 +73,12 @@
             v-on:append-folder="onFileTreeContextMenuFolderAppendingButtonClick"
             v-on:show-file-creation-view="onFileTreeContextMenuFileAppendingButtonClick"
         ></file-tree-context-menu>
+        <source-code-editor-context-menu
+            v-show="sourceCodeEditor.contextMenu.isShown"
+            :left="sourceCodeEditor.contextMenu.left"
+            :top="sourceCodeEditor.contextMenu.top"
+            v-on:add-question="onAddQuestion"
+        ></source-code-editor-context-menu>
     </div>
 </template>
 
@@ -66,9 +86,15 @@
     import FileCreationView from "./file-tree/FileCreationView.vue";
     import FileTree from "./file-tree/FileTree.vue";
     import FileTreeContextMenu from "./file-tree/FileTreeContextMenu.vue";
+    import SourceCodeEditor from "./editor/SourceCodeEditor.vue"
+    import SourceCodeEditorContextMenu from "./editor/SourceCodeEditorContextMenu.vue"
     import FileTreeItemAppendable from "./file-tree/FileTreeItemAppendable.js";
     import FileTreeItemFetchable from "./file-tree/FileTreeItemFetchable.js";
     import FileUpdatable from "./file-tree/FileUpdatable.js";
+    import QuestionItem from "./question/QuestionItem.vue";
+    import QuestionAddable from "./question/QuestionAddable.js";
+    import QuestionFetchable from "./question/QuestionFetchable.js";
+    import QuestionUpdatable from "./question/QuestionUpdatable.js";
 
     export default {
             name: "development-view",
@@ -97,21 +123,47 @@
                             itemId: null,
                             itemChildren: null,
                         }
-                    }
+                    },
+                    sourceCodeEditor: {
+                        contextMenu: {
+                            isShown: false,
+                            left: 0,
+                            top: 0,
+                            target: null,
+                        },
+                    },
+                    questions: [],
+                    isFetchingQuestions: false,
                 }
             },
-            mixins: [FileTreeItemAppendable, FileTreeItemFetchable, FileUpdatable],
+            mixins: [
+                FileTreeItemAppendable,
+                FileTreeItemFetchable,
+                FileUpdatable,
+                QuestionAddable,
+                QuestionFetchable,
+                QuestionUpdatable,
+            ],
             components: {
                 FileTreeContextMenu,
                 FileTree,
                 FileCreationView,
+                SourceCodeEditorContextMenu,
+                QuestionItem,
+                SourceCodeEditor,
             },
             created() {
                 this.buildFileTree(this.lessonId, this.fileTree.rootItem);
             },
             methods: {
                 onclick() {
+                    //console.log("ONCLICK");
                     this.fileTree.contextMenu.isShown = false;
+                    this.sourceCodeEditor.contextMenu.isShown = false;
+                    this.sourceCodeEditor.isClicked = true;
+                },
+                onundo() {
+                    alert("ごめんなさい!UNDO機能はまだ実装していません。");
                 },
                 onFlieCreationViewCancelButtonClick() {
                     this.fileCreationView.isShown = false;
@@ -134,11 +186,52 @@
                         fileName
                     );
                 },
-                onSourceCodeChange(e) {
+                onUpdateFileText(e) {
+                    if (this.isFetchingQuestions) {
+                        console.log("---------ERROR---------");
+                        console.log("QuestionをFetch中です。");
+                        console.log("---------ERROR---------");
+                    }
                     this.file.text = e.target.value;
                     this.updateFileText(this.file.id, this.file.text);
                 },
-                showContextMenu(isFile, originX, originY, itemId, itemChildren) {
+                onAddQuestion() {
+                    const selectionStart = this.sourceCodeEditor.contextMenu.target.selectionStart;
+                    const selectionEnd = this.sourceCodeEditor.contextMenu.target.selectionEnd;
+                    const answer = this.sourceCodeEditor.contextMenu.target.value.substring(selectionStart, selectionEnd);
+                    this.addQuestion(
+                        selectionStart,
+                        selectionEnd,
+                        this.file.id,
+                        (id => {
+                        this.questions.push({
+                            id,
+                            hasUpdated: false,
+                            startIndex: selectionStart,
+                            endIndex: selectionEnd,
+                            answer,
+                        });
+                    }));
+                },
+                onRemoveQuestions(questionIds) {
+                    //console.log(this.questions);
+                    const that = this;
+                    questionIds.forEach(questionId => {
+                        that.questions = that.questions.filter(question => question.id !== questionId)
+                    });
+                    //console.log(this.questions);
+                },
+                onUpdateQuestion(id, startIndex, endIndex) {
+                    let question = null;
+                    if (question = this.questions.find(question => question.id === id)) {
+                        question.hasUpdated = true;
+                        question.startIndex = startIndex;
+                        question.endIndex = endIndex;
+                        question.answer = this.file.text.substring(question.startIndex, question.endIndex);
+                        this.questions = this.questions;
+                    }
+                },
+                showFileTreeContextMenu(isFile, originX, originY, itemId, itemChildren) {
                     this.fileTree.contextMenu.isFile = isFile;
                     this.fileTree.contextMenu.isShown = true;
                     this.fileTree.contextMenu.left = originX;
@@ -146,8 +239,33 @@
                     this.fileTree.contextMenu.itemId = itemId;
                     this.fileTree.contextMenu.itemChildren = itemChildren;
                 },
+                showSourceCodeEditorContextMenu(e) {
+                    this.sourceCodeEditor.contextMenu.isShown = true;
+                    this.sourceCodeEditor.contextMenu.left = e.pageX;
+                    this.sourceCodeEditor.contextMenu.top = e.pageY;
+                    this.sourceCodeEditor.contextMenu.target = e.target;
+                },
                 setFile(file) {
                     this.file = file;
+                    this.questions = [];
+                    this.isFetchingQuestions = true;
+                    const that = this;
+                    this.fetchQuestions(file.id, (response => {
+                        //console.log(response);
+                        that.questions.push(...response.data.map(question => {
+                            return {
+                                id: question.id,
+                                hasUpdated: false,
+                                startIndex: question.start_index,
+                                endIndex: question.end_index,
+                                answer: that.file.text.substring(question.start_index, question.end_index),
+                            };
+                        }));
+                        that.isFetchingQuestions = false;
+                    }));
+                },
+                setIsClickedToFalse() {
+                    this.sourceCodeEditor.isClicked = false;
                 },
             },
     };

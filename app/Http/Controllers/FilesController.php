@@ -31,8 +31,8 @@ class FilesController extends Controller
     {
         return Controller::narrowDownFromConditions(
             $request,
-            File::all(),
-            ["id", "name", "parent_folder_id", "lesson_id"]
+            "\App\File::all",
+            "\App\File::where"
         );
     }
 

@@ -1,5 +1,5 @@
 <template>
-    <div id="context-menu" class="btn-group-vertical border bg-white" :style="style">
+    <div id="file-tree-context-menu" class="btn-group-vertical border bg-white" :style="style">
         <button type="button" class="btn btn-light" v-show="isFolder" @click="onAppendFolderButtonClick">フォルダを追加</button>
         <button type="button" class="btn btn-light" v-show="isFolder" @click="onAppendFileButtonClick">ファイルを追加</button>
         <button type="button" class="btn btn-light">名前を変更</button>
@@ -35,9 +35,3 @@
         },
     }
 </script>
-
-<style scoped>
-    #context-menu {
-        position: absolute;
-    }
-</style>

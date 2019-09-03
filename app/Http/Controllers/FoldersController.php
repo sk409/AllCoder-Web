@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 class FoldersController extends Controller
 {
 
+    public static function f() {
+        return "OKOKOKOK";
+    }
+
     public function store(FolderCreationRequest $request) {
         $folder = Folder::create($request->all());
         return $folder->id;
@@ -17,8 +21,8 @@ class FoldersController extends Controller
     public function fetch(Request $request) {
         return Controller::narrowDownFromConditions(
             $request,
-            Folder::all(),
-            ["id", "name", "parent_folder_id", "lesson_id"]
+            "\App\Folder::all",
+            "\App\Folder::where"
         );
     }
 

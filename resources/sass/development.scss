@@ -2,8 +2,8 @@ $file-creation-view-height: 80vh;
 $file-creation-view-width: $file-creation-view-height;
 $file-creation-view-margin: $file-creation-view-width * 0.01;
 $file-creation-view-component-margin: $file-creation-view-margin;
-$file-creation-view-file-name-width: $file-creation-view-width * 0.6;
-$file-creation-view-button-width: ($file-creation-view-width - $file-creation-view-file-name-width - $file-creation-view-margin * 2 - $file-creation-view-component-margin * 2) / 2 * 0.9;
+$file-creation-view-file-name-width: $file-creation-view-width * 0.5;
+$file-creation-view-button-width: ($file-creation-view-width - $file-creation-view-file-name-width - $file-creation-view-margin * 2 - $file-creation-view-component-margin * 2) / 2 * 0.8;
 $file-creation-view-item-width: $file-creation-view-width * 0.2;
 $file-creation-view-item-height: $file-creation-view-item-width;
 
@@ -41,8 +41,17 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     width: $file-creation-view-file-name-width;
 }
 
-#code-editor {
+#source-code-editor {
     resize: none;
+    white-space: nowrap;
+}
+
+#file-tree-context-menu, #source-code-editor-context-menu {
+    position: absolute;
+}
+
+#questions-view {
+    overflow: scroll;
 }
 
 .file-creation-view-button {
