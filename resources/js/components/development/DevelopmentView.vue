@@ -21,9 +21,10 @@
         <div id="body" class="row">
             <div class="col-9 h-100 p-0">
                 <div class="h-75 d-flex">
-                    <div id="file-tree" class="w-25 h-100">
+                    <div class="w-25 h-100">
                         <ul class="w-100 h-100">
                             <file-tree 
+                                id="file-tree"
                                 class="w-100 h-100"
                                 :root-item="fileTree.rootItem"
                                 v-on:show-context-menu="showFileTreeContextMenu"
@@ -60,9 +61,11 @@
         </div>
         <transition name="fade">
             <file-creation-view 
-            v-show="fileCreationView.isShown"
-            @cancel="onFlieCreationViewCancelButtonClick"
-            @append-file="onAppendFile"
+                v-show="fileCreationView.isShown"
+                :lesson-id="lessonId"
+                :item-id="fileTree.contextMenu.itemId"
+                :item-children="fileTree.contextMenu.itemChildren"
+                @cancel="onFlieCreationViewCancelButtonClick"
             ></file-creation-view>
         </transition>
         <file-tree-context-menu
@@ -70,14 +73,17 @@
             :is-file="fileTree.contextMenu.isFile"
             :left="fileTree.contextMenu.left"
             :top="fileTree.contextMenu.top"
-            v-on:append-folder="onFileTreeContextMenuFolderAppendingButtonClick"
-            v-on:show-file-creation-view="onFileTreeContextMenuFileAppendingButtonClick"
+            :lesson-id="lessonId"
+            :item-id="fileTree.contextMenu.itemId"
+            :item-children="fileTree.contextMenu.itemChildren"
+            @show-file-creation-view="onShowFileCreationView"
+            @remove-file-tree-item="onRemoveFileTreeItem"
         ></file-tree-context-menu>
         <source-code-editor-context-menu
             v-show="sourceCodeEditor.contextMenu.isShown"
             :left="sourceCodeEditor.contextMenu.left"
             :top="sourceCodeEditor.contextMenu.top"
-            v-on:add-question="onAddQuestion"
+            @add-question="onAddQuestion"
         ></source-code-editor-context-menu>
     </div>
 </template>
@@ -88,7 +94,7 @@
     import FileTreeContextMenu from "./file-tree/FileTreeContextMenu.vue";
     import SourceCodeEditor from "./editor/SourceCodeEditor.vue"
     import SourceCodeEditorContextMenu from "./editor/SourceCodeEditorContextMenu.vue"
-    import FileTreeItemAppendable from "./file-tree/FileTreeItemAppendable.js";
+    import FileTreeItemDeletable from "./file-tree/FileTreeItemDeletable.js";
     import FileTreeItemFetchable from "./file-tree/FileTreeItemFetchable.js";
     import FileUpdatable from "./file-tree/FileUpdatable.js";
     import QuestionItem from "./question/QuestionItem.vue";
@@ -137,7 +143,7 @@
                 }
             },
             mixins: [
-                FileTreeItemAppendable,
+                FileTreeItemDeletable,
                 FileTreeItemFetchable,
                 FileUpdatable,
                 QuestionAddable,
@@ -168,23 +174,8 @@
                 onFlieCreationViewCancelButtonClick() {
                     this.fileCreationView.isShown = false;
                 },
-                onFileTreeContextMenuFolderAppendingButtonClick() {
-                    this.appendFolder(
-                        this.lessonId,
-                        this.fileTree.contextMenu.itemId,
-                        this.fileTree.contextMenu.itemChildren
-                    );
-                },
-                onFileTreeContextMenuFileAppendingButtonClick() {
+                onShowFileCreationView() {
                     this.fileCreationView.isShown = true;
-                },
-                onAppendFile(fileName) {
-                    this.appendFile(
-                        this.lessonId,
-                        this.fileTree.contextMenu.itemId,
-                        this.fileTree.contextMenu.itemChildren,
-                        fileName
-                    );
                 },
                 onUpdateFileText(e) {
                     if (this.isFetchingQuestions) {
@@ -230,6 +221,42 @@
                         question.answer = this.file.text.substring(question.startIndex, question.endIndex);
                         this.questions = this.questions;
                     }
+                },
+                onRemoveFileTreeItem(id, isFile) {
+                    //console.log(id);
+                    const that = this;
+                    const deleter = function(item) {
+                        if (item.isFile) {
+                            that.deleteFile(item.id);
+                        } else {
+                            that.deleteFolder(item.id);
+                        }
+                        item.children.forEach(child => {
+                            deleter(child);
+                        });
+                    };
+                    const remover = function(item) {
+                        let found = false;
+                        for(let index = 0; index < item.children.length; ++index) {
+                            if ((item.children[index].id === id) && (item.children[index].isFile === isFile)) {
+                                found = true;
+                                deleter(item.children[index]);
+                                item.children.splice(index, 1);
+                                break;
+                            }
+                        }
+                        if (found) {
+                            return true;
+                        } else {
+                            for(let index = 0; index < item.children.length; ++index) {
+                                if (remover(item.children[index])) {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                    remover(this.fileTree.rootItem);
                 },
                 showFileTreeContextMenu(isFile, originX, originY, itemId, itemChildren) {
                     this.fileTree.contextMenu.isFile = isFile;

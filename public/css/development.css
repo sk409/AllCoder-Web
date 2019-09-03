@@ -8,6 +8,8 @@
 
 #file-tree {
   overflow: scroll;
+  white-space: nowrap;
+  padding-bottom: 16px;
 }
 
 #file-creation-view {

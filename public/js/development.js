@@ -1843,7 +1843,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _file_tree_FileTreeContextMenu_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./file-tree/FileTreeContextMenu.vue */ "./resources/js/components/development/file-tree/FileTreeContextMenu.vue");
 /* harmony import */ var _editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./editor/SourceCodeEditor.vue */ "./resources/js/components/development/editor/SourceCodeEditor.vue");
 /* harmony import */ var _editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./editor/SourceCodeEditorContextMenu.vue */ "./resources/js/components/development/editor/SourceCodeEditorContextMenu.vue");
-/* harmony import */ var _file_tree_FileTreeItemAppendable_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./file-tree/FileTreeItemAppendable.js */ "./resources/js/components/development/file-tree/FileTreeItemAppendable.js");
+/* harmony import */ var _file_tree_FileTreeItemDeletable_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./file-tree/FileTreeItemDeletable.js */ "./resources/js/components/development/file-tree/FileTreeItemDeletable.js");
 /* harmony import */ var _file_tree_FileTreeItemFetchable_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./file-tree/FileTreeItemFetchable.js */ "./resources/js/components/development/file-tree/FileTreeItemFetchable.js");
 /* harmony import */ var _file_tree_FileUpdatable_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./file-tree/FileUpdatable.js */ "./resources/js/components/development/file-tree/FileUpdatable.js");
 /* harmony import */ var _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./question/QuestionItem.vue */ "./resources/js/components/development/question/QuestionItem.vue");
@@ -1858,6 +1858,12 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1994,7 +2000,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       isFetchingQuestions: false
     };
   },
-  mixins: [_file_tree_FileTreeItemAppendable_js__WEBPACK_IMPORTED_MODULE_5__["default"], _file_tree_FileTreeItemFetchable_js__WEBPACK_IMPORTED_MODULE_6__["default"], _file_tree_FileUpdatable_js__WEBPACK_IMPORTED_MODULE_7__["default"], _question_QuestionAddable_js__WEBPACK_IMPORTED_MODULE_9__["default"], _question_QuestionFetchable_js__WEBPACK_IMPORTED_MODULE_10__["default"], _question_QuestionUpdatable_js__WEBPACK_IMPORTED_MODULE_11__["default"]],
+  mixins: [_file_tree_FileTreeItemDeletable_js__WEBPACK_IMPORTED_MODULE_5__["default"], _file_tree_FileTreeItemFetchable_js__WEBPACK_IMPORTED_MODULE_6__["default"], _file_tree_FileUpdatable_js__WEBPACK_IMPORTED_MODULE_7__["default"], _question_QuestionAddable_js__WEBPACK_IMPORTED_MODULE_9__["default"], _question_QuestionFetchable_js__WEBPACK_IMPORTED_MODULE_10__["default"], _question_QuestionUpdatable_js__WEBPACK_IMPORTED_MODULE_11__["default"]],
   components: {
     FileTreeContextMenu: _file_tree_FileTreeContextMenu_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
     FileTree: _file_tree_FileTree_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -2019,14 +2025,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     onFlieCreationViewCancelButtonClick: function onFlieCreationViewCancelButtonClick() {
       this.fileCreationView.isShown = false;
     },
-    onFileTreeContextMenuFolderAppendingButtonClick: function onFileTreeContextMenuFolderAppendingButtonClick() {
-      this.appendFolder(this.lessonId, this.fileTree.contextMenu.itemId, this.fileTree.contextMenu.itemChildren);
-    },
-    onFileTreeContextMenuFileAppendingButtonClick: function onFileTreeContextMenuFileAppendingButtonClick() {
+    onShowFileCreationView: function onShowFileCreationView() {
       this.fileCreationView.isShown = true;
-    },
-    onAppendFile: function onAppendFile(fileName) {
-      this.appendFile(this.lessonId, this.fileTree.contextMenu.itemId, this.fileTree.contextMenu.itemChildren, fileName);
     },
     onUpdateFileText: function onUpdateFileText(e) {
       if (this.isFetchingQuestions) {
@@ -2075,6 +2075,49 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         question.answer = this.file.text.substring(question.startIndex, question.endIndex);
         this.questions = this.questions;
       }
+    },
+    onRemoveFileTreeItem: function onRemoveFileTreeItem(id, isFile) {
+      //console.log(id);
+      var that = this;
+
+      var deleter = function deleter(item) {
+        if (item.isFile) {
+          that.deleteFile(item.id);
+        } else {
+          that.deleteFolder(item.id);
+        }
+
+        item.children.forEach(function (child) {
+          deleter(child);
+        });
+      };
+
+      var remover = function remover(item) {
+        var found = false;
+
+        for (var index = 0; index < item.children.length; ++index) {
+          if (item.children[index].id === id && item.children[index].isFile === isFile) {
+            found = true;
+            deleter(item.children[index]);
+            item.children.splice(index, 1);
+            break;
+          }
+        }
+
+        if (found) {
+          return true;
+        } else {
+          for (var _index = 0; _index < item.children.length; ++_index) {
+            if (remover(item.children[_index])) {
+              return true;
+            }
+          }
+        }
+
+        return false;
+      };
+
+      remover(this.fileTree.rootItem);
     },
     showFileTreeContextMenu: function showFileTreeContextMenu(isFile, originX, originY, itemId, itemChildren) {
       this.fileTree.contextMenu.isFile = isFile;
@@ -2460,8 +2503,10 @@ __webpack_require__.r(__webpack_exports__);
         this.$emit("remove-questions", deletedQuestionIds);
       }
     },
-    historyUndo: function historyUndo(e) {},
-    historyRedo: function historyRedo(e) {},
+    // historyUndo(e) {
+    // },
+    // historyRedo(e) {
+    // },
     appendUpdatingTask: function appendUpdatingTask(id, startIndex, endIndex) {
       this.$emit("update-question", id, startIndex, endIndex);
       this.delayedUpdate();
@@ -2539,7 +2584,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _FilecreationViewFileItem_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FilecreationViewFileItem.vue */ "./resources/js/components/development/file-tree/FilecreationViewFileItem.vue");
+/* harmony import */ var _FileTreeItemAppendable_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FileTreeItemAppendable.js */ "./resources/js/components/development/file-tree/FileTreeItemAppendable.js");
+/* harmony import */ var _FilecreationViewFileItem_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FilecreationViewFileItem.vue */ "./resources/js/components/development/file-tree/FilecreationViewFileItem.vue");
 //
 //
 //
@@ -2556,11 +2602,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "file-creation-view",
-  components: {
-    FilecCreationViewFileItem: _FilecreationViewFileItem_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+  props: {
+    lessonId: Number,
+    itemId: Number,
+    itemChildren: Array
   },
+  components: {
+    FilecCreationViewFileItem: _FilecreationViewFileItem_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+  mixins: [_FileTreeItemAppendable_js__WEBPACK_IMPORTED_MODULE_0__["default"]],
   data: function data() {
     return {
       fileName: "test.html",
@@ -2586,8 +2639,8 @@ __webpack_require__.r(__webpack_exports__);
     onCancelButtonClick: function onCancelButtonClick() {
       this.$emit("cancel");
     },
-    onFileCreationButtonClick: function onFileCreationButtonClick() {
-      this.$emit("append-file", this.fileName);
+    onCreateFile: function onCreateFile() {
+      this.appendFile(this.lessonId, this.itemId, this.itemChildren, this.fileName);
     }
   }
 });
@@ -2645,6 +2698,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _FileTreeItemAppendable_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FileTreeItemAppendable.js */ "./resources/js/components/development/file-tree/FileTreeItemAppendable.js");
 //
 //
 //
@@ -2653,19 +2707,28 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "file-tree-context-menu",
   props: {
     isFile: Boolean,
     left: Number,
-    top: Number
+    top: Number,
+    lessonId: Number,
+    itemId: Number,
+    itemChildren: Array
   },
+  mixins: [_FileTreeItemAppendable_js__WEBPACK_IMPORTED_MODULE_0__["default"]],
   methods: {
-    onAppendFolderButtonClick: function onAppendFolderButtonClick() {
-      this.$emit("append-folder");
+    onAppendFolder: function onAppendFolder() {
+      this.appendFolder(this.lessonId, this.itemId, this.itemChildren);
     },
-    onAppendFileButtonClick: function onAppendFileButtonClick() {
+    onShowFileCreationView: function onShowFileCreationView() {
       this.$emit("show-file-creation-view");
+    },
+    onRemove: function onRemove() {
+      this.$emit("remove-file-tree-item", this.itemId, this.isFile);
     }
   },
   computed: {
@@ -5430,27 +5493,26 @@ var render = function() {
       _c("div", { staticClass: "row", attrs: { id: "body" } }, [
         _c("div", { staticClass: "col-9 h-100 p-0" }, [
           _c("div", { staticClass: "h-75 d-flex" }, [
-            _c(
-              "div",
-              { staticClass: "w-25 h-100", attrs: { id: "file-tree" } },
-              [
-                _c(
-                  "ul",
-                  { staticClass: "w-100 h-100" },
-                  [
-                    _c("file-tree", {
-                      staticClass: "w-100 h-100",
-                      attrs: { "root-item": _vm.fileTree.rootItem },
-                      on: {
-                        "show-context-menu": _vm.showFileTreeContextMenu,
-                        "set-file": _vm.setFile
-                      }
-                    })
-                  ],
-                  1
-                )
-              ]
-            ),
+            _c("div", { staticClass: "w-25 h-100" }, [
+              _c(
+                "ul",
+                { staticClass: "w-100 h-100" },
+                [
+                  _c("file-tree", {
+                    staticClass: "w-100 h-100",
+                    attrs: {
+                      id: "file-tree",
+                      "root-item": _vm.fileTree.rootItem
+                    },
+                    on: {
+                      "show-context-menu": _vm.showFileTreeContextMenu,
+                      "set-file": _vm.setFile
+                    }
+                  })
+                ],
+                1
+              )
+            ]),
             _vm._v(" "),
             _c(
               "div",
@@ -5515,10 +5577,12 @@ var render = function() {
                 expression: "fileCreationView.isShown"
               }
             ],
-            on: {
-              cancel: _vm.onFlieCreationViewCancelButtonClick,
-              "append-file": _vm.onAppendFile
-            }
+            attrs: {
+              "lesson-id": _vm.lessonId,
+              "item-id": _vm.fileTree.contextMenu.itemId,
+              "item-children": _vm.fileTree.contextMenu.itemChildren
+            },
+            on: { cancel: _vm.onFlieCreationViewCancelButtonClick }
           })
         ],
         1
@@ -5536,12 +5600,14 @@ var render = function() {
         attrs: {
           "is-file": _vm.fileTree.contextMenu.isFile,
           left: _vm.fileTree.contextMenu.left,
-          top: _vm.fileTree.contextMenu.top
+          top: _vm.fileTree.contextMenu.top,
+          "lesson-id": _vm.lessonId,
+          "item-id": _vm.fileTree.contextMenu.itemId,
+          "item-children": _vm.fileTree.contextMenu.itemChildren
         },
         on: {
-          "append-folder": _vm.onFileTreeContextMenuFolderAppendingButtonClick,
-          "show-file-creation-view":
-            _vm.onFileTreeContextMenuFileAppendingButtonClick
+          "show-file-creation-view": _vm.onShowFileCreationView,
+          "remove-file-tree-item": _vm.onRemoveFileTreeItem
         }
       }),
       _vm._v(" "),
@@ -5806,7 +5872,7 @@ var render = function() {
               {
                 staticClass: "btn btn-primary file-creation-view-button",
                 attrs: { id: "file-creaetion-view-create", type: "button" },
-                on: { click: _vm.onFileCreationButtonClick }
+                on: { click: _vm.onCreateFile }
               },
               [_vm._v("作成")]
             )
@@ -5924,7 +5990,7 @@ var render = function() {
           ],
           staticClass: "btn btn-light",
           attrs: { type: "button" },
-          on: { click: _vm.onAppendFolderButtonClick }
+          on: { click: _vm.onAppendFolder }
         },
         [_vm._v("フォルダを追加")]
       ),
@@ -5942,7 +6008,7 @@ var render = function() {
           ],
           staticClass: "btn btn-light",
           attrs: { type: "button" },
-          on: { click: _vm.onAppendFileButtonClick }
+          on: { click: _vm.onShowFileCreationView }
         },
         [_vm._v("ファイルを追加")]
       ),
@@ -5951,6 +6017,16 @@ var render = function() {
         "button",
         { staticClass: "btn btn-light", attrs: { type: "button" } },
         [_vm._v("名前を変更")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-light",
+          attrs: { type: "button" },
+          on: { click: _vm.onRemove }
+        },
+        [_vm._v("削除")]
       )
     ]
   )
@@ -6774,6 +6850,29 @@ var fileTreeItemAppendable = {
   }
 };
 /* harmony default export */ __webpack_exports__["default"] = (fileTreeItemAppendable);
+
+/***/ }),
+
+/***/ "./resources/js/components/development/file-tree/FileTreeItemDeletable.js":
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/development/file-tree/FileTreeItemDeletable.js ***!
+  \********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var fileTreeItemDeletable = {
+  methods: {
+    deleteFolder: function deleteFolder(id) {
+      axios["delete"]("/folders/" + id).then(function (response) {});
+    },
+    deleteFile: function deleteFile(id) {
+      axios["delete"]("/files/" + id).then(function (response) {});
+    }
+  }
+};
+/* harmony default export */ __webpack_exports__["default"] = (fileTreeItemDeletable);
 
 /***/ }),
 

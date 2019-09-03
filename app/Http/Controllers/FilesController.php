@@ -27,6 +27,10 @@ class FilesController extends Controller
         File::find($id)->fill($parameters)->save();
     }
 
+    public function destroy(Request $request, int $id) {
+        File::destroy($id);
+    }
+
     public function fetch(Request $request)
     {
         return Controller::narrowDownFromConditions(

@@ -4,7 +4,7 @@
             <div class="w-100 text-center">
                 <input id="file-creation-view-file-name" class="form-control" v-model="fileName">
                 <button id="file-creation-view-cancel" class="btn btn-primary file-creation-view-button" type="button" @click="onCancelButtonClick">キャンセル</button>
-                <button id="file-creaetion-view-create" class="btn btn-primary file-creation-view-button" type="button" @click="onFileCreationButtonClick">作成</button>
+                <button id="file-creaetion-view-create" class="btn btn-primary file-creation-view-button" type="button" @click="onCreateFile">作成</button>
             </div>
         </div>
         <div id="file-creation-view-body" class="text-center">
@@ -14,12 +14,21 @@
 </template>
 
 <script>
-    import FilecCreationViewFileItem from "./FilecreationViewFileItem.vue"
+    import FileTreeItemAppendable from "./FileTreeItemAppendable.js";
+    import FilecCreationViewFileItem from "./FilecreationViewFileItem.vue";
     export default {
         name: "file-creation-view",
+        props: {
+            lessonId: Number,
+            itemId: Number,
+            itemChildren: Array,
+        },
         components: {
             FilecCreationViewFileItem,
         },
+        mixins: [
+            FileTreeItemAppendable,
+        ],
         data: function() {
             return {
                 fileName: "test.html",
@@ -51,8 +60,13 @@
             onCancelButtonClick() {
                 this.$emit("cancel");
             },
-            onFileCreationButtonClick() {
-                this.$emit("append-file", this.fileName);
+            onCreateFile() {
+                this.appendFile(
+                    this.lessonId,
+                    this.itemId,
+                    this.itemChildren,
+                    this.fileName
+                );
             },
         }
     }

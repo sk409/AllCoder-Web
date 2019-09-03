@@ -8,14 +8,13 @@ use Illuminate\Http\Request;
 
 class FoldersController extends Controller
 {
-
-    public static function f() {
-        return "OKOKOKOK";
-    }
-
     public function store(FolderCreationRequest $request) {
         $folder = Folder::create($request->all());
         return $folder->id;
+    }
+
+    public function destroy(Request $request, int $id) {
+        Folder::destroy($id);
     }
 
     public function fetch(Request $request) {

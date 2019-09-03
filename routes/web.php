@@ -26,10 +26,12 @@ Route::get("/development/{lessonId}", "DevelopmentController@index")->name("deve
 
 Route::get("/folders/fetch", "FoldersController@fetch")->name("folders.fetch");
 Route::post("/folders", "FoldersController@store")->name("folders.store");
+Route::delete("/folders/{folder}", "FoldersController@destroy")->name("folders.destroy");
 
 Route::get("/files/fetch", "FilesController@fetch")->name("files.fetch");
 Route::post("/files", "FilesController@store")->name("files.store");
 Route::put("/files/{file}", "FilesController@update")->name("files.update");
+Route::delete("/files/{file}", "FilesController@destroy")->name("files.destroy");
 
 Route::get("/questions/fetch", "QuestionsController@fetch")->name("questions.fetch");
 Route::post("/questions", "QuestionsController@store")->name("questions.store");

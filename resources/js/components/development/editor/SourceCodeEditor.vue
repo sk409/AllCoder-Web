@@ -355,12 +355,12 @@
                     this.$emit("remove-questions", deletedQuestionIds);
                 }
             },
-            historyUndo(e) {
+            // historyUndo(e) {
                 
-            },
-            historyRedo(e) {
+            // },
+            // historyRedo(e) {
                 
-            },
+            // },
             appendUpdatingTask(id, startIndex, endIndex) {
                 this.$emit("update-question", id, startIndex, endIndex);
                 this.delayedUpdate();
