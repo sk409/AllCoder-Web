@@ -17,6 +17,14 @@ class DescriptionsController extends Controller
         return $description->id;
     }
 
+    public function update(Request $request, int $id) {
+        $parameters = $request->all();
+        if ($request->has("text") && is_null($request->text)) {
+            $parameters["text"] = "";
+        }
+        Description::find($id)->fill($parameters)->save();
+    }
+
     public function fetch(Request $request) {
         return Controller::narrowDownFromConditions(
             $request,

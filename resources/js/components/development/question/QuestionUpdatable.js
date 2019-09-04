@@ -6,7 +6,7 @@ const questionUpdatable = {
             //console.log("will Update");
             axios.put("/questions/" + id, parameters).then(response => {
                 //console.log(response);
-                console.log("Updated");
+                //console.log("Updated");
             });
         },
     },

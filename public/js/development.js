@@ -1852,6 +1852,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _question_QuestionUpdatable_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./question/QuestionUpdatable.js */ "./resources/js/components/development/question/QuestionUpdatable.js");
 /* harmony import */ var _description_Description_vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./description/Description.vue */ "./resources/js/components/development/description/Description.vue");
 /* harmony import */ var _description_DescriptionFetchable_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./description/DescriptionFetchable.js */ "./resources/js/components/development/description/DescriptionFetchable.js");
+/* harmony import */ var _description_PostDescriptionTarget_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./description/PostDescriptionTarget.js */ "./resources/js/components/development/description/PostDescriptionTarget.js");
+/* harmony import */ var _description_FetchDescriptionTargets_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./description/FetchDescriptionTargets.js */ "./resources/js/components/development/description/FetchDescriptionTargets.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -1952,6 +1954,13 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+
+
 
 
 
@@ -2004,7 +2013,11 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       },
       questions: [],
       isFetchingQuestions: false,
-      descriptions: null
+      description: {
+        selectedDescription: null,
+        descriptions: null,
+        targets: []
+      }
     };
   },
   mixins: [_file_tree_FileTreeItemDeletable_js__WEBPACK_IMPORTED_MODULE_5__["default"], _file_tree_FileTreeItemFetchable_js__WEBPACK_IMPORTED_MODULE_6__["default"], _file_tree_FileUpdatable_js__WEBPACK_IMPORTED_MODULE_7__["default"], _question_QuestionAddable_js__WEBPACK_IMPORTED_MODULE_9__["default"], _question_QuestionFetchable_js__WEBPACK_IMPORTED_MODULE_10__["default"], _question_QuestionUpdatable_js__WEBPACK_IMPORTED_MODULE_11__["default"], _description_DescriptionFetchable_js__WEBPACK_IMPORTED_MODULE_13__["default"]],
@@ -2036,14 +2049,14 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     onShowFileCreationView: function onShowFileCreationView() {
       this.fileCreationView.isShown = true;
     },
-    onUpdateFileText: function onUpdateFileText(e) {
+    onUpdateFileText: function onUpdateFileText(text) {
       if (this.isFetchingQuestions) {
         console.log("---------ERROR---------");
         console.log("QuestionをFetch中です。");
         console.log("---------ERROR---------");
       }
 
-      this.file.text = e.target.value;
+      this.file.text = text;
       this.updateFileText(this.file.id, this.file.text);
     },
     onAddQuestion: function onAddQuestion() {
@@ -2056,20 +2069,20 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         _this.questions.push({
           id: id,
           hasUpdated: false,
+          hasDeleted: false,
           startIndex: selectionStart,
           endIndex: selectionEnd,
           answer: answer
         });
       });
     },
-    onRemoveQuestions: function onRemoveQuestions(questionIds) {
-      //console.log(this.questions);
+    onAddDescriptionTarget: function onAddDescriptionTarget() {
+      var selectionStart = this.sourceCodeEditor.contextMenu.target.selectionStart;
+      var selectionEnd = this.sourceCodeEditor.contextMenu.target.selectionEnd;
       var that = this;
-      questionIds.forEach(function (questionId) {
-        that.questions = that.questions.filter(function (question) {
-          return question.id !== questionId;
-        });
-      }); //console.log(this.questions);
+      Object(_description_PostDescriptionTarget_js__WEBPACK_IMPORTED_MODULE_14__["postDescriptionTarget"])(selectionStart, selectionEnd, this.description.selectedDescription.id, function (description) {
+        that.description.targets.push(description);
+      });
     },
     onUpdateQuestion: function onUpdateQuestion(id, startIndex, endIndex) {
       var question = null;
@@ -2082,6 +2095,19 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         question.endIndex = endIndex;
         question.answer = this.file.text.substring(question.startIndex, question.endIndex);
         this.questions = this.questions;
+      }
+    },
+    onUpdateDescriptionTarget: function onUpdateDescriptionTarget(id, startIndex, endIndex) {
+      var descriptionTarget = null;
+
+      if (descriptionTarget = this.description.targets.find(function (descriptionTarget) {
+        return descriptionTarget.id === id;
+      })) {
+        descriptionTarget.hasUpdated = true;
+        descriptionTarget.startIndex = startIndex;
+        descriptionTarget.endIndex = endIndex;
+        console.log("DescriptionTarget: " + this.file.text.substring(startIndex, endIndex));
+        this.description.targets = this.description.targets;
       }
     },
     onRemoveFileTreeItem: function onRemoveFileTreeItem(id, isFile) {
@@ -2132,6 +2158,15 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       remover(this.fileTree.rootItem);
     },
+    onSetDescription: function onSetDescription(selectedDescription) {
+      this.description.selectedDescription = selectedDescription;
+    },
+    onSetQuestions: function onSetQuestions(questions) {
+      this.questions = questions; //console.log(this.questions);
+    },
+    onSetDescriptionTargets: function onSetDescriptionTargets(descriptionTargets) {
+      this.description.targets = descriptionTargets;
+    },
     showFileTreeContextMenu: function showFileTreeContextMenu(isFile, originX, originY, itemId, itemChildren) {
       this.fileTree.contextMenu.isFile = isFile;
       this.fileTree.contextMenu.isShown = true;
@@ -2159,6 +2194,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           return {
             id: question.id,
             hasUpdated: false,
+            hasDeleted: false,
             startIndex: question.start_index,
             endIndex: question.end_index,
             answer: that.file.text.substring(question.start_index, question.end_index)
@@ -2168,12 +2204,22 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         that.isFetchingQuestions = false;
       });
       this.fetchDescriptions(file.id, function (descriptions) {
-        that.descriptions = descriptions;
+        that.description.descriptions = descriptions;
+        that.description.targets = [];
+        descriptions.forEach(function (description) {
+          Object(_description_FetchDescriptionTargets_js__WEBPACK_IMPORTED_MODULE_15__["fetchDescriptionTargets"])(description.id, function (descriptionTargets) {
+            var _that$description$tar;
+
+            (_that$description$tar = that.description.targets).push.apply(_that$description$tar, _toConsumableArray(descriptionTargets)); // console.log("---DescriptionTargets---");
+            // descriptionTargets.forEach(descriptionTarget => {
+            //     console.log(that.file.text.substring(descriptionTarget.startIndex, descriptionTarget.endIndex));
+            // });
+            // console.log("------------------------");
+
+          });
+        });
       });
       this.sourceCodeEditor.disabled = false;
-    },
-    setIsClickedToFalse: function setIsClickedToFalse() {
-      this.sourceCodeEditor.isClicked = false;
     }
   }
 });
@@ -2190,6 +2236,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DescriptionCreatable_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DescriptionCreatable.js */ "./resources/js/components/development/description/DescriptionCreatable.js");
+/* harmony import */ var _UpdateDescription_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UpdateDescription.js */ "./resources/js/components/development/description/UpdateDescription.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -2219,6 +2266,21 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "description",
@@ -2229,10 +2291,14 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   mixins: [_DescriptionCreatable_js__WEBPACK_IMPORTED_MODULE_0__["default"]],
   data: function data() {
     return {
+      descriptionList: {
+        isShown: true
+      },
       editingView: {
         isShown: false,
         description: Object
-      }
+      },
+      delayedUpdate: _.debounce(this.updateDescription, 500)
     };
   },
   methods: {
@@ -2245,11 +2311,28 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         that.descriptions.push(description);
       });
     },
-    onSlideUpEditingView: function onSlideUpEditingView(descriptionId) {
-      this.editingView.isShown = !this.editingView.isShown;
+    onSlideDownDescriptionList: function onSlideDownDescriptionList(descriptionId) {
+      this.descriptionList.isShown = false;
       this.editingView.description = this.descriptions.find(function (description) {
         return description.id === descriptionId;
       });
+      this.$emit("set-description", this.editingView.description);
+    },
+    onInputDescription: function onInputDescription(e) {
+      this.editingView.description.text = e.target.value;
+      this.delayedUpdate();
+    },
+    onCloseEditingView: function onCloseEditingView() {
+      this.editingView.isShown = false;
+    },
+    onAfterLeaveSlideUpEditingView: function onAfterLeaveSlideUpEditingView() {
+      this.descriptionList.isShown = true;
+    },
+    onAfterLeaveSlideDownDescriptionList: function onAfterLeaveSlideDownDescriptionList() {
+      this.editingView.isShown = true;
+    },
+    updateDescription: function updateDescription() {
+      Object(_UpdateDescription_js__WEBPACK_IMPORTED_MODULE_1__["updateDescription"])(this.editingView.description.id, this.editingView.description.index, this.editingView.description.text, this.fileId);
     }
   }
 });
@@ -2266,9 +2349,11 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _question_QuestionUpdatable_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../question/QuestionUpdatable.js */ "./resources/js/components/development/question/QuestionUpdatable.js");
-/* harmony import */ var _question_QuestionDeletable_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../question/QuestionDeletable.js */ "./resources/js/components/development/question/QuestionDeletable.js");
-/* harmony import */ var q__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! q */ "./node_modules/q/q.js");
-/* harmony import */ var q__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(q__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var q__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! q */ "./node_modules/q/q.js");
+/* harmony import */ var q__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(q__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _question_DeleteQuestions_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../question/DeleteQuestions.js */ "./resources/js/components/development/question/DeleteQuestions.js");
+/* harmony import */ var _description_UpdateDescriptionTarget_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../description/UpdateDescriptionTarget.js */ "./resources/js/components/development/description/UpdateDescriptionTarget.js");
+/* harmony import */ var _description_DeleteDescriptionTargets_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../description/DeleteDescriptionTargets.js */ "./resources/js/components/development/description/DeleteDescriptionTargets.js");
 //
 //
 //
@@ -2288,6 +2373,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+ //import QuestionDeletable from "../question/QuestionDeletable.js";
+
+
 
 
 
@@ -2296,17 +2384,18 @@ __webpack_require__.r(__webpack_exports__);
   props: {
     text: String,
     questions: Array,
+    descriptionTargets: Array,
     disabled: Boolean
   },
-  mixins: [_question_QuestionUpdatable_js__WEBPACK_IMPORTED_MODULE_0__["default"], _question_QuestionDeletable_js__WEBPACK_IMPORTED_MODULE_1__["default"]],
+  mixins: [_question_QuestionUpdatable_js__WEBPACK_IMPORTED_MODULE_0__["default"]],
   data: function data() {
     return {
+      textarea: null,
       textBeforeInput: null,
       selectedRangeBeforeInput: null,
       pastedText: null,
-      inputQueue: q__WEBPACK_IMPORTED_MODULE_2__["Promise"].resolve(),
-      apiQueue: q__WEBPACK_IMPORTED_MODULE_2__["Promise"].resolve(),
-      delayedUpdate: _.debounce(this.updateQuestions, 500)
+      inputQueue: q__WEBPACK_IMPORTED_MODULE_1__["Promise"].resolve(),
+      delayedUpdate: _.debounce(this.update, 500)
     };
   },
   methods: {
@@ -2343,7 +2432,7 @@ __webpack_require__.r(__webpack_exports__);
       // }
 
 
-      this.$emit("update-file-text", e);
+      this.textarea = e.target;
       this.selectedRangeBeforeInput = null;
     },
     onclick: function onclick(e) {
@@ -2370,257 +2459,304 @@ __webpack_require__.r(__webpack_exports__);
       this.$emit("show-context-menu", e);
     },
     insertText: function insertText(selectedRangeBeforeInput, selectionStart, selectionEnd) {
+      var _this = this;
+
       //console.log("(" + selectionStart + ", " + selectionEnd + ")");
       // console.log(selectedRangeBeforeInput);
       // console.log(getSelection().toString());
       //console.log(this.questions);
-      var deletedQuestionIds = [];
+      //const deletedQuestionIds = [];
       var that = this;
 
       if (selectedRangeBeforeInput === null || selectedRangeBeforeInput.start === selectedRangeBeforeInput.end) {
         var caretPosition = selectionStart - 1;
-        this.questions.forEach(function (question) {
-          var updated = false; // console.log(question.startIndex);
-          // console.log(question.endIndex);
+        this.questions.concat(this.descriptionTargets).forEach(function (item) {
+          //console.log(item.startIndex);
+          var updated = false;
 
-          if (caretPosition <= question.startIndex) {
+          if (caretPosition <= item.startIndex) {
             //console.log("START");
-            ++question.startIndex;
+            ++item.startIndex;
             updated = true;
           }
 
-          if (caretPosition < question.endIndex) {
+          if (caretPosition < item.endIndex) {
             //console.log("END");
-            ++question.endIndex;
+            ++item.endIndex;
             updated = true;
           }
 
           if (updated) {
-            that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+            item.hasUpdated = true;
+            that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
           }
         });
       } else {
-        this.questions.forEach(function (question, index) {
-          if (selectedRangeBeforeInput.start <= question.startIndex && question.endIndex <= selectedRangeBeforeInput.end //  |---[---]---|
+        this.questions.concat(this.descriptionTargets).forEach(function (item) {
+          if (selectedRangeBeforeInput.start <= item.startIndex && item.endIndex <= selectedRangeBeforeInput.end //  |---[---]---|
           ) {
-              deletedQuestionIds.push(question.id);
-              that.appendDeletingTask(question.id);
+              item.hasDeleted = true;
+
+              _this.delayedUpdate();
             } else {
-            if (selectedRangeBeforeInput.start <= question.startIndex && question.startIndex <= selectedRangeBeforeInput.end && selectedRangeBeforeInput.end < question.endIndex //  |---[---|---)
+            if (selectedRangeBeforeInput.start <= item.startIndex && item.startIndex <= selectedRangeBeforeInput.end && selectedRangeBeforeInput.end < item.endIndex //  |---[---|---)
             ) {
-                question.startIndex = selectedRangeBeforeInput.start + 1;
-                question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1;
-              } else if (question.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.start <= question.endIndex && question.endIndex <= selectedRangeBeforeInput.end // (---|---]---|
+                item.startIndex = selectedRangeBeforeInput.start + 1;
+                item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1;
+              } else if (item.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.start <= item.endIndex && item.endIndex <= selectedRangeBeforeInput.end // (---|---]---|
             ) {
-                question.endIndex = selectedRangeBeforeInput.start;
-              } else if (question.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.end < question.endIndex // (---|---|---)
+                item.endIndex = selectedRangeBeforeInput.start;
+              } else if (item.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.end < item.endIndex // (---|---|---)
             ) {
-                question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1;
-              } else if (selectedRangeBeforeInput.end < question.startIndex) {
+                item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1;
+              } else if (selectedRangeBeforeInput.end < item.startIndex) {
               // |---|---(---)
-              question.startIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1;
-              question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1;
+              item.startIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1;
+              item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1;
             }
 
-            that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+            item.hasUpdated = !(item.endIndex < selectedRangeBeforeInput.start); //  (---)---[---]
+
+            that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
           }
         });
-      }
+      } // if (deletedQuestionIds.length) {
+      //     this.$emit("remove-questions", deletedQuestionIds);
+      // }
 
-      if (deletedQuestionIds.length) {
-        this.$emit("remove-questions", deletedQuestionIds);
-      }
     },
     deleteContentBackward: function deleteContentBackward(selectedRangeBeforeInput, selectionStart, selectionEnd) {
+      var _this2 = this;
+
       //console.log("(" + selectionStart + ", " + selectionEnd + ")");
       //console.log(selectedRangeBeforeInput);
-      var deletedQuestionIds = [];
       var that = this;
 
       if (selectedRangeBeforeInput === null || selectedRangeBeforeInput.start === selectedRangeBeforeInput.end) {
         var caretPosition = selectionStart + 1; //console.log(caretPosition);
 
-        this.questions.forEach(function (question) {
+        this.questions.concat(this.descriptionTargets).forEach(function (item) {
           var updated = false; // console.log(question.startIndex);
           // console.log(question.endIndex);
 
-          if (caretPosition <= question.startIndex) {
+          if (caretPosition <= item.startIndex) {
             //console.log("START");
-            --question.startIndex;
+            --item.startIndex;
             updated = true;
           }
 
-          if (caretPosition <= question.endIndex) {
+          if (caretPosition <= item.endIndex) {
             //console.log("END");
-            --question.endIndex;
+            --item.endIndex;
             updated = true;
           }
 
           if (updated) {
-            if (question.endIndex - question.startIndex == 0) {
-              deletedQuestionIds.push(question.id);
-              that.appendDeletingTask(question.id);
+            if (item.endIndex - item.startIndex == 0) {
+              item.hasDeleted = true;
             } else {
-              that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+              item.hasUpdated = true;
+              that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
             }
           }
         });
       } else {
-        this.questions.forEach(function (question, index) {
-          if (selectedRangeBeforeInput.start <= question.startIndex && question.endIndex <= selectedRangeBeforeInput.end //  |---[---]---|
+        this.questions.concat(this.descriptionTargets).forEach(function (item) {
+          if (selectedRangeBeforeInput.start <= item.startIndex && item.endIndex <= selectedRangeBeforeInput.end //  |---[---]---|
           ) {
-              deletedQuestionIds.push(question.id);
-              that.appendDeletingTask(question.id);
+              item.hasDeleted = true;
+
+              _this2.delayedUpdate();
             } else {
-            if (selectedRangeBeforeInput.start <= question.startIndex && question.startIndex <= selectedRangeBeforeInput.end && selectedRangeBeforeInput.end < question.endIndex //  |---[---|---)
+            if (selectedRangeBeforeInput.start <= item.startIndex && item.startIndex <= selectedRangeBeforeInput.end && selectedRangeBeforeInput.end < item.endIndex //  |---[---|---)
             ) {
-                question.startIndex = selectedRangeBeforeInput.start;
-                question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start; // console.log(question.startIndex);
-                // console.log(question.endIndex);
-              } else if (question.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.start <= question.endIndex && question.endIndex <= selectedRangeBeforeInput.end // (---|---]---|
+                item.startIndex = selectedRangeBeforeInput.start;
+                item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+              } else if (item.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.start <= item.endIndex && item.endIndex <= selectedRangeBeforeInput.end // (---|---]---|
             ) {
-                question.endIndex = selectedRangeBeforeInput.start;
-              } else if (question.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.end < question.endIndex // (---|---|---)
+                item.endIndex = selectedRangeBeforeInput.start;
+              } else if (item.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.end < item.endIndex // (---|---|---)
             ) {
-                question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
-              } else if (selectedRangeBeforeInput.end < question.startIndex) {
+                item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+              } else if (selectedRangeBeforeInput.end < item.startIndex) {
               // |---|---(---)
-              question.startIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
-              question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+              item.startIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+              item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
             }
 
-            that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+            item.hasUpdated = !(item.endIndex < selectedRangeBeforeInput.start); //  (---)---[---]
+
+            that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
           }
         });
       }
-
-      if (deletedQuestionIds.length) {
-        this.$emit("remove-questions", deletedQuestionIds);
-      }
     },
     insertFromPaste: function insertFromPaste(selectedRangeBeforeInput, selectionStart, selectionEnd) {
-      var _this = this;
+      var _this3 = this;
 
-      var deletedQuestionIds = [];
       var that = this;
 
       if (selectedRangeBeforeInput === null || selectedRangeBeforeInput.start === selectedRangeBeforeInput.end) {
         var caretPosition = selectionStart - this.pastedText.length;
-        this.questions.forEach(function (question) {
+        this.questions.concat(this.descriptionTargets).forEach(function (item) {
           var updated = false; // console.log(question.startIndex);
           // console.log(question.endIndex);
 
-          if (caretPosition <= question.startIndex) {
+          if (caretPosition <= item.startIndex) {
             //console.log("START");
-            question.startIndex += _this.pastedText.length;
+            item.startIndex += _this3.pastedText.length;
             updated = true;
           }
 
-          if (caretPosition < question.endIndex) {
+          if (caretPosition < item.endIndex) {
             //console.log("END");
-            question.endIndex += _this.pastedText.length;
+            item.endIndex += _this3.pastedText.length;
             updated = true;
           }
 
           if (updated) {
-            that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+            item.hasUpdated = true;
+            that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
           }
         });
       } else {
-        this.questions.forEach(function (question, index) {
-          if (selectedRangeBeforeInput.start <= question.startIndex && question.endIndex <= selectedRangeBeforeInput.end //  |---[---]---|
+        this.questions.concat(this.descriptionTargets).forEach(function (item) {
+          if (selectedRangeBeforeInput.start <= item.startIndex && item.endIndex <= selectedRangeBeforeInput.end //  |---[---]---|
           ) {
-              deletedQuestionIds.push(question.id);
-              that.appendDeletingTask(question.id);
+              item.hasDeleted = true;
+
+              _this3.delayedUpdate();
             } else {
-            if (selectedRangeBeforeInput.start <= question.startIndex && question.startIndex <= selectedRangeBeforeInput.end && selectedRangeBeforeInput.end < question.endIndex //  |---[---|---)
+            if (selectedRangeBeforeInput.start <= item.startIndex && item.startIndex <= selectedRangeBeforeInput.end && selectedRangeBeforeInput.end < item.endIndex //  |---[---|---)
             ) {
-                question.startIndex = selectedRangeBeforeInput.start + _this.pastedText.length;
-                question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
-                question.endIndex += _this.pastedText.length;
-              } else if (question.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.start <= question.endIndex && question.endIndex <= selectedRangeBeforeInput.end // (---|---]---|
+                item.startIndex = selectedRangeBeforeInput.start + _this3.pastedText.length;
+                item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+                item.endIndex += _this3.pastedText.length;
+              } else if (item.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.start <= item.endIndex && item.endIndex <= selectedRangeBeforeInput.end // (---|---]---|
             ) {
-                question.endIndex = selectedRangeBeforeInput.start;
-              } else if (question.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.end < question.endIndex // (---|---|---)
+                item.endIndex = selectedRangeBeforeInput.start;
+              } else if (item.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.end < item.endIndex // (---|---|---)
             ) {
-                question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
-                question.endIndex += _this.pastedText.length;
-              } else if (selectedRangeBeforeInput.end < question.startIndex) {
+                item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+                item.endIndex += _this3.pastedText.length;
+              } else if (selectedRangeBeforeInput.end < item.startIndex) {
               // |---|---(---)
-              question.startIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
-              question.startIndex += _this.pastedText.length;
-              question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
-              question.endIndex += _this.pastedText.length;
+              item.startIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+              item.startIndex += _this3.pastedText.length;
+              item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+              item.endIndex += _this3.pastedText.length;
             }
 
-            that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+            item.hasUpdated = !(item.endIndex < selectedRangeBeforeInput.start); //  (---)---[---]
+
+            that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
           }
         });
       }
-
-      if (deletedQuestionIds.length) {
-        this.$emit("remove-questions", deletedQuestionIds);
-      }
     },
     deleteByCut: function deleteByCut(selectedRangeBeforeInput, selectionStart, selectionEnd) {
+      var _this4 = this;
+
       //console.log("(" + selectionStart + ", " + selectionEnd + ")");
       //console.log(selectedRangeBeforeInput);
-      var deletedQuestionIds = [];
       var that = this;
-      this.questions.forEach(function (question, index) {
-        if (selectedRangeBeforeInput.start <= question.startIndex && question.endIndex <= selectedRangeBeforeInput.end //  |---[---]---|
+      this.questions.concat(this.descriptionTargets).forEach(function (item) {
+        if (selectedRangeBeforeInput.start <= item.startIndex && item.endIndex <= selectedRangeBeforeInput.end //  |---[---]---|
         ) {
-            deletedQuestionIds.push(question.id);
-            that.appendDeletingTask(question.id);
+            item.hasDeleted = true;
+
+            _this4.delayedUpdate();
           } else {
-          if (selectedRangeBeforeInput.start <= question.startIndex && question.startIndex <= selectedRangeBeforeInput.end && selectedRangeBeforeInput.end < question.endIndex //  |---[---|---)
+          if (selectedRangeBeforeInput.start <= item.startIndex && item.startIndex <= selectedRangeBeforeInput.end && selectedRangeBeforeInput.end < item.endIndex //  |---[---|---)
           ) {
-              question.startIndex = selectedRangeBeforeInput.start;
-              question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start; // console.log(question.startIndex);
-              // console.log(question.endIndex);
-            } else if (question.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.start <= question.endIndex && question.endIndex <= selectedRangeBeforeInput.end // (---|---]---|
+              item.startIndex = selectedRangeBeforeInput.start;
+              item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+            } else if (item.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.start <= item.endIndex && item.endIndex <= selectedRangeBeforeInput.end // (---|---]---|
           ) {
-              question.endIndex = selectedRangeBeforeInput.start;
-            } else if (question.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.end < question.endIndex // (---|---|---)
+              item.endIndex = selectedRangeBeforeInput.start;
+            } else if (item.startIndex < selectedRangeBeforeInput.start && selectedRangeBeforeInput.end < item.endIndex // (---|---|---)
           ) {
-              question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
-            } else if (selectedRangeBeforeInput.end < question.startIndex) {
+              item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+            } else if (selectedRangeBeforeInput.end < item.startIndex) {
             // |---|---(---)
-            question.startIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
-            question.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+            item.startIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
+            item.endIndex -= selectedRangeBeforeInput.end - selectedRangeBeforeInput.start;
           }
 
-          that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+          item.hasUpdated = !(item.endIndex < selectedRangeBeforeInput.start); //  (---)---[---]
+
+          that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
         }
       });
-
-      if (deletedQuestionIds.length) {
-        this.$emit("remove-questions", deletedQuestionIds);
-      }
     },
     // historyUndo(e) {
     // },
     // historyRedo(e) {
     // },
     appendUpdatingTask: function appendUpdatingTask(id, startIndex, endIndex) {
-      this.$emit("update-question", id, startIndex, endIndex);
       this.delayedUpdate();
     },
-    appendDeletingTask: function appendDeletingTask(id) {
-      console.log("DELETE");
+    // appendDeletingTask(id) {
+    //     console.log("DELETE");
+    //     const that = this;
+    //     this.apiQueue.then(function() {
+    //         that.deleteQuestion(id);
+    //     });
+    // },
+    update: function update() {
+      console.log("UPDATE");
+      this.$emit("update-file-text", this.textarea.value);
       var that = this;
-      this.apiQueue.then(function () {
-        that.deleteQuestion(id);
-      });
-    },
-    updateQuestions: function updateQuestions() {
-      var that = this;
-      this.questions.forEach(function (question) {
-        that.updateQuestion(question.id, {
-          start_index: question.startIndex,
-          end_index: question.endIndex
+
+      var deleter = function deleter(items, isQuestion) {
+        var deletedItemIds = items.filter(function (item) {
+          return item.hasDeleted;
+        }).map(function (item) {
+          return item.id;
         });
-        question.hasUpdated = false;
+
+        if (deletedItemIds.length) {
+          if (isQuestion) {
+            console.log("Delete Question.");
+            Object(_question_DeleteQuestions_js__WEBPACK_IMPORTED_MODULE_2__["deleteQuestions"])(deletedItemIds);
+          } else {
+            console.log("Delete DescriptionTargets.");
+            Object(_description_DeleteDescriptionTargets_js__WEBPACK_IMPORTED_MODULE_4__["deleteDescriptionTargets"])(deletedItemIds);
+          }
+        }
+      };
+
+      deleter(this.questions, true);
+      deleter(this.descriptionTargets, false);
+      this.$emit("set-questions", this.questions.filter(function (question) {
+        return !question.hasDeleted;
+      }));
+      this.$emit("set-description-targets", this.descriptionTargets.filter(function (descriptionTarget) {
+        return !descriptionTarget.hasDeleted;
+      }));
+      Vue.nextTick(function () {
+        var updater = function updater(items, isQuestion) {
+          items.forEach(function (item) {
+            if (item.hasUpdated) {
+              if (isQuestion) {
+                that.updateQuestion(item.id, {
+                  start_index: item.startIndex,
+                  end_index: item.endIndex
+                });
+                that.$emit("update-question", item.id, item.startIndex, item.endIndex);
+              } else {
+                Object(_description_UpdateDescriptionTarget_js__WEBPACK_IMPORTED_MODULE_3__["updateDescriptionTarget"])(item.id, item.startIndex, item.endIndex, item.descriptionId);
+                that.$emit("update-description-target", item.id, item.startIndex, item.endIndex);
+              }
+
+              item.hasUpdated = false;
+            }
+          });
+        };
+
+        updater(that.questions, true); //console.log(that.descriptionTargets);
+
+        updater(that.descriptionTargets, false);
       });
     }
   }
@@ -2644,15 +2780,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "source-code-editor-context-menu",
   props: {
     left: Number,
-    top: Number
+    top: Number,
+    isDescriptionSelected: Boolean
   },
   methods: {
-    onAddQuestionButtonClick: function onAddQuestionButtonClick() {
+    onAddQuestion: function onAddQuestion() {
       this.$emit("add-question");
+    },
+    onAddDescriptionTarget: function onAddDescriptionTarget() {
+      this.$emit("add-description-target");
     },
     isTextSelected: function isTextSelected() {
       return getSelection().toString().length;
@@ -5565,7 +5706,7 @@ var render = function() {
         "div",
         {
           staticClass: "d-flex bg-light border-bottom p-2",
-          attrs: { id: "header" }
+          attrs: { id: "development-header" }
         },
         [
           _c(
@@ -5581,94 +5722,106 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
-      _c("div", { staticClass: "row", attrs: { id: "body" } }, [
+      _c("div", { staticClass: "row", attrs: { id: "development-body" } }, [
         _c("div", { staticClass: "col-9 h-100 p-0" }, [
-          _c("div", { staticClass: "h-75 d-flex" }, [
-            _c("div", { staticClass: "w-25 h-100" }, [
+          _c(
+            "div",
+            { staticClass: "d-flex", attrs: { id: "development-body-top" } },
+            [
+              _c("div", { staticClass: "w-25 h-100" }, [
+                _c(
+                  "ul",
+                  { staticClass: "w-100 h-100" },
+                  [
+                    _c("file-tree", {
+                      staticClass: "w-100 h-100",
+                      attrs: {
+                        id: "file-tree",
+                        "root-item": _vm.fileTree.rootItem
+                      },
+                      on: {
+                        "show-context-menu": _vm.showFileTreeContextMenu,
+                        "set-file": _vm.setFile
+                      }
+                    })
+                  ],
+                  1
+                )
+              ]),
+              _vm._v(" "),
               _c(
-                "ul",
-                { staticClass: "w-100 h-100" },
+                "div",
+                { staticClass: "w-75 h-100" },
                 [
-                  _c("file-tree", {
+                  _c("source-code-editor", {
                     staticClass: "w-100 h-100",
                     attrs: {
-                      id: "file-tree",
-                      "root-item": _vm.fileTree.rootItem
+                      id: "source-code-editor",
+                      text: _vm.file ? _vm.file.text : "",
+                      questions: _vm.questions,
+                      "description-targets": _vm.description.targets,
+                      disabled: _vm.sourceCodeEditor.disabled
                     },
                     on: {
-                      "show-context-menu": _vm.showFileTreeContextMenu,
-                      "set-file": _vm.setFile
+                      "update-file-text": _vm.onUpdateFileText,
+                      "show-context-menu": function($event) {
+                        $event.stopPropagation()
+                        $event.preventDefault()
+                        return _vm.showSourceCodeEditorContextMenu($event)
+                      },
+                      "update-question": _vm.onUpdateQuestion,
+                      "update-description-target":
+                        _vm.onUpdateDescriptionTarget,
+                      "set-questions": _vm.onSetQuestions,
+                      "set-description-targets": _vm.onSetDescriptionTargets
                     }
                   })
                 ],
                 1
               )
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "w-75 h-100" },
-              [
-                _c("source-code-editor", {
-                  staticClass: "w-100 h-100",
-                  attrs: {
-                    id: "source-code-editor",
-                    text: _vm.file ? _vm.file.text : "",
-                    questions: _vm.questions,
-                    disabled: _vm.sourceCodeEditor.disabled
-                  },
-                  on: {
-                    "update-file-text": _vm.onUpdateFileText,
-                    "show-context-menu": function($event) {
-                      $event.stopPropagation()
-                      $event.preventDefault()
-                      return _vm.showSourceCodeEditorContextMenu($event)
-                    },
-                    "set-is-clicked-to-false": _vm.setIsClickedToFalse,
-                    "remove-questions": _vm.onRemoveQuestions,
-                    "update-question": _vm.onUpdateQuestion
-                  }
-                })
-              ],
-              1
-            )
-          ]),
+            ]
+          ),
           _vm._v(" "),
-          _c("div", { staticClass: "h-25 d-flex" }, [
-            _c(
-              "div",
-              { staticClass: "w-25", attrs: { id: "questions-view" } },
-              _vm._l(_vm.questions, function(question) {
-                return _c("question-item", {
-                  key: question.id,
-                  attrs: { answer: question.answer }
-                })
-              }),
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "w-75" },
-              [
-                _c("description", {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: _vm.file,
-                      expression: "file"
-                    }
-                  ],
-                  attrs: {
-                    "file-id": _vm.file ? _vm.file.id : null,
-                    descriptions: _vm.descriptions
-                  }
-                })
-              ],
-              1
-            )
-          ])
+          _c(
+            "div",
+            { staticClass: "d-flex", attrs: { id: "development-body-bottom" } },
+            [
+              _c(
+                "div",
+                { staticClass: "w-25", attrs: { id: "questions-view" } },
+                _vm._l(_vm.questions, function(question) {
+                  return _c("question-item", {
+                    key: question.id,
+                    attrs: { answer: question.answer }
+                  })
+                }),
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "w-75" },
+                [
+                  _c("description", {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.file,
+                        expression: "file"
+                      }
+                    ],
+                    attrs: {
+                      "file-id": _vm.file ? _vm.file.id : null,
+                      descriptions: _vm.description.descriptions
+                    },
+                    on: { "set-description": _vm.onSetDescription }
+                  })
+                ],
+                1
+              )
+            ]
+          )
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "col p-0 h-100 bg-dark" })
@@ -5732,9 +5885,14 @@ var render = function() {
         ],
         attrs: {
           left: _vm.sourceCodeEditor.contextMenu.left,
-          top: _vm.sourceCodeEditor.contextMenu.top
+          top: _vm.sourceCodeEditor.contextMenu.top,
+          "is-description-selected":
+            _vm.description.selectedDescription !== null
         },
-        on: { "add-question": _vm.onAddQuestion }
+        on: {
+          "add-question": _vm.onAddQuestion,
+          "add-description-target": _vm.onAddDescriptionTarget
+        }
       })
     ],
     1
@@ -5785,89 +5943,136 @@ var render = function() {
     "div",
     { staticClass: "w-100 h-100", attrs: { id: "description" } },
     [
-      _c("transition", { attrs: { name: "slide-up" } }, [
-        _c(
-          "div",
-          {
-            directives: [
-              {
-                name: "show",
-                rawName: "v-show",
-                value: _vm.editingView.isShown,
-                expression: "editingView.isShown"
-              }
-            ],
-            staticClass: "bg-danger",
-            staticStyle: { width: "100%", height: "300px" },
-            attrs: { id: "description-editing-view" }
-          },
-          [
-            _c("textarea", {
+      _c(
+        "transition",
+        {
+          attrs: { name: "slide-up" },
+          on: { "after-leave": _vm.onAfterLeaveSlideUpEditingView }
+        },
+        [
+          _c(
+            "div",
+            {
               directives: [
                 {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.editingView.description.text,
-                  expression: "editingView.description.text"
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.editingView.isShown,
+                  expression: "editingView.isShown"
                 }
               ],
               staticClass: "w-100 h-100",
-              domProps: { value: _vm.editingView.description.text },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.editingView.description,
-                    "text",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c("div", { attrs: { id: "description-tools d-flex" } }, [
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-primary",
-            on: { click: _vm.onAppendDescription }
-          },
-          [_vm._v("追加")]
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "bg-info", attrs: { id: "description-list" } },
-        _vm._l(_vm.descriptions, function(description) {
-          return _c(
-            "div",
-            {
-              key: description.id,
-              staticClass: "border-bottom",
-              on: {
-                click: function($event) {
-                  return _vm.onSlideUpEditingView(description.id)
-                }
-              }
+              attrs: { id: "description-editing-view" }
             },
             [
-              _vm._v(
-                "\n           " +
-                  _vm._s(description.index) +
-                  ": " +
-                  _vm._s(description.text) +
-                  "\n       "
+              _c(
+                "div",
+                {
+                  staticClass: "d-flex align-items-center",
+                  attrs: { id: "description-editing-header" }
+                },
+                [
+                  _c("div", [
+                    _vm._v(_vm._s(_vm.editingView.description.index))
+                  ]),
+                  _vm._v(" "),
+                  _c("button", { staticClass: "ml-auto btn btn-primary" }, [
+                    _vm._v("p")
+                  ]),
+                  _vm._v(" "),
+                  _c("button", { staticClass: "btn btn-primary" }, [
+                    _vm._v("n")
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      on: { click: _vm.onCloseEditingView }
+                    },
+                    [_vm._v("c")]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c("div", { attrs: { id: "description-editing-body" } }, [
+                _c("textarea", {
+                  staticClass: "w-100 h-100",
+                  attrs: { id: "description-editor" },
+                  domProps: { value: _vm.editingView.description.text },
+                  on: { input: _vm.onInputDescription }
+                })
+              ])
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "transition",
+        {
+          attrs: { name: "slide-down" },
+          on: { "after-leave": _vm.onAfterLeaveSlideDownDescriptionList }
+        },
+        [
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.descriptionList.isShown,
+                  expression: "descriptionList.isShown"
+                }
+              ],
+              staticClass: "w-100 h-100"
+            },
+            [
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "d-flex align-items-center border-bottom border-dark",
+                  attrs: { id: "description-list-header" }
+                },
+                [
+                  _c("button", { staticClass: "btn btn-primary" }, [
+                    _vm._v("a")
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { attrs: { id: "description-list-body" } },
+                _vm._l(_vm.descriptions, function(description) {
+                  return _c(
+                    "div",
+                    {
+                      key: description.id,
+                      staticClass: "border-bottom",
+                      on: {
+                        click: function($event) {
+                          return _vm.onSlideDownDescriptionList(description.id)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                   " +
+                          _vm._s(description.index) +
+                          ": "
+                      ),
+                      _c("pre", [_vm._v(_vm._s(description.text))])
+                    ]
+                  )
+                }),
+                0
               )
             ]
           )
-        }),
-        0
+        ]
       )
     ],
     1
@@ -6009,9 +6214,27 @@ var render = function() {
           ],
           staticClass: "btn btn-light",
           attrs: { type: "button" },
-          on: { click: _vm.onAddQuestionButtonClick }
+          on: { click: _vm.onAddQuestion }
         },
-        [_vm._v("選択範囲を問題に追加")]
+        [_vm._v("問題に追加")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.isDescriptionSelected,
+              expression: "isDescriptionSelected"
+            }
+          ],
+          staticClass: "btn btn-light",
+          attrs: { type: "button" },
+          on: { click: _vm.onAddDescriptionTarget }
+        },
+        [_vm._v("説明対象に追加")]
       ),
       _vm._v(" "),
       _c(
@@ -6638,6 +6861,49 @@ function createDescription(id, index, text, fileId) {
 
 /***/ }),
 
+/***/ "./resources/js/components/development/description/CreateDescriptionTarget.js":
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/development/description/CreateDescriptionTarget.js ***!
+  \************************************************************************************/
+/*! exports provided: createDescriptionTarget */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createDescriptionTarget", function() { return createDescriptionTarget; });
+function createDescriptionTarget(id, startIndex, endIndex, descriptionId) {
+  return {
+    id: id,
+    startIndex: startIndex,
+    endIndex: endIndex,
+    descriptionId: descriptionId,
+    hasUpdated: false,
+    hasDeleted: false
+  };
+}
+
+/***/ }),
+
+/***/ "./resources/js/components/development/description/DeleteDescriptionTargets.js":
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/development/description/DeleteDescriptionTargets.js ***!
+  \*************************************************************************************/
+/*! exports provided: deleteDescriptionTargets */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteDescriptionTargets", function() { return deleteDescriptionTargets; });
+var deleteDescriptionTargets = function deleteDescriptionTargets(ids) {
+  var queryParameters = ids.map(function (id, index) {
+    return "ids[" + index + "]=" + id;
+  }).join("&");
+  axios["delete"]("/description_targets?" + queryParameters).then(function (response) {//console.log(response.data);
+  });
+};
+
+/***/ }),
+
 /***/ "./resources/js/components/development/description/Description.vue":
 /*!*************************************************************************!*\
   !*** ./resources/js/components/development/description/Description.vue ***!
@@ -6764,6 +7030,101 @@ var descriptionFetchable = {
   }
 };
 /* harmony default export */ __webpack_exports__["default"] = (descriptionFetchable);
+
+/***/ }),
+
+/***/ "./resources/js/components/development/description/FetchDescriptionTargets.js":
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/development/description/FetchDescriptionTargets.js ***!
+  \************************************************************************************/
+/*! exports provided: fetchDescriptionTargets */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchDescriptionTargets", function() { return fetchDescriptionTargets; });
+/* harmony import */ var _CreateDescriptionTarget_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CreateDescriptionTarget.js */ "./resources/js/components/development/description/CreateDescriptionTarget.js");
+
+function fetchDescriptionTargets(descriptionId, completion) {
+  axios.get("/description_targets/fetch?description_id=" + descriptionId).then(function (response) {
+    var descriptionTargets = response.data.map(function (descriptionTarget) {
+      return Object(_CreateDescriptionTarget_js__WEBPACK_IMPORTED_MODULE_0__["createDescriptionTarget"])(descriptionTarget.id, descriptionTarget.start_index, descriptionTarget.end_index, descriptionId);
+    });
+    completion(descriptionTargets);
+  });
+}
+
+/***/ }),
+
+/***/ "./resources/js/components/development/description/PostDescriptionTarget.js":
+/*!**********************************************************************************!*\
+  !*** ./resources/js/components/development/description/PostDescriptionTarget.js ***!
+  \**********************************************************************************/
+/*! exports provided: postDescriptionTarget */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "postDescriptionTarget", function() { return postDescriptionTarget; });
+/* harmony import */ var _CreateDescriptionTarget_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CreateDescriptionTarget.js */ "./resources/js/components/development/description/CreateDescriptionTarget.js");
+
+function postDescriptionTarget(startIndex, endIndex, descriptionId, completion) {
+  axios.post("/description_targets", {
+    start_index: startIndex,
+    end_index: endIndex,
+    description_id: descriptionId
+  }).then(function (response) {
+    var id = response.data;
+    var descriptionTarget = Object(_CreateDescriptionTarget_js__WEBPACK_IMPORTED_MODULE_0__["createDescriptionTarget"])(id, startIndex, endIndex, descriptionId);
+    completion(descriptionTarget);
+  });
+}
+
+/***/ }),
+
+/***/ "./resources/js/components/development/description/UpdateDescription.js":
+/*!******************************************************************************!*\
+  !*** ./resources/js/components/development/description/UpdateDescription.js ***!
+  \******************************************************************************/
+/*! exports provided: updateDescription */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateDescription", function() { return updateDescription; });
+function updateDescription(id, index, text, fileId) {
+  console.log(index);
+  console.log(text);
+  console.log(fileId);
+  axios.put("/descriptions/" + id, {
+    index: index,
+    text: text,
+    file_id: fileId
+  }).then(function (response) {//console.log(response.data);
+  });
+}
+
+/***/ }),
+
+/***/ "./resources/js/components/development/description/UpdateDescriptionTarget.js":
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/development/description/UpdateDescriptionTarget.js ***!
+  \************************************************************************************/
+/*! exports provided: updateDescriptionTarget */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateDescriptionTarget", function() { return updateDescriptionTarget; });
+function updateDescriptionTarget(id, startIndex, endIndex, descriptionId) {
+  axios.put("/description_targets/" + id, {
+    start_index: startIndex,
+    end_index: endIndex,
+    description_id: descriptionId
+  }).then(function (response) {//console.log(response.data);
+  });
+}
+;
 
 /***/ }),
 
@@ -7460,6 +7821,26 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/development/question/DeleteQuestions.js":
+/*!*************************************************************************!*\
+  !*** ./resources/js/components/development/question/DeleteQuestions.js ***!
+  \*************************************************************************/
+/*! exports provided: deleteQuestions */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteQuestions", function() { return deleteQuestions; });
+var deleteQuestions = function deleteQuestions(ids) {
+  var queryString = ids.map(function (id, index) {
+    return "ids[" + index + "]=" + id;
+  }).join("&");
+  axios["delete"]("/questions?" + queryString).then(function (response) {//console.log(response.data);
+  });
+};
+
+/***/ }),
+
 /***/ "./resources/js/components/development/question/QuestionAddable.js":
 /*!*************************************************************************!*\
   !*** ./resources/js/components/development/question/QuestionAddable.js ***!
@@ -7483,27 +7864,6 @@ var questionAddable = {
   }
 };
 /* harmony default export */ __webpack_exports__["default"] = (questionAddable);
-
-/***/ }),
-
-/***/ "./resources/js/components/development/question/QuestionDeletable.js":
-/*!***************************************************************************!*\
-  !*** ./resources/js/components/development/question/QuestionDeletable.js ***!
-  \***************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-var questionDeletable = {
-  methods: {
-    deleteQuestion: function deleteQuestion(id) {
-      axios["delete"]("/questions/" + id).then(function (response) {//console.log(response);
-      });
-    }
-  }
-};
-/* harmony default export */ __webpack_exports__["default"] = (questionDeletable);
 
 /***/ }),
 
@@ -7613,9 +7973,8 @@ var questionUpdatable = {
       // console.log(id);
       // console.log(parameters);
       //console.log("will Update");
-      axios.put("/questions/" + id, parameters).then(function (response) {
-        //console.log(response);
-        console.log("Updated");
+      axios.put("/questions/" + id, parameters).then(function (response) {//console.log(response);
+        //console.log("Updated");
       });
     }
   }

@@ -1,26 +1,41 @@
 <template>
      <div id="description" class="w-100 h-100">
-         <transition name="slide-up">
-             <div id="description-editing-view" v-show="editingView.isShown" class="bg-danger" style="width:100%;height:300px;">
-                 <textarea 
-                    class="w-100 h-100"
-                    v-model="editingView.description.text"
-                ></textarea>
+         <transition name="slide-up" @after-leave="onAfterLeaveSlideUpEditingView">
+             <div id="description-editing-view" class="w-100 h-100" v-show="editingView.isShown">
+                 <div id="description-editing-header" class="d-flex align-items-center">
+                     <div>{{editingView.description.index}}</div>
+                     <button class="ml-auto btn btn-primary">p</button>
+                     <button class="btn btn-primary">n</button>
+                     <button class="btn btn-primary" @click="onCloseEditingView">c</button>
+                 </div>
+                 <div id="description-editing-body">
+                     <textarea
+                        id="description-editor"
+                        class="w-100 h-100"
+                        :value="editingView.description.text"
+                        @input="onInputDescription"
+                    ></textarea>
+                 </div>
             </div>
          </transition>
-        <div id="description-tools d-flex">
-                <button class="btn btn-primary" @click="onAppendDescription">追加</button>
+         <transition name="slide-down" @after-leave="onAfterLeaveSlideDownDescriptionList">
+             <div class="w-100 h-100" v-show="descriptionList.isShown">
+                <div id="description-list-header" class="d-flex align-items-center border-bottom border-dark">
+                    <button class="btn btn-primary">a</button>
+                </div>
+                <div id="description-list-body">
+                    <div class="border-bottom" v-for="description in descriptions" :key="description.id" @click="onSlideDownDescriptionList(description.id)">
+                        {{description.index}}: <pre>{{description.text}}</pre>
+                    </div>
+                </div>
             </div>
-        <div id="description-list" class="bg-info">
-            <div class="border-bottom" v-for="description in descriptions" :key="description.id" @click="onSlideUpEditingView(description.id)">
-                {{description.index}}: {{description.text}}
-            </div>
-         </div>
+         </transition>
      </div>
 </template>
 
 <script>
     import DescriptionCreatable from "./DescriptionCreatable.js";
+    import {updateDescription} from "./UpdateDescription.js";
     export default {
         name: "description",
         props: {
@@ -32,10 +47,14 @@
         ],
         data: function() {
             return {
+                descriptionList: {
+                    isShown: true
+                },
                 editingView: {
                     isShown: false,
                     description: Object,
                 },
+                delayedUpdate: _.debounce(this.updateDescription, 500),
             }
         },
         methods: {
@@ -48,9 +67,31 @@
                     that.descriptions.push(description);
                 });
             },
-            onSlideUpEditingView(descriptionId) {
-                this.editingView.isShown = !this.editingView.isShown;
+            onSlideDownDescriptionList(descriptionId) {
+                this.descriptionList.isShown = false;
                 this.editingView.description = this.descriptions.find(description => description.id === descriptionId);
+                this.$emit("set-description", this.editingView.description);
+            },
+            onInputDescription(e) {
+                this.editingView.description.text = e.target.value;
+                this.delayedUpdate();
+            },
+            onCloseEditingView() {
+                this.editingView.isShown = false;
+            },
+            onAfterLeaveSlideUpEditingView() {
+                this.descriptionList.isShown = true;
+            },
+            onAfterLeaveSlideDownDescriptionList() {
+                this.editingView.isShown = true;
+            },
+            updateDescription() {
+                updateDescription(
+                    this.editingView.description.id,
+                    this.editingView.description.index,
+                    this.editingView.description.text,
+                    this.fileId
+                );
             }
         },
     }

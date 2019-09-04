@@ -7,12 +7,20 @@ $file-creation-view-button-width: ($file-creation-view-width - $file-creation-vi
 $file-creation-view-item-width: $file-creation-view-width * 0.2;
 $file-creation-view-item-height: $file-creation-view-item-width;
 
-#header {
+#development-header {
     height: 5vh;
 }
 
-#body {
+#development-body {
     height: 95vh;
+}
+
+#development-body-top {
+    height: 60%;
+}
+
+#development-body-bottom {
+    height: 40%;
 }
 
 #file-tree {
@@ -61,13 +69,25 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     position: relative;
 }
 
-#description-list {
-    overflow: scroll;
-    height: 80%;
+#description-list-header {
+    height: 15%;
 }
 
-#description-tools {
-    height: 30%;
+#description-list-body {
+    overflow: scroll;
+    height: 85%;
+}
+
+#description-editing-header {
+    height: 15%;
+}
+
+#description-editing-body {
+    height: 85%;
+}
+
+#description-editor {
+    resize: none;
 }
 
 .file-creation-view-button {
@@ -97,5 +117,13 @@ $file-creation-view-item-height: $file-creation-view-item-width;
 }
 
 .slide-up-enter, .slide-up-leave-to {
+    transform: translate(0, 100%);
+}
+
+.slide-down-enter-active, .slide-down-leave-active {
+    transition: transform .5s;
+}
+
+.slide-down-enter, .slide-down-leave-to {
     transform: translate(0, 100%);
 }

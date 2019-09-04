@@ -17,8 +17,10 @@ class QuestionsController extends Controller
         Question::find($id)->fill($request->all())->save();
     }
     
-    public function destroy(Request $request, int $id) {
-        Question::destroy($id);
+    public function destroy(Request $request) {
+        foreach($request->ids as $id) {
+            Question::destroy($id);
+        }
     }
 
     public function fetch(Request $request)

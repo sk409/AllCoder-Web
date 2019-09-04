@@ -19,27 +19,31 @@
 
 <script>
     import QuestionUpdatable from "../question/QuestionUpdatable.js";
-    import QuestionDeletable from "../question/QuestionDeletable.js";
+    //import QuestionDeletable from "../question/QuestionDeletable.js";
     import { Promise } from 'q';
+    import {deleteQuestion, deleteQuestions} from "../question/DeleteQuestions.js";
+    import {updateDescriptionTarget} from "../description/UpdateDescriptionTarget.js";
+    import {deleteDescriptionTarget, deleteDescriptionTargets} from "../description/DeleteDescriptionTargets.js";
     export default {
         name: "source-code-editor",
         props: {
             text: String,
             questions: Array,
+            descriptionTargets: Array,
             disabled: Boolean,
         },
         mixins: [
             QuestionUpdatable,
-            QuestionDeletable,
+            // QuestionDeletable,
         ],
         data: function() {
             return {
+                textarea: null,
                 textBeforeInput: null,
                 selectedRangeBeforeInput: null,
                 pastedText: null,
                 inputQueue: Promise.resolve(),
-                apiQueue: Promise.resolve(),
-                delayedUpdate: _.debounce(this.updateQuestions, 500),
+                delayedUpdate: _.debounce(this.update, 500),
             }
         },
         methods: {
@@ -90,7 +94,7 @@
                 // } else if (e.inputType === "historyRedo") {
                 //     this.queue.then(this.historyRedo(e));
                 // }
-                this.$emit("update-file-text", e);
+                this.textarea = e.target;
                 this.selectedRangeBeforeInput = null;
             },
             onclick(e) {
@@ -121,70 +125,71 @@
                 // console.log(selectedRangeBeforeInput);
                 // console.log(getSelection().toString());
                 //console.log(this.questions);
-                const deletedQuestionIds = [];
+                //const deletedQuestionIds = [];
                 const that = this;
                 if (
                     selectedRangeBeforeInput === null ||
                     selectedRangeBeforeInput.start === selectedRangeBeforeInput.end
                 ) {
                     const caretPosition = selectionStart - 1;
-                    this.questions.forEach(question => {
+                    this.questions.concat(this.descriptionTargets).forEach(item => {
+                        //console.log(item.startIndex);
                         let updated = false;
-                        // console.log(question.startIndex);
-                        // console.log(question.endIndex);
-                        if (caretPosition <= question.startIndex) {
+                        if (caretPosition <= item.startIndex) {
                             //console.log("START");
-                            ++question.startIndex;
+                            ++item.startIndex;
                             updated = true;
                         }
-                        if (caretPosition < question.endIndex) {
+                        if (caretPosition < item.endIndex) {
                             //console.log("END");
-                            ++question.endIndex;
+                            ++item.endIndex;
                             updated = true;
                         }
                         if (updated) {
-                            that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+                            item.hasUpdated = true;
+                            that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
                         }
                     });
+                    
                 } else {
-                    this.questions.forEach((question, index) => {
-                        if (selectedRangeBeforeInput.start <= question.startIndex &&
-                            question.endIndex <= selectedRangeBeforeInput.end   //  |---[---]---|
+                    this.questions.concat(this.descriptionTargets).forEach(item => {
+                        if (selectedRangeBeforeInput.start <= item.startIndex &&
+                            item.endIndex <= selectedRangeBeforeInput.end   //  |---[---]---|
                         ) {
-                            deletedQuestionIds.push(question.id);
-                            that.appendDeletingTask(question.id);
+                            item.hasDeleted = true;
+                            this.delayedUpdate();
                         } else {
-                            if (selectedRangeBeforeInput.start <= question.startIndex &&
-                                question.startIndex <= selectedRangeBeforeInput.end &&
-                                selectedRangeBeforeInput.end < question.endIndex    //  |---[---|---)
+                            if (selectedRangeBeforeInput.start <= item.startIndex &&
+                                item.startIndex <= selectedRangeBeforeInput.end &&
+                                selectedRangeBeforeInput.end < item.endIndex    //  |---[---|---)
                             ) {
-                                question.startIndex = (selectedRangeBeforeInput.start + 1);
-                                question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1);
-                            } else if (question.startIndex < selectedRangeBeforeInput.start &&
-                                selectedRangeBeforeInput.start <= question.endIndex &&
-                                question.endIndex <= selectedRangeBeforeInput.end   // (---|---]---|
+                                item.startIndex = (selectedRangeBeforeInput.start + 1);
+                                item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1);
+                            } else if (item.startIndex < selectedRangeBeforeInput.start &&
+                                selectedRangeBeforeInput.start <= item.endIndex &&
+                                item.endIndex <= selectedRangeBeforeInput.end   // (---|---]---|
                             ) {
-                                question.endIndex = selectedRangeBeforeInput.start;
-                            } else if (question.startIndex < selectedRangeBeforeInput.start &&
-                                       selectedRangeBeforeInput.end < question.endIndex     // (---|---|---)
+                                item.endIndex = selectedRangeBeforeInput.start;
+                            } else if (item.startIndex < selectedRangeBeforeInput.start &&
+                                       selectedRangeBeforeInput.end < item.endIndex     // (---|---|---)
                             ) {
-                                question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1);
-                            } else if (selectedRangeBeforeInput.end < question.startIndex) { // |---|---(---)
-                                question.startIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1);
-                                question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1);
+                                item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1);
+                            } else if (selectedRangeBeforeInput.end < item.startIndex) { // |---|---(---)
+                                item.startIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1);
+                                item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start - 1);
                             }
-                            that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+                            item.hasUpdated = !(item.endIndex < selectedRangeBeforeInput.start);    //  (---)---[---]
+                            that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
                         }
                     });
                 }
-                if (deletedQuestionIds.length) {
-                    this.$emit("remove-questions", deletedQuestionIds);
-                }
+                // if (deletedQuestionIds.length) {
+                //     this.$emit("remove-questions", deletedQuestionIds);
+                // }
             },
             deleteContentBackward(selectedRangeBeforeInput, selectionStart, selectionEnd) {
                 //console.log("(" + selectionStart + ", " + selectionEnd + ")");
                 //console.log(selectedRangeBeforeInput);
-                const deletedQuestionIds = [];
                 const that = this;
                 if (
                     selectedRangeBeforeInput === null ||
@@ -192,170 +197,159 @@
                 ) {
                     const caretPosition = selectionStart + 1;
                     //console.log(caretPosition);
-                    this.questions.forEach(question => {
+                    this.questions.concat(this.descriptionTargets).forEach(item => {
                         let updated = false;
                         // console.log(question.startIndex);
                         // console.log(question.endIndex);
-                        if (caretPosition <= question.startIndex) {
+                        if (caretPosition <= item.startIndex) {
                             //console.log("START");
-                            --question.startIndex;
+                            --item.startIndex;
                             updated = true;
                         }
-                        if (caretPosition <= question.endIndex) {
+                        if (caretPosition <= item.endIndex) {
                             //console.log("END");
-                            --question.endIndex;
+                            --item.endIndex;
                             updated = true;
                         }
                         if (updated) {
-                            if (question.endIndex - question.startIndex == 0) {
-                                deletedQuestionIds.push(question.id);
-                                that.appendDeletingTask(question.id);
+                            if (item.endIndex - item.startIndex == 0) {                            
+                                item.hasDeleted = true;
                             } else {
-                                that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+                                item.hasUpdated = true;
+                                that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
                             }
                         }
                     });
                 } else {
-                    this.questions.forEach((question, index) => {
-                        if (selectedRangeBeforeInput.start <= question.startIndex &&
-                            question.endIndex <= selectedRangeBeforeInput.end   //  |---[---]---|
+                    this.questions.concat(this.descriptionTargets).forEach(item => {
+                        if (selectedRangeBeforeInput.start <= item.startIndex &&
+                            item.endIndex <= selectedRangeBeforeInput.end   //  |---[---]---|
                         ) {
-                            deletedQuestionIds.push(question.id);
-                            that.appendDeletingTask(question.id);
+                            item.hasDeleted =  true;
+                            this.delayedUpdate();
                         } else {
-                            if (selectedRangeBeforeInput.start <= question.startIndex &&
-                                question.startIndex <= selectedRangeBeforeInput.end &&
-                                selectedRangeBeforeInput.end < question.endIndex    //  |---[---|---)
+                            if (selectedRangeBeforeInput.start <= item.startIndex &&
+                                item.startIndex <= selectedRangeBeforeInput.end &&
+                                selectedRangeBeforeInput.end < item.endIndex    //  |---[---|---)
                             ) {
-                                question.startIndex = (selectedRangeBeforeInput.start);
-                                question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
-                                // console.log(question.startIndex);
-                                // console.log(question.endIndex);
-                            } else if (question.startIndex < selectedRangeBeforeInput.start &&
-                                selectedRangeBeforeInput.start <= question.endIndex &&
-                                question.endIndex <= selectedRangeBeforeInput.end   // (---|---]---|
+                                item.startIndex = (selectedRangeBeforeInput.start);
+                                item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                            } else if (item.startIndex < selectedRangeBeforeInput.start &&
+                                selectedRangeBeforeInput.start <= item.endIndex &&
+                                item.endIndex <= selectedRangeBeforeInput.end   // (---|---]---|
                             ) {
-                                question.endIndex = selectedRangeBeforeInput.start;
-                            } else if (question.startIndex < selectedRangeBeforeInput.start &&
-                                       selectedRangeBeforeInput.end < question.endIndex     // (---|---|---)
+                                item.endIndex = selectedRangeBeforeInput.start;
+                            } else if (item.startIndex < selectedRangeBeforeInput.start &&
+                                       selectedRangeBeforeInput.end < item.endIndex     // (---|---|---)
                             ) {
-                                question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
-                            } else if (selectedRangeBeforeInput.end < question.startIndex) { // |---|---(---)
-                                question.startIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
-                                question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                                item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                            } else if (selectedRangeBeforeInput.end < item.startIndex) { // |---|---(---)
+                                item.startIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                                item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
                             }
-                            that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+                            item.hasUpdated = !(item.endIndex < selectedRangeBeforeInput.start);    //  (---)---[---]
+                            that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
                         }
                     });
                 }
-                if (deletedQuestionIds.length) {
-                    this.$emit("remove-questions", deletedQuestionIds);
-                }
             },
             insertFromPaste(selectedRangeBeforeInput, selectionStart, selectionEnd) { 
-                const deletedQuestionIds = [];
                 const that = this;
                 if (
                     selectedRangeBeforeInput === null ||
                     selectedRangeBeforeInput.start === selectedRangeBeforeInput.end
                 ) {
                     const caretPosition = selectionStart - this.pastedText.length;
-                    this.questions.forEach(question => {
+                    this.questions.concat(this.descriptionTargets).forEach(item => {
                         let updated = false;
                         // console.log(question.startIndex);
                         // console.log(question.endIndex);
-                        if (caretPosition <= question.startIndex) {
+                        if (caretPosition <= item.startIndex) {
                             //console.log("START");
-                            question.startIndex += this.pastedText.length;
+                            item.startIndex += this.pastedText.length;
                             updated = true;
                         }
-                        if (caretPosition < question.endIndex) {
+                        if (caretPosition < item.endIndex) {
                             //console.log("END");
-                            question.endIndex += this.pastedText.length;
+                            item.endIndex += this.pastedText.length;
                             updated = true;
                         }
                         if (updated) {
-                            that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+                            item.hasUpdated = true;
+                            that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
                         }
                     });
                 } else {
-                    this.questions.forEach((question, index) => {
-                        if (selectedRangeBeforeInput.start <= question.startIndex &&
-                            question.endIndex <= selectedRangeBeforeInput.end   //  |---[---]---|
+                    this.questions.concat(this.descriptionTargets).forEach(item => {
+                        if (selectedRangeBeforeInput.start <= item.startIndex &&
+                            item.endIndex <= selectedRangeBeforeInput.end   //  |---[---]---|
                         ) {
-                            deletedQuestionIds.push(question.id);
-                            that.appendDeletingTask(question.id);
+                            item.hasDeleted = true;
+                            this.delayedUpdate();
                         } else {
-                            if (selectedRangeBeforeInput.start <= question.startIndex &&
-                                question.startIndex <= selectedRangeBeforeInput.end &&
-                                selectedRangeBeforeInput.end < question.endIndex    //  |---[---|---)
+                            if (selectedRangeBeforeInput.start <= item.startIndex &&
+                                item.startIndex <= selectedRangeBeforeInput.end &&
+                                selectedRangeBeforeInput.end < item.endIndex    //  |---[---|---)
                             ) {
-                                question.startIndex = (selectedRangeBeforeInput.start + this.pastedText.length);
-                                question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
-                                question.endIndex += this.pastedText.length;
-                            } else if (question.startIndex < selectedRangeBeforeInput.start &&
-                                selectedRangeBeforeInput.start <= question.endIndex &&
-                                question.endIndex <= selectedRangeBeforeInput.end   // (---|---]---|
+                                item.startIndex = (selectedRangeBeforeInput.start + this.pastedText.length);
+                                item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                                item.endIndex += this.pastedText.length;
+                            } else if (item.startIndex < selectedRangeBeforeInput.start &&
+                                selectedRangeBeforeInput.start <= item.endIndex &&
+                                item.endIndex <= selectedRangeBeforeInput.end   // (---|---]---|
                             ) {
-                                question.endIndex = selectedRangeBeforeInput.start;
-                            } else if (question.startIndex < selectedRangeBeforeInput.start &&
-                                       selectedRangeBeforeInput.end < question.endIndex     // (---|---|---)
+                                item.endIndex = selectedRangeBeforeInput.start;
+                            } else if (item.startIndex < selectedRangeBeforeInput.start &&
+                                       selectedRangeBeforeInput.end < item.endIndex     // (---|---|---)
                             ) {
-                                question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
-                                question.endIndex += this.pastedText.length;
-                            } else if (selectedRangeBeforeInput.end < question.startIndex) { // |---|---(---)
-                                question.startIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
-                                question.startIndex += this.pastedText.length;
-                                question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
-                                question.endIndex += this.pastedText.length;
+                                item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                                item.endIndex += this.pastedText.length;
+                            } else if (selectedRangeBeforeInput.end < item.startIndex) { // |---|---(---)
+                                item.startIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                                item.startIndex += this.pastedText.length;
+                                item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                                item.endIndex += this.pastedText.length;
                             }
-                            that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+                            item.hasUpdated = !(item.endIndex < selectedRangeBeforeInput.start);    //  (---)---[---]
+                            that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
                         }
                     });
-                }
-                if (deletedQuestionIds.length) {
-                    this.$emit("remove-questions", deletedQuestionIds);
                 }
             },
             deleteByCut(selectedRangeBeforeInput, selectionStart, selectionEnd) {
                 //console.log("(" + selectionStart + ", " + selectionEnd + ")");
                 //console.log(selectedRangeBeforeInput);
-                const deletedQuestionIds = [];
                 const that = this;
-                this.questions.forEach((question, index) => {
-                    if (selectedRangeBeforeInput.start <= question.startIndex &&
-                        question.endIndex <= selectedRangeBeforeInput.end   //  |---[---]---|
+                this.questions.concat(this.descriptionTargets).forEach(item => {
+                    if (selectedRangeBeforeInput.start <= item.startIndex &&
+                        item.endIndex <= selectedRangeBeforeInput.end   //  |---[---]---|
                     ) {
-                        deletedQuestionIds.push(question.id);
-                        that.appendDeletingTask(question.id);
+                        item.hasDeleted = true;
+                        this.delayedUpdate();
                     } else {
-                        if (selectedRangeBeforeInput.start <= question.startIndex &&
-                            question.startIndex <= selectedRangeBeforeInput.end &&
-                            selectedRangeBeforeInput.end < question.endIndex    //  |---[---|---)
+                        if (selectedRangeBeforeInput.start <= item.startIndex &&
+                            item.startIndex <= selectedRangeBeforeInput.end &&
+                            selectedRangeBeforeInput.end < item.endIndex    //  |---[---|---)
                         ) {
-                            question.startIndex = (selectedRangeBeforeInput.start);
-                            question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
-                            // console.log(question.startIndex);
-                            // console.log(question.endIndex);
-                        } else if (question.startIndex < selectedRangeBeforeInput.start &&
-                            selectedRangeBeforeInput.start <= question.endIndex &&
-                            question.endIndex <= selectedRangeBeforeInput.end   // (---|---]---|
+                            item.startIndex = (selectedRangeBeforeInput.start);
+                            item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                        } else if (item.startIndex < selectedRangeBeforeInput.start &&
+                            selectedRangeBeforeInput.start <= item.endIndex &&
+                            item.endIndex <= selectedRangeBeforeInput.end   // (---|---]---|
                         ) {
-                            question.endIndex = selectedRangeBeforeInput.start;
-                        } else if (question.startIndex < selectedRangeBeforeInput.start &&
-                                    selectedRangeBeforeInput.end < question.endIndex     // (---|---|---)
+                            item.endIndex = selectedRangeBeforeInput.start;
+                        } else if (item.startIndex < selectedRangeBeforeInput.start &&
+                                selectedRangeBeforeInput.end < item.endIndex     // (---|---|---)
                         ) {
-                            question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
-                        } else if (selectedRangeBeforeInput.end < question.startIndex) { // |---|---(---)
-                            question.startIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
-                            question.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                            item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                        } else if (selectedRangeBeforeInput.end < item.startIndex) { // |---|---(---)
+                            item.startIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
+                            item.endIndex -= (selectedRangeBeforeInput.end - selectedRangeBeforeInput.start);
                         }
-                        that.appendUpdatingTask(question.id, question.startIndex, question.endIndex);
+                        item.hasUpdated = !(item.endIndex < selectedRangeBeforeInput.start);    //  (---)---[---]
+                        that.appendUpdatingTask(item.id, item.startIndex, item.endIndex);
                     }
                 });
-                if (deletedQuestionIds.length) {
-                    this.$emit("remove-questions", deletedQuestionIds);
-                }
             },
             // historyUndo(e) {
                 
@@ -364,24 +358,56 @@
                 
             // },
             appendUpdatingTask(id, startIndex, endIndex) {
-                this.$emit("update-question", id, startIndex, endIndex);
                 this.delayedUpdate();
             },
-            appendDeletingTask(id) {
-                console.log("DELETE");
+            // appendDeletingTask(id) {
+            //     console.log("DELETE");
+            //     const that = this;
+            //     this.apiQueue.then(function() {
+            //         that.deleteQuestion(id);
+            //     });
+            // },
+            update() {
+                console.log("UPDATE");
+                this.$emit("update-file-text", this.textarea.value);
                 const that = this;
-                this.apiQueue.then(function() {
-                    that.deleteQuestion(id);
-                });
-            },
-            updateQuestions() {
-                const that = this;
-                this.questions.forEach(question => {
-                    that.updateQuestion(question.id, {
-                        start_index: question.startIndex,
-                        end_index: question.endIndex,
-                    });
-                    question.hasUpdated= false;
+                const deleter = function(items, isQuestion) {
+                    const deletedItemIds = items.filter(item => item.hasDeleted).map(item => item.id);
+                    if (deletedItemIds.length) {
+                        if (isQuestion) {
+                            console.log("Delete Question.");
+                            deleteQuestions(deletedItemIds);
+                        } else {
+                            console.log("Delete DescriptionTargets.");
+                            deleteDescriptionTargets(deletedItemIds);
+                        }
+                    }
+                };
+                deleter(this.questions, true);
+                deleter(this.descriptionTargets, false);
+                this.$emit("set-questions", this.questions.filter(question => !question.hasDeleted));
+                this.$emit("set-description-targets", this.descriptionTargets.filter(descriptionTarget => !descriptionTarget.hasDeleted));
+                Vue.nextTick(function() {
+                    const updater = function(items, isQuestion) {
+                        items.forEach(item => {
+                            if (item.hasUpdated) {
+                                if (isQuestion) {
+                                    that.updateQuestion(item.id, {
+                                        start_index: item.startIndex,
+                                        end_index: item.endIndex,
+                                    });
+                                    that.$emit("update-question", item.id, item.startIndex, item.endIndex);
+                                } else {
+                                    updateDescriptionTarget(item.id, item.startIndex, item.endIndex, item.descriptionId);
+                                    that.$emit("update-description-target", item.id, item.startIndex, item.endIndex);
+                                }
+                                item.hasUpdated = false;   
+                            }
+                        });
+                    };
+                    updater(that.questions, true);
+                    //console.log(that.descriptionTargets);
+                    updater(that.descriptionTargets, false);
                 });
             },
         }

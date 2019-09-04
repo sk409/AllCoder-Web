@@ -5,7 +5,7 @@
         v-on:click="onclick"
         v-on:keydown.meta.90.stop.prevent="onundo"
     >
-        <div id="header" class="d-flex bg-light border-bottom p-2">
+        <div id="development-header" class="d-flex bg-light border-bottom p-2">
             <div class="d-flex align-items-center" contenteditable="true">
                 {{ lessonTitle }}
             </div>
@@ -15,9 +15,9 @@
                 <button class="ml-2" type="button">ファイル</button>
             </div>
         </div>
-        <div id="body" class="row">
+        <div id="development-body" class="row">
             <div class="col-9 h-100 p-0">
-                <div class="h-75 d-flex">
+                <div id="development-body-top" class="d-flex">
                     <div class="w-25 h-100">
                         <ul class="w-100 h-100">
                             <file-tree 
@@ -35,16 +35,18 @@
                             class="w-100 h-100"
                             :text="file ? file.text : ''"
                             :questions="questions"
+                            :description-targets="description.targets"
                             :disabled="sourceCodeEditor.disabled"
                             @update-file-text="onUpdateFileText"
                             @show-context-menu.stop.prevent="showSourceCodeEditorContextMenu"
-                            @set-is-clicked-to-false="setIsClickedToFalse"
-                            @remove-questions="onRemoveQuestions"
                             @update-question="onUpdateQuestion"
+                            @update-description-target="onUpdateDescriptionTarget"
+                            @set-questions="onSetQuestions"
+                            @set-description-targets="onSetDescriptionTargets"
                         ></source-code-editor>
                     </div>
                 </div>
-                <div class="h-25 d-flex">
+                <div id="development-body-bottom" class="d-flex">
                     <div id="questions-view" class="w-25">
                         <question-item v-for="question in questions" :key="question.id" :answer="question.answer"></question-item>
                     </div>
@@ -52,7 +54,8 @@
                         <description
                             v-show="file"
                             :file-id="file ? file.id : null"
-                            :descriptions="descriptions"
+                            :descriptions="description.descriptions"
+                            @set-description="onSetDescription"
                         ></description>
                     </div>
                 </div>
@@ -85,7 +88,9 @@
             v-show="sourceCodeEditor.contextMenu.isShown"
             :left="sourceCodeEditor.contextMenu.left"
             :top="sourceCodeEditor.contextMenu.top"
+            :is-description-selected="description.selectedDescription !== null"
             @add-question="onAddQuestion"
+            @add-description-target="onAddDescriptionTarget"
         ></source-code-editor-context-menu>
     </div>
 </template>
@@ -105,6 +110,8 @@
     import QuestionUpdatable from "./question/QuestionUpdatable.js";
     import Description from "./description/Description.vue";
     import DescriptionFetchable from "./description/DescriptionFetchable.js";
+    import {postDescriptionTarget} from "./description/PostDescriptionTarget.js";
+    import {fetchDescriptionTarget, fetchDescriptionTargets} from "./description/FetchDescriptionTargets.js";
 
     export default {
             name: "development-view",
@@ -144,7 +151,11 @@
                     },
                     questions: [],
                     isFetchingQuestions: false,
-                    descriptions: null,
+                    description: {
+                        selectedDescription: null,
+                        descriptions: null,
+                        targets: [],
+                    },
                 }
             },
             mixins: [
@@ -184,13 +195,13 @@
                 onShowFileCreationView() {
                     this.fileCreationView.isShown = true;
                 },
-                onUpdateFileText(e) {
+                onUpdateFileText(text) {
                     if (this.isFetchingQuestions) {
                         console.log("---------ERROR---------");
                         console.log("QuestionをFetch中です。");
                         console.log("---------ERROR---------");
                     }
-                    this.file.text = e.target.value;
+                    this.file.text = text;
                     this.updateFileText(this.file.id, this.file.text);
                 },
                 onAddQuestion() {
@@ -205,19 +216,20 @@
                         this.questions.push({
                             id,
                             hasUpdated: false,
+                            hasDeleted: false,
                             startIndex: selectionStart,
                             endIndex: selectionEnd,
                             answer,
                         });
                     }));
                 },
-                onRemoveQuestions(questionIds) {
-                    //console.log(this.questions);
+                onAddDescriptionTarget() {
+                    const selectionStart = this.sourceCodeEditor.contextMenu.target.selectionStart;
+                    const selectionEnd = this.sourceCodeEditor.contextMenu.target.selectionEnd;
                     const that = this;
-                    questionIds.forEach(questionId => {
-                        that.questions = that.questions.filter(question => question.id !== questionId)
+                    postDescriptionTarget(selectionStart, selectionEnd, this.description.selectedDescription.id, description => {
+                        that.description.targets.push(description);
                     });
-                    //console.log(this.questions);
                 },
                 onUpdateQuestion(id, startIndex, endIndex) {
                     let question = null;
@@ -227,6 +239,16 @@
                         question.endIndex = endIndex;
                         question.answer = this.file.text.substring(question.startIndex, question.endIndex);
                         this.questions = this.questions;
+                    }
+                },
+                onUpdateDescriptionTarget(id, startIndex, endIndex) {
+                    let descriptionTarget = null;
+                    if (descriptionTarget = this.description.targets.find(descriptionTarget => descriptionTarget.id === id)) {
+                        descriptionTarget.hasUpdated = true;
+                        descriptionTarget.startIndex = startIndex;
+                        descriptionTarget.endIndex = endIndex;
+                        console.log("DescriptionTarget: " + this.file.text.substring(startIndex, endIndex));
+                        this.description.targets = this.description.targets;
                     }
                 },
                 onRemoveFileTreeItem(id, isFile) {
@@ -269,6 +291,16 @@
                     }
                     remover(this.fileTree.rootItem);
                 },
+                onSetDescription(selectedDescription) {
+                    this.description.selectedDescription = selectedDescription;
+                },
+                onSetQuestions(questions) {
+                    this.questions = questions;
+                    //console.log(this.questions);
+                },
+                onSetDescriptionTargets(descriptionTargets) {
+                    this.description.targets = descriptionTargets;
+                },
                 showFileTreeContextMenu(isFile, originX, originY, itemId, itemChildren) {
                     this.fileTree.contextMenu.isFile = isFile;
                     this.fileTree.contextMenu.isShown = true;
@@ -294,6 +326,7 @@
                             return {
                                 id: question.id,
                                 hasUpdated: false,
+                                hasDeleted: false,
                                 startIndex: question.start_index,
                                 endIndex: question.end_index,
                                 answer: that.file.text.substring(question.start_index, question.end_index),
@@ -302,12 +335,20 @@
                         that.isFetchingQuestions = false;
                     }));
                     this.fetchDescriptions(file.id, descriptions => {
-                        that.descriptions = descriptions;
+                        that.description.descriptions = descriptions;
+                        that.description.targets = [];
+                        descriptions.forEach(description => {
+                            fetchDescriptionTargets(description.id, descriptionTargets => {
+                                that.description.targets.push(...descriptionTargets);
+                                // console.log("---DescriptionTargets---");
+                                // descriptionTargets.forEach(descriptionTarget => {
+                                //     console.log(that.file.text.substring(descriptionTarget.startIndex, descriptionTarget.endIndex));
+                                // });
+                                // console.log("------------------------");
+                            });
+                        });
                     });
                     this.sourceCodeEditor.disabled = false;
-                },
-                setIsClickedToFalse() {
-                    this.sourceCodeEditor.isClicked = false;
                 },
             },
     };
