@@ -18,7 +18,7 @@ class DashboardController extends Controller
     public function materials(): Renderable
     {
         $user = Auth::user();
-        $materials = [];
+        $materials = $user->materials;
         return view('dashboard/materials', ["user" => $user, "materials" => $materials]);
     }
 

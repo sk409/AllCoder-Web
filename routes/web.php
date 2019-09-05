@@ -21,6 +21,7 @@ Route::get('/dashboard/materials', 'DashboardController@materials')->name('dashb
 Route::get("/dashboard/lessons", "DashboardController@lessons")->name("dashboard.lessons");
 
 Route::resource("lessons", "LessonsController");
+Route::resource("materials", "MaterialsController");
 
 Route::get("/development/{lessonId}", "DevelopmentController@index")->name("development");
 

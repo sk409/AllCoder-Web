@@ -10,9 +10,9 @@
                 {{ lessonTitle }}
             </div>
             <div class="ml-3 d-flex align-items-center">
+                <!-- <button class="ml-2" type="button">ファイル</button>
                 <button class="ml-2" type="button">ファイル</button>
-                <button class="ml-2" type="button">ファイル</button>
-                <button class="ml-2" type="button">ファイル</button>
+                <button class="ml-2" type="button">ファイル</button> -->
             </div>
         </div>
         <div id="development-body" class="row">

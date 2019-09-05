@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="border-bottom">
         <pre @click="onclick">{{answer}}</pre>
     </div>
 </template>

@@ -1,0 +1,3 @@
+@mixin shadow($blur, $spead, $color: lightgray) {
+    box-shadow: 0 0 $blur $spead $color;
+}

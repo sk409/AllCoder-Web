@@ -1,0 +1,31 @@
+@import "../utility/border";
+@import "../utility/spacing";
+
+#material-description {
+    resize: none;
+    height: 300px;
+}
+
+#lesson-selection-text {
+    @include border-bottom;
+    @include pb-2;
+    @include mb-2;
+    text-align: center;
+}
+
+.material-form-label {
+    width: 100%;
+}
+
+.material-form-control {
+    width: 100%;
+    display: block;
+}
+
+.lesson-label {
+    cursor: pointer;
+}
+
+.lesson-checkbox {
+    @include mr-2;
+}

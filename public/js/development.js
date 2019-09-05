@@ -5730,7 +5730,7 @@ var render = function() {
             [_vm._v("\n            " + _vm._s(_vm.lessonTitle) + "\n        ")]
           ),
           _vm._v(" "),
-          _vm._m(0)
+          _c("div", { staticClass: "ml-3 d-flex align-items-center" })
         ]
       ),
       _vm._v(" "),
@@ -5924,26 +5924,7 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "ml-3 d-flex align-items-center" }, [
-      _c("button", { staticClass: "ml-2", attrs: { type: "button" } }, [
-        _vm._v("ファイル")
-      ]),
-      _vm._v(" "),
-      _c("button", { staticClass: "ml-2", attrs: { type: "button" } }, [
-        _vm._v("ファイル")
-      ]),
-      _vm._v(" "),
-      _c("button", { staticClass: "ml-2", attrs: { type: "button" } }, [
-        _vm._v("ファイル")
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -6661,7 +6642,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
+  return _c("div", { staticClass: "border-bottom" }, [
     _c("pre", { on: { click: _vm.onclick } }, [_vm._v(_vm._s(_vm.answer))])
   ])
 }

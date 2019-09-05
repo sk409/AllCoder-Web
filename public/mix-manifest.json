@@ -2,6 +2,10 @@
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
     "/css/development.css": "/css/development.css",
+    "/css/materials/create.css": "/css/materials/create.css",
+    "/css/materials/edit.css": "/css/materials/edit.css",
     "/js/development.js": "/js/development.js",
-    "/js/lodash.full.min.js": "/js/lodash.full.min.js"
+    "/js/lodash.full.min.js": "/js/lodash.full.min.js",
+    "/js/materials/create.js": "/js/materials/create.js",
+    "/js/materials/edit.js": "/js/materials/edit.js"
 }
