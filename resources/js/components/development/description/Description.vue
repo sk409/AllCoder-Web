@@ -2,11 +2,11 @@
      <div id="description" class="w-100 h-100">
          <transition name="slide-up" @after-leave="onAfterLeaveSlideUpEditingView">
              <div id="description-editing-view" class="w-100 h-100" v-show="editingView.isShown">
-                 <div id="description-editing-header" class="d-flex align-items-center">
+                 <div id="description-editing-header" class="d-flex align-items-center border-bottom border-dark">
                      <div>{{editingView.description.index}}</div>
-                     <button class="ml-auto btn btn-primary">p</button>
-                     <button class="btn btn-primary">n</button>
-                     <button class="btn btn-primary" @click="onCloseEditingView">c</button>
+                     <button class="ml-auto"><img :src="prevButtonUrl" alt="前"></button>
+                     <button class="ml-3"><img :src="nextButtonUrl" alt="次"></button>
+                     <button class="ml-3 mr-2" @click="onCloseEditingView"><img :src="crossButtonUrl" alt="閉じる"></button>
                  </div>
                  <div id="description-editing-body">
                      <textarea
@@ -21,7 +21,7 @@
          <transition name="slide-down" @after-leave="onAfterLeaveSlideDownDescriptionList">
              <div class="w-100 h-100" v-show="descriptionList.isShown">
                 <div id="description-list-header" class="d-flex align-items-center border-bottom border-dark">
-                    <button class="btn btn-primary">a</button>
+                    <button class="ml-auto mr-2" @click="onAppendDescription"><img :src="plusButtonUrl" alt="追加"></button>
                 </div>
                 <div id="description-list-body">
                     <div class="border-bottom" v-for="description in descriptions" :key="description.id" @click="onSlideDownDescriptionList(description.id)">
@@ -41,6 +41,10 @@
         props: {
             fileId: Number,
             descriptions: Array,
+            plusButtonUrl: String,
+            prevButtonUrl: String,
+            nextButtonUrl: String,
+            crossButtonUrl: String,
         },
         mixins: [
             DescriptionCreatable,

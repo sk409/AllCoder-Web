@@ -5,7 +5,7 @@
         v-on:click="onclick"
         v-on:keydown.meta.90.stop.prevent="onundo"
     >
-        <div id="development-header" class="d-flex bg-light border-bottom p-2">
+        <div id="development-header" class="d-flex bg-light border-bottom border-dark row">
             <div class="d-flex align-items-center" contenteditable="true">
                 {{ lessonTitle }}
             </div>
@@ -18,7 +18,7 @@
         <div id="development-body" class="row">
             <div class="col-9 h-100 p-0">
                 <div id="development-body-top" class="d-flex">
-                    <div class="w-25 h-100">
+                    <div class="w-25 h-100 border-right border-bottom border-dark">
                         <ul class="w-100 h-100">
                             <file-tree 
                                 id="file-tree"
@@ -29,7 +29,7 @@
                             ></file-tree>
                         </ul>
                     </div>
-                    <div class="w-75 h-100">
+                    <div class="w-75 h-100 border-bottom border-dark">
                         <source-code-editor
                             id="source-code-editor"
                             class="w-100 h-100"
@@ -47,7 +47,7 @@
                     </div>
                 </div>
                 <div id="development-body-bottom" class="d-flex">
-                    <div id="questions-view" class="w-25">
+                    <div id="questions-view" class="w-25 border-right border-dark">
                         <question-item v-for="question in questions" :key="question.id" :answer="question.answer"></question-item>
                     </div>
                     <div class="w-75">
@@ -55,6 +55,10 @@
                             v-show="file"
                             :file-id="file ? file.id : null"
                             :descriptions="description.descriptions"
+                            :plusButtonUrl="plusButtonUrl"
+                            :prevButtonUrl="prevButtonUrl"
+                            :nextButtonUrl="nextButtonUrl"
+                            :cross-button-url="crossButtonUrl"
                             @set-description="onSetDescription"
                         ></description>
                     </div>
@@ -118,6 +122,10 @@
             props: {
                 lessonId: Number,
                 lessonTitle: String,
+                plusButtonUrl: String,
+                prevButtonUrl: String,
+                nextButtonUrl: String,
+                crossButtonUrl: String,
             },
             data: function() {
                 return {

@@ -52,6 +52,8 @@ $file-creation-view-item-height: $file-creation-view-item-width;
 }
 
 #source-code-editor {
+    border: none;
+    outline: none;
     resize: none;
     white-space: nowrap;
 }
@@ -73,6 +75,16 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     height: 15%;
 }
 
+#description-list-header button, #description-editing-header button {
+    background: transparent;
+    border: none;
+}
+
+#description-list-header img, #description-editing-header img {
+    width: 20px;
+    height: 20px;
+}
+
 #description-list-body {
     overflow: scroll;
     height: 85%;
@@ -87,6 +99,8 @@ $file-creation-view-item-height: $file-creation-view-item-width;
 }
 
 #description-editor {
+    border: none;
+    outline: none;
     resize: none;
 }
 

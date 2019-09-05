@@ -1959,6 +1959,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -1979,7 +1983,11 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   name: "development-view",
   props: {
     lessonId: Number,
-    lessonTitle: String
+    lessonTitle: String,
+    plusButtonUrl: String,
+    prevButtonUrl: String,
+    nextButtonUrl: String,
+    crossButtonUrl: String
   },
   data: function data() {
     return {
@@ -2286,7 +2294,11 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   name: "description",
   props: {
     fileId: Number,
-    descriptions: Array
+    descriptions: Array,
+    plusButtonUrl: String,
+    prevButtonUrl: String,
+    nextButtonUrl: String,
+    crossButtonUrl: String
   },
   mixins: [_DescriptionCreatable_js__WEBPACK_IMPORTED_MODULE_0__["default"]],
   data: function data() {
@@ -5705,7 +5717,7 @@ var render = function() {
       _c(
         "div",
         {
-          staticClass: "d-flex bg-light border-bottom p-2",
+          staticClass: "d-flex bg-light border-bottom border-dark row",
           attrs: { id: "development-header" }
         },
         [
@@ -5728,30 +5740,37 @@ var render = function() {
             "div",
             { staticClass: "d-flex", attrs: { id: "development-body-top" } },
             [
-              _c("div", { staticClass: "w-25 h-100" }, [
-                _c(
-                  "ul",
-                  { staticClass: "w-100 h-100" },
-                  [
-                    _c("file-tree", {
-                      staticClass: "w-100 h-100",
-                      attrs: {
-                        id: "file-tree",
-                        "root-item": _vm.fileTree.rootItem
-                      },
-                      on: {
-                        "show-context-menu": _vm.showFileTreeContextMenu,
-                        "set-file": _vm.setFile
-                      }
-                    })
-                  ],
-                  1
-                )
-              ]),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "w-25 h-100 border-right border-bottom border-dark"
+                },
+                [
+                  _c(
+                    "ul",
+                    { staticClass: "w-100 h-100" },
+                    [
+                      _c("file-tree", {
+                        staticClass: "w-100 h-100",
+                        attrs: {
+                          id: "file-tree",
+                          "root-item": _vm.fileTree.rootItem
+                        },
+                        on: {
+                          "show-context-menu": _vm.showFileTreeContextMenu,
+                          "set-file": _vm.setFile
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ]
+              ),
               _vm._v(" "),
               _c(
                 "div",
-                { staticClass: "w-75 h-100" },
+                { staticClass: "w-75 h-100 border-bottom border-dark" },
                 [
                   _c("source-code-editor", {
                     staticClass: "w-100 h-100",
@@ -5788,7 +5807,10 @@ var render = function() {
             [
               _c(
                 "div",
-                { staticClass: "w-25", attrs: { id: "questions-view" } },
+                {
+                  staticClass: "w-25 border-right border-dark",
+                  attrs: { id: "questions-view" }
+                },
                 _vm._l(_vm.questions, function(question) {
                   return _c("question-item", {
                     key: question.id,
@@ -5813,7 +5835,11 @@ var render = function() {
                     ],
                     attrs: {
                       "file-id": _vm.file ? _vm.file.id : null,
-                      descriptions: _vm.description.descriptions
+                      descriptions: _vm.description.descriptions,
+                      plusButtonUrl: _vm.plusButtonUrl,
+                      prevButtonUrl: _vm.prevButtonUrl,
+                      nextButtonUrl: _vm.nextButtonUrl,
+                      "cross-button-url": _vm.crossButtonUrl
                     },
                     on: { "set-description": _vm.onSetDescription }
                   })
@@ -5968,7 +5994,8 @@ var render = function() {
               _c(
                 "div",
                 {
-                  staticClass: "d-flex align-items-center",
+                  staticClass:
+                    "d-flex align-items-center border-bottom border-dark",
                   attrs: { id: "description-editing-header" }
                 },
                 [
@@ -5976,21 +6003,25 @@ var render = function() {
                     _vm._v(_vm._s(_vm.editingView.description.index))
                   ]),
                   _vm._v(" "),
-                  _c("button", { staticClass: "ml-auto btn btn-primary" }, [
-                    _vm._v("p")
+                  _c("button", { staticClass: "ml-auto" }, [
+                    _c("img", { attrs: { src: _vm.prevButtonUrl, alt: "前" } })
                   ]),
                   _vm._v(" "),
-                  _c("button", { staticClass: "btn btn-primary" }, [
-                    _vm._v("n")
+                  _c("button", { staticClass: "ml-3" }, [
+                    _c("img", { attrs: { src: _vm.nextButtonUrl, alt: "次" } })
                   ]),
                   _vm._v(" "),
                   _c(
                     "button",
                     {
-                      staticClass: "btn btn-primary",
+                      staticClass: "ml-3 mr-2",
                       on: { click: _vm.onCloseEditingView }
                     },
-                    [_vm._v("c")]
+                    [
+                      _c("img", {
+                        attrs: { src: _vm.crossButtonUrl, alt: "閉じる" }
+                      })
+                    ]
                   )
                 ]
               ),
@@ -6037,9 +6068,18 @@ var render = function() {
                   attrs: { id: "description-list-header" }
                 },
                 [
-                  _c("button", { staticClass: "btn btn-primary" }, [
-                    _vm._v("a")
-                  ])
+                  _c(
+                    "button",
+                    {
+                      staticClass: "ml-auto mr-2",
+                      on: { click: _vm.onAppendDescription }
+                    },
+                    [
+                      _c("img", {
+                        attrs: { src: _vm.plusButtonUrl, alt: "追加" }
+                      })
+                    ]
+                  )
                 ]
               ),
               _vm._v(" "),
