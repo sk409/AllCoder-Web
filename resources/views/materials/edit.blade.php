@@ -11,14 +11,20 @@
 @section("app-content")
     <div id="material-editing">
         <material-form
-            :material="{{$material}}"
-            :user="{{$user}}"
-            :lessons="{{$lessons}}"
-            :selected-lessons="{{$material->lessons}}"
-            page-title="{{$pageTitle}}"
-            method="{{$method}}"
-            action="{{$action}}"
-            submit-button-text="{{$submitButtonText}}"
+            :material="{
+                title: '{{ $material->title }}',
+                description: '{{ $material->description }}',
+                price: '{{ $material->price }}',
+                lessons: {{ $material->lessons }},
+                user: {
+                    id: '{{ $user->id }}',
+                    lessons: {{ $user->lessons }},
+                }
+            }"
+            page-title="教材編集"
+            method="put"
+            action="{{ route("materials.update", $material->id) }}"
+            submit-button-text="適用"
         ></material-form>
     </div>
 @endsection

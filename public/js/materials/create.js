@@ -171,9 +171,6 @@ __webpack_require__.r(__webpack_exports__);
   name: "material-form",
   props: {
     material: Object,
-    user: Object,
-    lessons: Array,
-    selectedLessons: Array,
     pageTitle: String,
     method: String,
     action: String,
@@ -185,17 +182,12 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       csrf: document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-      selectedLessonIds: this.selectedLessons ? this.selectedLessons.map(function (selectedLesson) {
-        return selectedLesson.id;
+      selectedLessonIds: this.material.lessons ? this.material.lessons.sort(function (a, b) {
+        return a.pivot.index - b.pivot.index;
+      }).map(function (lesson) {
+        return lesson.id;
       }) : []
     };
-  },
-  created: function created() {
-    if (this.selectedLessons) {
-      this.selectedLessons.sort(function (a, b) {
-        return a.id < b.id;
-      });
-    }
   }
 });
 
@@ -274,7 +266,7 @@ var render = function() {
                 _vm._v(" "),
                 _c("input", {
                   attrs: { type: "hidden", name: "user_id" },
-                  domProps: { value: _vm.user.id }
+                  domProps: { value: _vm.material.user.id }
                 }),
                 _vm._v(" "),
                 _vm._l(_vm.selectedLessonIds, function(selectedLessonId) {
@@ -386,7 +378,7 @@ var render = function() {
                   _vm._v("レッスン選択")
                 ]),
                 _vm._v(" "),
-                _vm._l(_vm.lessons, function(lesson) {
+                _vm._l(_vm.material.user.lessons, function(lesson) {
                   return _c("div", { key: lesson.name }, [
                     _c("label", { staticClass: "lesson-label" }, [
                       _c("input", {
@@ -462,7 +454,7 @@ var render = function() {
               _vm._v(" "),
               _c("selected-lessons", {
                 attrs: {
-                  lessons: _vm.lessons,
+                  lessons: _vm.material.user.lessons,
                   "selected-ids": _vm.selectedLessonIds
                 }
               })

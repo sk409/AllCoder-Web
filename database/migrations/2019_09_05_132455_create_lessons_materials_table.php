@@ -13,7 +13,7 @@ class CreateLessonsMaterialsTable extends Migration
      */
     public function up()
     {
-        Schema::create('lessons_materials', function (Blueprint $table) {
+        Schema::create('lesson_material', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->smallInteger("index");
             $table->bigInteger("lesson_id")->unsigned();

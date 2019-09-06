@@ -3,6 +3,7 @@
 namespace App;
 
 use App\User;
+use App\Lesson;
 use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
@@ -16,8 +17,7 @@ class Material extends Model
 
     public function lessons()
     {
-        return $this->belongsToMany(Material::class, "lessons_materials", "material_id", "lesson_id")
-                ->withTimeStamps();
+        return $this->belongsToMany(Lesson::class)->withPivot("index");
     }
 
 }

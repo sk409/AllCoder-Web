@@ -11,13 +11,16 @@
 @section("app-content")
     <div id="material-creation">
         <material-form
-            :material="{{$material}}"
-            :user="{{$user}}"
-            :lessons="{{$lessons}}"
-            page-title="{{$pageTitle}}"
-            method="{{$method}}"
-            action="{{$action}}"
-            submit-button-text="{{$submitButtonText}}"
+            :material="{
+                user: {
+                    id: '{{$user->id}}',
+                    lessons: {{$user->lessons}},
+                }
+            }"
+            page-title="新規教材作成"
+            method="post"
+            action="{{ route("materials.store") }}"
+            submit-button-text="作成"
         ></material-form>
     </div>
 @endsection

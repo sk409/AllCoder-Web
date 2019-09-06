@@ -11,7 +11,7 @@
                     <form method="post" :action="action">
                         <input name="_method" type="hidden" :value="method">
                         <input type="hidden" name="_token" :value="csrf">
-                        <input type="hidden" name="user_id" :value="user.id">
+                        <input type="hidden" name="user_id" :value="material.user.id">
                         <input
                             type="hidden"
                             name="lessonIds[]"
@@ -38,7 +38,7 @@
                             </label>
                         </div>
                         <div id="lesson-selection-text">レッスン選択</div>
-                        <div v-for="lesson in lessons" :key="lesson.name">
+                        <div v-for="lesson in material.user.lessons" :key="lesson.name">
                             <label class="lesson-label">
                                 <input 
                                     class="lesson-checkbox"
@@ -59,7 +59,7 @@
                 <div class="shadow p-3">
                     <div class="border-bottom pb-1 mb-3">選択したレッスン</div>
                     <selected-lessons 
-                        :lessons="lessons"
+                        :lessons="material.user.lessons"
                         :selected-ids="selectedLessonIds"
                     ></selected-lessons>
                 </div>
@@ -74,9 +74,6 @@
         name: "material-form",
         props: {
             material: Object,
-            user: Object,
-            lessons: Array,
-            selectedLessons: Array,
             pageTitle: String,
             method: String,
             action: String,
@@ -88,12 +85,9 @@
         data: function() {
             return {
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-                selectedLessonIds: this.selectedLessons ? this.selectedLessons.map(selectedLesson => selectedLesson.id) : [],
-            }
-        },
-        created() {
-            if (this.selectedLessons) {
-                this.selectedLessons.sort((a, b) => a.id < b.id);
+                selectedLessonIds: this.material.lessons ?
+                    this.material.lessons.sort((a, b) => a.pivot.index - b.pivot.index ).map(lesson => lesson.id) :
+                    []
             }
         },
     }

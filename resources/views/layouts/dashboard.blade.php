@@ -30,7 +30,7 @@
             </div>
             <div class="col-3">
                 <div class="d-flex flex-column">
-                    <a class="btn btn-primary mx-auto w-50" href="{{ route("materials.create") }}" target="_blank">教材作成</a>
+                    <a class="btn btn-primary mx-auto w-50" href="{{ route("materials.create") }}">教材作成</a>
                     <a class="btn btn-primary mx-auto mt-3 w-50" href="{{ route("lessons.create") }}" target="_blank">レッスン作成</a>
                 </div>
             </div>
