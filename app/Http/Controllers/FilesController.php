@@ -9,6 +9,15 @@ use Illuminate\Http\Request;
 class FilesController extends Controller
 {
 
+    public function index(Request $request)
+    {
+        return Controller::narrowDownFromConditions(
+            $request,
+            "\App\File::all",
+            "\App\File::where"
+        );
+    }
+
     public function store(FileCreationRequest $request)
     {
         $parameters = $request->all();
@@ -19,7 +28,8 @@ class FilesController extends Controller
         return $file->id;
     }
 
-    public function update(Request $request, int $id) {
+    public function update(Request $request, int $id)
+    {
         $parameters = $request->all();
         if ($request->has("text") && is_null($request->text)) {
             $parameters["text"] = "";
@@ -27,17 +37,8 @@ class FilesController extends Controller
         File::find($id)->fill($parameters)->save();
     }
 
-    public function destroy(Request $request, int $id) {
+    public function destroy(Request $request, int $id)
+    {
         File::destroy($id);
     }
-
-    public function fetch(Request $request)
-    {
-        return Controller::narrowDownFromConditions(
-            $request,
-            "\App\File::all",
-            "\App\File::where"
-        );
-    }
-
 }

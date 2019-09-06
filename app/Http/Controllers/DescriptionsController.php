@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class DescriptionsController extends Controller
 {
+
+    public function index(Request $request) {
+        return Controller::narrowDownFromConditions(
+            $request,
+            "\App\Description::all",
+            "\App\Description::where"
+        );
+    }
     
     public function store(Request $request) {
         $parameters = $request->all();
@@ -23,14 +31,6 @@ class DescriptionsController extends Controller
             $parameters["text"] = "";
         }
         Description::find($id)->fill($parameters)->save();
-    }
-
-    public function fetch(Request $request) {
-        return Controller::narrowDownFromConditions(
-            $request,
-            "\App\Description::all",
-            "\App\Description::where"
-        );
     }
 
 }

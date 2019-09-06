@@ -1,4 +1,4 @@
-import DevelopmentView from "./components/development/DevelopmentView.vue";
+import DevelopmentView from "./DevelopmentView.vue";
 
 new Vue({
         el: "#development",

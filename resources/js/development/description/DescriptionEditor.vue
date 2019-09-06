@@ -21,7 +21,7 @@
          <transition name="slide-down" @after-leave="onAfterLeaveSlideDownDescriptionList">
              <div class="w-100 h-100" v-show="descriptionList.isShown">
                 <div id="description-list-header" class="d-flex align-items-center border-bottom border-dark">
-                    <button class="ml-auto mr-2" @click="onAppendDescription"><img :src="plusButtonUrl" alt="追加"></button>
+                    <button class="ml-auto mr-2" @click="onStoreDescription"><img :src="plusButtonUrl" alt="追加"></button>
                 </div>
                 <div id="description-list-body">
                     <div class="border-bottom" v-for="description in descriptions" :key="description.id" @click="onSlideDownDescriptionList(description.id)">
@@ -34,10 +34,8 @@
 </template>
 
 <script>
-    import DescriptionCreatable from "./DescriptionCreatable.js";
-    import {updateDescription} from "./UpdateDescription.js";
     export default {
-        name: "description",
+        name: "description-editor",
         props: {
             fileId: Number,
             descriptions: Array,
@@ -46,9 +44,6 @@
             nextButtonUrl: String,
             crossButtonUrl: String,
         },
-        mixins: [
-            DescriptionCreatable,
-        ],
         data: function() {
             return {
                 descriptionList: {
@@ -62,19 +57,17 @@
             }
         },
         methods: {
-            onAppendDescription() {
+            onStoreDescription() {
                 const that = this;
                 const index = this.descriptions.length ?
                               Math.max(...this.descriptions.map(description => description.index)) + 1 :
                               0;
-                this.createDescription(index, "", this.fileId, description => {
-                    that.descriptions.push(description);
-                });
+                this.$emit("store-description", index);
             },
             onSlideDownDescriptionList(descriptionId) {
                 this.descriptionList.isShown = false;
                 this.editingView.description = this.descriptions.find(description => description.id === descriptionId);
-                this.$emit("set-description", this.editingView.description);
+                this.$emit("set-selected-description", this.editingView.description);
             },
             onInputDescription(e) {
                 this.editingView.description.text = e.target.value;
@@ -90,12 +83,11 @@
                 this.editingView.isShown = true;
             },
             updateDescription() {
-                updateDescription(
-                    this.editingView.description.id,
-                    this.editingView.description.index,
-                    this.editingView.description.text,
-                    this.fileId
-                );
+                const description = this.descriptions.find(description => description.id === this.editingView.description.id);
+                if (!description) {
+                    return;
+                }
+                description.update();
             }
         },
     }

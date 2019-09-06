@@ -7,6 +7,15 @@ use Illuminate\Http\Request;
 
 class QuestionsController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        return Controller::narrowDownFromConditions(
+            $request,
+            "\App\Question::all",
+            "\App\Question::where"
+        );
+    }
     
     public function store(Request $request) {
         $question = Question::create($request->all());
@@ -17,19 +26,8 @@ class QuestionsController extends Controller
         Question::find($id)->fill($request->all())->save();
     }
     
-    public function destroy(Request $request) {
-        foreach($request->ids as $id) {
-            Question::destroy($id);
-        }
-    }
-
-    public function fetch(Request $request)
-    {
-        return Controller::narrowDownFromConditions(
-            $request,
-            "\App\Question::all",
-            "\App\Question::where"
-        );
+    public function destroy(Request $request, int $id) {
+        Question::destroy($id);
     }
 
 }

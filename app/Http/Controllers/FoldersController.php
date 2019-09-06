@@ -8,16 +8,9 @@ use Illuminate\Http\Request;
 
 class FoldersController extends Controller
 {
-    public function store(FolderCreationRequest $request) {
-        $folder = Folder::create($request->all());
-        return $folder->id;
-    }
 
-    public function destroy(Request $request, int $id) {
-        Folder::destroy($id);
-    }
-
-    public function fetch(Request $request) {
+    public function index(Request $request)
+    {
         return Controller::narrowDownFromConditions(
             $request,
             "\App\Folder::all",
@@ -25,4 +18,14 @@ class FoldersController extends Controller
         );
     }
 
+    public function store(FolderCreationRequest $request)
+    {
+        $folder = Folder::create($request->all());
+        return $folder->id;
+    }
+
+    public function destroy(Request $request, int $id)
+    {
+        Folder::destroy($id);
+    }
 }
