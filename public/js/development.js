@@ -2218,12 +2218,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           Object(_description_FetchDescriptionTargets_js__WEBPACK_IMPORTED_MODULE_15__["fetchDescriptionTargets"])(description.id, function (descriptionTargets) {
             var _that$description$tar;
 
-            (_that$description$tar = that.description.targets).push.apply(_that$description$tar, _toConsumableArray(descriptionTargets)); // console.log("---DescriptionTargets---");
-            // descriptionTargets.forEach(descriptionTarget => {
-            //     console.log(that.file.text.substring(descriptionTarget.startIndex, descriptionTarget.endIndex));
-            // });
-            // console.log("------------------------");
-
+            (_that$description$tar = that.description.targets).push.apply(_that$description$tar, _toConsumableArray(descriptionTargets));
           });
         });
       });

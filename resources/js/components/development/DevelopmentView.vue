@@ -348,11 +348,6 @@
                         descriptions.forEach(description => {
                             fetchDescriptionTargets(description.id, descriptionTargets => {
                                 that.description.targets.push(...descriptionTargets);
-                                // console.log("---DescriptionTargets---");
-                                // descriptionTargets.forEach(descriptionTarget => {
-                                //     console.log(that.file.text.substring(descriptionTarget.startIndex, descriptionTarget.endIndex));
-                                // });
-                                // console.log("------------------------");
                             });
                         });
                     });
