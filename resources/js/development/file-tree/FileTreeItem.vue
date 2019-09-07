@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import Folder from "../../folder/ Folder.js";
+import Folder from "../../models/Folder.js";
 export default {
   name: "file-tree-item",
   props: {

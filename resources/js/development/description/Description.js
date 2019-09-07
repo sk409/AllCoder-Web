@@ -1,4 +1,4 @@
-import Model from "../../Model.js";
+import Model from "../../models/Model.js";
 
 export default class Description extends Model {
     static baseRoute() {

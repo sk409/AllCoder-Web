@@ -11,12 +11,16 @@
 @section("app-content")
     <div id="development">
         <development-view
-            :lesson-id="{{$lesson->id}}"
-            lesson-title="{{$lesson->title}}"
-            plus-button-url="{{asset("images/plus-button.png")}}"
-            prev-button-url="{{asset("images/prev-button.png")}}"
-            next-button-url="{{asset("images/next-button.png")}}"
-            cross-button-url="{{asset("images/cross-button.png")}}"
+            :lesson="{
+                id: {{$lesson->id}},
+                title: '{{$lesson->title}}'
+            }"
+            :image-urls="{
+                plusButton: '{{asset("images/plus-button.png")}}',
+                prevButton: '{{asset("images/prev-button.png")}}',
+                nextButton: '{{asset("images/next-button.png")}}',
+                crossButton: '{{asset("images/cross-button.png")}}'
+            }"
         ></development-view>
     </div>
 @endsection

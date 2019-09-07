@@ -1,27 +1,28 @@
-import Model from "../Model.js";
+import Model from "./Model.js";
 
-export default class Folder extends Model {
+export default class File extends Model {
     static baseRoute() {
-        return "folders";
+        return "files";
     }
 
     static index(parameters, completion) {
-        Model.index(Folder.baseRoute(), parameters, completion);
+        Model.index(File.baseRoute(), parameters, completion);
     }
 
-    constructor(id, name, parent, lessonId) {
-        super(Folder.baseRoute());
+    constructor(id, name, text, parent, lessonId) {
+        super(File.baseRoute());
         this.id = id;
         this.name = name;
+        this.text = text;
         this.parent = parent;
         this.lessonId = lessonId;
-        this.children = [];
     }
 
     parameters() {
         return {
             name: this.name,
-            parent_folder_id: this.parent.id,
+            text: this.text,
+            parent_folder_id: this.parent ? this.parent.id : "",
             lesson_id: this.lessonId
         };
     }
@@ -42,6 +43,14 @@ export default class Folder extends Model {
         this._name = value;
     }
 
+    get text() {
+        return this._text;
+    }
+
+    set text(value) {
+        this._text = value;
+    }
+
     get parent() {
         return this._parent;
     }
@@ -56,13 +65,5 @@ export default class Folder extends Model {
 
     set lessonId(value) {
         this._lessonId = value;
-    }
-
-    get children() {
-        return this._children;
-    }
-
-    set children(value) {
-        this._children = value;
     }
 }

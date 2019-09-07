@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import File from "../../file/File.js";
-import Folder from "../../folder/ Folder.js";
+import File from "../../models/File.js";
+import Folder from "../../models/Folder.js";
 import FileTreeItem from "./FileTreeItem.vue";
 export default {
   name: "file-tree",

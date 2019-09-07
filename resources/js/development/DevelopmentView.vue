@@ -6,7 +6,7 @@
     v-on:keydown.meta.90.stop.prevent="onundo"
   >
     <div id="development-header" class="d-flex bg-light border-bottom border-dark row">
-      <div class="d-flex align-items-center" contenteditable="true">{{ lessonTitle }}</div>
+      <div class="d-flex align-items-center" contenteditable="true">{{ lesson.title }}</div>
       <div class="ml-3 d-flex align-items-center">
         <!-- <button class="ml-2" type="button">ファイル</button>
                 <button class="ml-2" type="button">ファイル</button>
@@ -22,7 +22,7 @@
                 id="file-tree"
                 class="w-100 h-100"
                 :items="fileTree.items"
-                :lesson-id="lessonId"
+                :lesson-id="lesson.id"
                 @show-context-menu="onShowFileTreeContextMenu"
                 @set-file="onSetFile"
               ></file-tree>
@@ -35,7 +35,7 @@
               :file="file"
               :questions="questions"
               :description-targets="description.targets"
-              @show-context-menu.stop.prevent="showSourceCodeEditorContextMenu"
+              @show-context-menu.stop.prevent="onShowSourceCodeEditorContextMenu"
             ></source-code-editor>
           </div>
         </div>
@@ -52,11 +52,7 @@
               v-show="file"
               :file-id="file ? file.id : null"
               :descriptions="description.descriptions"
-              :plusButtonUrl="plusButtonUrl"
-              :prevButtonUrl="prevButtonUrl"
-              :nextButtonUrl="nextButtonUrl"
-              :cross-button-url="crossButtonUrl"
-              @store-description="onStoreDescription"
+              :image-urls="imageUrls"
               @set-selected-description="onSetSelectedDescription"
             ></description-editor>
           </div>
@@ -68,7 +64,7 @@
       <file-creation-view
         v-show="fileCreationView.isShown"
         :folder="fileTree.contextMenu.item"
-        @cancel="onFlieCreationViewCancelButtonClick"
+        @hide="onHideFileCreationView"
       ></file-creation-view>
     </transition>
     <file-tree-context-menu
@@ -82,9 +78,12 @@
       v-show="sourceCodeEditor.contextMenu.isShown"
       :left="sourceCodeEditor.contextMenu.left"
       :top="sourceCodeEditor.contextMenu.top"
-      :is-description-selected="description.selectedDescription !== null"
-      @store-question="onStoreQuestion"
-      @store-description-target="onStoreDescriptionTarget"
+      :start-index="sourceCodeEditor.contextMenu.selection.startIndex"
+      :end-index="sourceCodeEditor.contextMenu.selection.endIndex"
+      :file="file"
+      :questions="questions"
+      :description-targets="description.targets"
+      :selected-description="description.selectedDescription"
     ></source-code-editor-context-menu>
   </div>
 </template>
@@ -93,7 +92,7 @@
 import Description from "./description/Description.js";
 import DescriptionEditor from "./description/DescriptionEditor.vue";
 import DescriptionTarget from "./description/DescriptionTarget.js";
-import File from "../file/File.js";
+import File from "../models/File.js";
 import FileCreationView from "./file-tree/FileCreationView.vue";
 import FileTree from "./file-tree/FileTree.vue";
 import FileTreeContextMenu from "./file-tree/FileTreeContextMenu.vue";
@@ -105,12 +104,14 @@ import SourceCodeEditorContextMenu from "./source-code-editor/SourceCodeEditorCo
 export default {
   name: "development-view",
   props: {
-    lessonId: Number,
-    lessonTitle: String,
-    plusButtonUrl: String,
-    prevButtonUrl: String,
-    nextButtonUrl: String,
-    crossButtonUrl: String
+    // lessonId: Number,
+    // lessonTitle: String,
+    // plusButtonUrl: String,
+    // prevButtonUrl: String,
+    // nextButtonUrl: String,
+    // crossButtonUrl: String
+    lesson: Object,
+    imageUrls: Object
   },
   data: function() {
     return {
@@ -133,7 +134,7 @@ export default {
           isShown: false,
           left: 0,
           top: 0,
-          target: null
+          selection: {}
         }
       },
       questions: [],
@@ -154,7 +155,7 @@ export default {
     DescriptionEditor
   },
   created() {
-    this.fileTree.items = File.index({ lesson_id: this.lessonId });
+    this.fileTree.items = File.index({ lesson_id: this.lesson.id });
   },
   methods: {
     onclick() {
@@ -165,47 +166,8 @@ export default {
     onundo() {
       alert("ごめんなさい!UNDO機能はまだ実装していません。");
     },
-    onFlieCreationViewCancelButtonClick() {
-      this.fileCreationView.isShown = false;
-    },
-    onStoreQuestion() {
-      const startIndex = this.sourceCodeEditor.contextMenu.target
-        .selectionStart;
-      const endIndex = this.sourceCodeEditor.contextMenu.target.selectionEnd;
-      const answer = this.sourceCodeEditor.contextMenu.target.value.substring(
-        startIndex,
-        endIndex
-      );
-      const question = new Question(
-        null,
-        startIndex,
-        endIndex,
-        this.file.id,
-        answer
-      );
-      question.store();
-      this.questions.push(question);
-    },
-    onStoreDescription(index) {
-      const description = new Description(null, index, "", this.file.id);
-      description.store();
-      this.description.descriptions.push(description);
-    },
     onSetSelectedDescription(selectedDescription) {
       this.description.selectedDescription = selectedDescription;
-    },
-    onStoreDescriptionTarget() {
-      const startIndex = this.sourceCodeEditor.contextMenu.target
-        .selectionStart;
-      const endIndex = this.sourceCodeEditor.contextMenu.target.selectionEnd;
-      const descriptionTarget = new DescriptionTarget(
-        null,
-        startIndex,
-        endIndex,
-        this.description.selectedDescription.id
-      );
-      descriptionTarget.store();
-      this.description.targets.push(descriptionTarget);
     },
     onSetFile(file) {
       this.file = file;
@@ -266,10 +228,17 @@ export default {
     onShowFileCreationView() {
       this.fileCreationView.isShown = true;
     },
-    showSourceCodeEditorContextMenu(e) {
+    onHideFileCreationView() {
+      this.fileCreationView.isShown = false;
+    },
+    onShowSourceCodeEditorContextMenu(e) {
       this.sourceCodeEditor.contextMenu.isShown = true;
       this.sourceCodeEditor.contextMenu.left = e.pageX;
       this.sourceCodeEditor.contextMenu.top = e.pageY;
+      this.sourceCodeEditor.contextMenu.selection.startIndex =
+        e.target.selectionStart;
+      this.sourceCodeEditor.contextMenu.selection.endIndex =
+        e.target.selectionEnd;
       this.sourceCodeEditor.contextMenu.target = e.target;
     }
   }

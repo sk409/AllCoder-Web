@@ -12,7 +12,7 @@
           id="file-creation-view-cancel"
           class="btn btn-primary file-creation-view-button"
           type="button"
-          @click="onCancelButtonClick"
+          @click="onHide"
         >キャンセル</button>
         <button
           id="file-creaetion-view-create"
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import File from "../../file/File.js";
+import File from "../../models/File.js";
 export default {
   name: "file-creation-view",
   props: {
@@ -80,8 +80,8 @@ export default {
     }
   },
   methods: {
-    onCancelButtonClick() {
-      this.$emit("cancel");
+    onHide() {
+      this.$emit("hide");
     },
     onStoreFile() {
       const isUniqueFileName = function(children, fileName) {
@@ -103,11 +103,12 @@ export default {
         null,
         fileName,
         "",
-        this.folder.id,
+        this.folder,
         this.folder.lessonId
       );
       file.store();
       this.folder.children.push(file);
+      this.onHide();
     },
     onInputFileName(e) {
       const splitted = e.target.value.split(".");

@@ -63,8 +63,9 @@ export default class Model {
     }
 
     store(completion) {
+        const that = this;
         Axios.post(this.uri.store(), this.parameters()).then(response => {
-            this.id = response.data;
+            that.id = response.data;
             Model.handleResponse(response, completion);
         });
     }
