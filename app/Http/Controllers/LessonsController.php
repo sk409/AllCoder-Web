@@ -11,8 +11,9 @@ use Illuminate\Http\Request;
 
 class LessonsController extends Controller
 {
-    
-    public function create(): Renderable {
+
+    public function create(): Renderable
+    {
         $lesson = new Lesson();
         return view("lessons.create", [
             "lesson" => $lesson,
@@ -20,9 +21,9 @@ class LessonsController extends Controller
         ]);
     }
 
-    public function store(LessonCreationRequest $request) {
+    public function store(LessonCreationRequest $request)
+    {
         $lesson = Lesson::create($request->all());
         return redirect("development/" . $lesson->id);
     }
-
 }

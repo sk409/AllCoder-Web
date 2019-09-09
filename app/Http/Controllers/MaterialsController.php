@@ -17,15 +17,17 @@ class MaterialsController extends Controller
         $this->establishRelationshipWithLessons($material, $request->lessonIds);
         return redirect()->route("dashboard.materials");
     }
-    
-    public function create(): Renderable {
+
+    public function create(): Renderable
+    {
         $user = Auth::user();
         return view("materials/create", [
             "user" => $user,
         ]);
     }
 
-    public function update(Request $request, int $id) {
+    public function update(Request $request, int $id)
+    {
         $material = Material::find($id);
         $material->fill($request->all())->save();
         $material->lessons()->detach();
@@ -33,16 +35,18 @@ class MaterialsController extends Controller
         return redirect()->route("dashboard.materials");
     }
 
-    public function edit(int $id) {
+    public function edit(int $id)
+    {
         $material = Material::find($id);
-        return view("materials/edit",[
+        return view("materials/edit", [
             "material" => $material,
             "lessons" => $material->user->lessons,
             "user" => $material->user,
         ]);
     }
 
-    private function establishRelationshipWithLessons($material, $lessonIds) {
+    private function establishRelationshipWithLessons($material, $lessonIds)
+    {
         foreach ($lessonIds as $index => $lessonId) {
             $material->lessons()->attach(
                 $lessonId,
@@ -50,5 +54,4 @@ class MaterialsController extends Controller
             );
         }
     }
-
 }

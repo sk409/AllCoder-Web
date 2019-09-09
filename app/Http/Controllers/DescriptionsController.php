@@ -8,15 +8,17 @@ use Illuminate\Http\Request;
 class DescriptionsController extends Controller
 {
 
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         return Controller::narrowDownFromConditions(
-            $request,
+            $request->all(),
             "\App\Description::all",
             "\App\Description::where"
         );
     }
-    
-    public function store(Request $request) {
+
+    public function store(Request $request)
+    {
         $parameters = $request->all();
         if ($request->has("text") && is_null($request->text)) {
             $parameters["text"] = "";
@@ -25,12 +27,12 @@ class DescriptionsController extends Controller
         return $description->id;
     }
 
-    public function update(Request $request, int $id) {
+    public function update(Request $request, int $id)
+    {
         $parameters = $request->all();
         if ($request->has("text") && is_null($request->text)) {
             $parameters["text"] = "";
         }
         Description::find($id)->fill($parameters)->save();
     }
-
 }

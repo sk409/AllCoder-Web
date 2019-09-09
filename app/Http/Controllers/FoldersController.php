@@ -12,7 +12,7 @@ class FoldersController extends Controller
     public function index(Request $request)
     {
         return Controller::narrowDownFromConditions(
-            $request,
+            $request->all(),
             "\App\Folder::all",
             "\App\Folder::where"
         );

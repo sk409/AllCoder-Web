@@ -12,7 +12,7 @@ class FilesController extends Controller
     public function index(Request $request)
     {
         return Controller::narrowDownFromConditions(
-            $request,
+            $request->all(),
             "\App\File::all",
             "\App\File::where"
         );

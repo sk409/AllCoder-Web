@@ -11,23 +11,25 @@ class QuestionsController extends Controller
     public function index(Request $request)
     {
         return Controller::narrowDownFromConditions(
-            $request,
+            $request->all(),
             "\App\Question::all",
             "\App\Question::where"
         );
     }
-    
-    public function store(Request $request) {
+
+    public function store(Request $request)
+    {
         $question = Question::create($request->all());
         return $question->id;
     }
 
-    public function update(Request $request, int $id) {
+    public function update(Request $request, int $id)
+    {
         Question::find($id)->fill($request->all())->save();
     }
-    
-    public function destroy(Request $request, int $id) {
+
+    public function destroy(Request $request, int $id)
+    {
         Question::destroy($id);
     }
-
 }

@@ -21,7 +21,7 @@ export default class Folder extends Model {
     parameters() {
         return {
             name: this.name,
-            parent_folder_id: this.parent.id,
+            parent_folder_id: this.parent ? this.parent.id : null,
             lesson_id: this.lessonId
         };
     }

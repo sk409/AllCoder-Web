@@ -2396,12 +2396,10 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   },
   data: function data() {
     return {
-      rootItem: new _models_Folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, null, null, this.lessonId)
+      rootItem: null
     };
   },
   created: function created() {
-    var _this = this;
-
     var fileTreeBuilder = function fileTreeBuilder(current, items, isFile) {
       var _current$children;
 
@@ -2436,15 +2434,35 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     };
 
     var that = this;
-    _models_Folder_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
-      lesson_id: this.lessonId
-    }, function (response) {
+
+    var build = function build(response) {
       fileTreeBuilder(that.rootItem, response.data, false);
       _models_File_js__WEBPACK_IMPORTED_MODULE_0__["default"].index({
-        lesson_id: _this.lessonId
+        lesson_id: that.lessonId
       }, function (response) {
         fileTreeBuilder(that.rootItem, response.data, true);
       });
+    };
+
+    _models_Folder_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
+      lesson_id: this.lessonId
+    }, function (response) {
+      var rootItemIndex = response.data.findIndex(function (folder) {
+        return folder.parent_folder_id === null;
+      });
+      var notFound = -1;
+
+      if (rootItemIndex === notFound) {
+        var rootFolder = new _models_Folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, "ROOT_FOLDER", null, that.lessonId);
+        rootFolder.store(function (response) {
+          that.rootItem = rootFolder;
+          build(response);
+        });
+      } else {
+        var _rootFolder = response.data[rootItemIndex];
+        that.rootItem = new _models_Folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](_rootFolder.id, _rootFolder.name, null, _rootFolder.lesson_id);
+        build(response);
+      }
     });
   },
   methods: {
@@ -2562,6 +2580,10 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_Folder_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../models/Folder.js */ "./resources/js/models/Folder.js");
+//
+//
+//
+//
 //
 //
 //
@@ -6325,20 +6347,22 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("li", [
-    _c(
-      "div",
-      {
-        on: {
-          click: _vm.onclick,
-          contextmenu: function($event) {
-            $event.stopPropagation()
-            $event.preventDefault()
-            return _vm.onShowContextMenu($event, _vm.item)
-          }
-        }
-      },
-      [_vm._v(_vm._s(_vm.item.name))]
-    ),
+    _vm.item && _vm.item.parent
+      ? _c(
+          "div",
+          {
+            on: {
+              click: _vm.onclick,
+              contextmenu: function($event) {
+                $event.stopPropagation()
+                $event.preventDefault()
+                return _vm.onShowContextMenu($event, _vm.item)
+              }
+            }
+          },
+          [_vm._v(_vm._s(_vm.item.name))]
+        )
+      : _vm._e(),
     _vm._v(" "),
     _vm.isFolder
       ? _c(
@@ -7912,7 +7936,7 @@ function (_Model) {
     value: function parameters() {
       return {
         name: this.name,
-        parent_folder_id: this.parent.id,
+        parent_folder_id: this.parent ? this.parent.id : null,
         lesson_id: this.lessonId
       };
     }
@@ -8122,7 +8146,7 @@ function () {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Documents/AllCoder/AllCoderForDevelopers/resources/js/development/development.js */"./resources/js/development/development.js");
+module.exports = __webpack_require__(/*! /Documents/Web/AllCoder/resources/js/development/development.js */"./resources/js/development/development.js");
 
 
 /***/ })

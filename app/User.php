@@ -4,6 +4,8 @@ namespace App;
 
 use App\Lesson;
 use App\Material;
+use App\MaterialComment;
+use App\LessonComment;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -39,11 +41,33 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function lessons() {
+    public function lessons()
+    {
         return $this->hasMany(Lesson::class);
     }
 
-    public function materials() {
+    public function materials()
+    {
         return $this->hasMany(Material::class);
+    }
+
+    public function lessonEvaluations()
+    {
+        return $this->belongsToMany(Lesson::class, "lesson_evaluations")->withPivot("value")->withTimestamps();
+    }
+
+    public function lessonComments()
+    {
+        return $this->hasMany(LessonComment::class);
+    }
+
+    public function materialComments()
+    {
+        return $this->hasMany(MaterialComment::class);
+    }
+
+    public function purchases()
+    {
+        return $this->belongsToMany(Material::class, "purchases");
     }
 }

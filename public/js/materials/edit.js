@@ -790,7 +790,7 @@ new Vue({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Documents/AllCoder/AllCoderForDevelopers/resources/js/materials/edit.js */"./resources/js/materials/edit.js");
+module.exports = __webpack_require__(/*! /Documents/Web/AllCoder/resources/js/materials/edit.js */"./resources/js/materials/edit.js");
 
 
 /***/ })

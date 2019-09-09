@@ -21,7 +21,7 @@ export default {
   },
   data: function() {
     return {
-      rootItem: new Folder(null, null, null, this.lessonId)
+      rootItem: null
     };
   },
   created() {
@@ -64,11 +64,33 @@ export default {
       }
     };
     const that = this;
-    Folder.index({ lesson_id: this.lessonId }, response => {
+    const build = function(response) {
       fileTreeBuilder(that.rootItem, response.data, false);
-      File.index({ lesson_id: this.lessonId }, response => {
+      File.index({ lesson_id: that.lessonId }, response => {
         fileTreeBuilder(that.rootItem, response.data, true);
       });
+    };
+    Folder.index({ lesson_id: this.lessonId }, response => {
+      const rootItemIndex = response.data.findIndex(
+        folder => folder.parent_folder_id === null
+      );
+      const notFound = -1;
+      if (rootItemIndex === notFound) {
+        const rootFolder = new Folder(null, "ROOT_FOLDER", null, that.lessonId);
+        rootFolder.store(response => {
+          that.rootItem = rootFolder;
+          build(response);
+        });
+      } else {
+        const rootFolder = response.data[rootItemIndex];
+        that.rootItem = new Folder(
+          rootFolder.id,
+          rootFolder.name,
+          null,
+          rootFolder.lesson_id
+        );
+        build(response);
+      }
     });
   },
   methods: {

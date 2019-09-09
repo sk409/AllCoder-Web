@@ -1,6 +1,10 @@
 <template>
   <li>
-    <div @click="onclick" @contextmenu.stop.prevent="onShowContextMenu($event, item)">{{item.name}}</div>
+    <div
+      v-if="item && item.parent"
+      @click="onclick"
+      @contextmenu.stop.prevent="onShowContextMenu($event, item)"
+    >{{item.name}}</div>
     <ul v-if="isFolder" class="file-tree-item">
       <file-tree-item
         v-show="isExpanded"

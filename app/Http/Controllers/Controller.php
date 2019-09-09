@@ -14,8 +14,8 @@ class Controller extends BaseController
 
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected static function narrowDownFromConditions(Request $request, callable $all, callable $where) {
-        $conditions = $request->all();
+    protected static function narrowDownFromConditions(array $conditions, callable $all, callable $where)
+    {
         if (!$conditions) {
             return call_user_func($all);
         }

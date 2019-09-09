@@ -19,4 +19,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => ["api"]], function () {
     Route::get("materials", "Api\MaterialsController@index");
+    Route::post("materials/purchase", "Api\MaterialsController@purchase");
+    Route::get("lessons", "Api\LessonsController@index");
 });
