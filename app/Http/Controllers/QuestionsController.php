@@ -12,8 +12,7 @@ class QuestionsController extends Controller
     {
         return Controller::narrowDownFromConditions(
             $request->all(),
-            "\App\Question::all",
-            "\App\Question::where"
+            "\App\Question"
         );
     }
 

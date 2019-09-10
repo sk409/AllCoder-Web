@@ -13,8 +13,7 @@ class FilesController extends Controller
     {
         return Controller::narrowDownFromConditions(
             $request->all(),
-            "\App\File::all",
-            "\App\File::where"
+            "\App\File:"
         );
     }
 

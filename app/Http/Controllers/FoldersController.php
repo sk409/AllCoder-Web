@@ -13,8 +13,7 @@ class FoldersController extends Controller
     {
         return Controller::narrowDownFromConditions(
             $request->all(),
-            "\App\Folder::all",
-            "\App\Folder::where"
+            "\App\Folder"
         );
     }
 

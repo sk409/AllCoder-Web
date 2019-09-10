@@ -18,7 +18,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => ["api"]], function () {
+    Route::get("users", "Api\UsersController@index");
     Route::get("materials", "Api\MaterialsController@index");
     Route::post("materials/purchase", "Api\MaterialsController@purchase");
-    Route::get("lessons", "Api\LessonsController@index");
+    Route::post("register", "Api\RegisterController@register");
+    Route::post("login", "Api\LoginController@login");
+    //Route::get("lessons", "Api\LessonsController@index");
 });

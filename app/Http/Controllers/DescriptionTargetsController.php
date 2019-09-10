@@ -12,8 +12,7 @@ class DescriptionTargetsController extends Controller
     {
         return Controller::narrowDownFromConditions(
             $request->all(),
-            "\App\DescriptionTarget::all",
-            "\App\DescriptionTarget::where"
+            "\App\DescriptionTarget"
         );
     }
 

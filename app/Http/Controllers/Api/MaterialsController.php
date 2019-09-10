@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Auth;
 use App\Material;
-use App\Lesson;
 use App\User;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -35,8 +32,7 @@ class MaterialsController extends Controller
         }
         $materials = Controller::narrowDownFromConditions(
             $conditions,
-            "\App\Material::all",
-            "\App\Material::where"
+            "\App\Material"
         );
         return MaterialsController::convert($materials);
     }
@@ -164,6 +160,6 @@ class MaterialsController extends Controller
             }
             $result[] = $stdMaterial;
         }
-        return count($result) === 1 ? json_encode($result[0]) : $result;
+        return $result;
     }
 }

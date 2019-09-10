@@ -14,15 +14,15 @@ class Controller extends BaseController
 
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected static function narrowDownFromConditions(array $conditions, callable $all, callable $where)
+    protected static function narrowDownFromConditions(array $conditions, string $model)
     {
         if (!$conditions) {
-            return call_user_func($all);
+            return call_user_func($model . "::all");
         }
         $result = null;
         foreach ($conditions as $conditionKey => $conditionValue) {
             if (is_null($result)) {
-                $result = call_user_func($where, $conditionKey, $conditionValue);
+                $result = call_user_func($model . "::where", $conditionKey, $conditionValue);
             } else {
                 $result = $result->where($conditionKey, $conditionValue);
             }
