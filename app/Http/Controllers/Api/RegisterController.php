@@ -18,6 +18,6 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-        return $user->id;
+        return User::find($user->id);
     }
 }

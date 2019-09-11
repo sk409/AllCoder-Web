@@ -64,22 +64,15 @@ export default {
       }
     };
     const that = this;
-    const build = function(response) {
-      fileTreeBuilder(that.rootItem, response.data, false);
-      File.index({ lesson_id: that.lessonId }, response => {
-        fileTreeBuilder(that.rootItem, response.data, true);
-      });
-    };
     Folder.index({ lesson_id: this.lessonId }, response => {
       const rootItemIndex = response.data.findIndex(
         folder => folder.parent_folder_id === null
       );
       const notFound = -1;
       if (rootItemIndex === notFound) {
-        const rootFolder = new Folder(null, "ROOT_FOLDER", null, that.lessonId);
+        const rootFolder = new Folder(null, "", null, that.lessonId);
         rootFolder.store(response => {
           that.rootItem = rootFolder;
-          build(response);
         });
       } else {
         const rootFolder = response.data[rootItemIndex];
@@ -89,7 +82,10 @@ export default {
           null,
           rootFolder.lesson_id
         );
-        build(response);
+        fileTreeBuilder(that.rootItem, response.data, false);
+        File.index({ lesson_id: that.lessonId }, response => {
+          fileTreeBuilder(that.rootItem, response.data, true);
+        });
       }
     });
   },

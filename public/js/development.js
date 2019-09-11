@@ -2434,16 +2434,6 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     };
 
     var that = this;
-
-    var build = function build(response) {
-      fileTreeBuilder(that.rootItem, response.data, false);
-      _models_File_js__WEBPACK_IMPORTED_MODULE_0__["default"].index({
-        lesson_id: that.lessonId
-      }, function (response) {
-        fileTreeBuilder(that.rootItem, response.data, true);
-      });
-    };
-
     _models_Folder_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
       lesson_id: this.lessonId
     }, function (response) {
@@ -2453,15 +2443,19 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       var notFound = -1;
 
       if (rootItemIndex === notFound) {
-        var rootFolder = new _models_Folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, "ROOT_FOLDER", null, that.lessonId);
+        var rootFolder = new _models_Folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, "", null, that.lessonId);
         rootFolder.store(function (response) {
           that.rootItem = rootFolder;
-          build(response);
         });
       } else {
         var _rootFolder = response.data[rootItemIndex];
         that.rootItem = new _models_Folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](_rootFolder.id, _rootFolder.name, null, _rootFolder.lesson_id);
-        build(response);
+        fileTreeBuilder(that.rootItem, response.data, false);
+        _models_File_js__WEBPACK_IMPORTED_MODULE_0__["default"].index({
+          lesson_id: that.lessonId
+        }, function (response) {
+          fileTreeBuilder(that.rootItem, response.data, true);
+        });
       }
     });
   },

@@ -19,7 +19,11 @@ class FoldersController extends Controller
 
     public function store(FolderCreationRequest $request)
     {
-        $folder = Folder::create($request->all());
+        $parameters = $request->all();
+        if ($parameters["name"] === null) {
+            $parameters["name"] = "";
+        }
+        $folder = Folder::create($parameters);
         return $folder->id;
     }
 
