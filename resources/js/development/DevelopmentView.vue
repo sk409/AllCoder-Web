@@ -50,8 +50,9 @@
           <div class="w-75">
             <description-editor
               v-show="file"
-              :file-id="file ? file.id : null"
+              :lesson-id="lesson.id"
               :descriptions="description.descriptions"
+              :file="file"
               :image-urls="imageUrls"
               @set-selected-description="onSetSelectedDescription"
             ></description-editor>
@@ -179,7 +180,7 @@ export default {
             question.start_index,
             question.end_index,
             question.file_id,
-            file.text.substring(question.strat_index, question.end_index)
+            file.text.substring(question.start_index, question.end_index)
           );
         });
       });

@@ -14,6 +14,7 @@ export default class File extends Model {
         this.id = id;
         this.name = name;
         this.text = text;
+        this.index = null;
         this.parent = parent;
         this.lessonId = lessonId;
     }
@@ -22,6 +23,7 @@ export default class File extends Model {
         return {
             name: this.name,
             text: this.text,
+            index: this.index ? this.index : "",
             parent_folder_id: this.parent ? this.parent.id : "",
             lesson_id: this.lessonId
         };
@@ -49,6 +51,14 @@ export default class File extends Model {
 
     set text(value) {
         this._text = value;
+    }
+
+    get index() {
+        return this._index;
+    }
+
+    set index(value) {
+        this._index = value;
     }
 
     get parent() {

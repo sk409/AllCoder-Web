@@ -1947,6 +1947,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
 
 
 
@@ -2037,7 +2038,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         file_id: file.id
       }, function (response) {
         that.questions = response.data.map(function (question) {
-          return new _question_Question_js__WEBPACK_IMPORTED_MODULE_7__["default"](question.id, question.start_index, question.end_index, question.file_id, file.text.substring(question.strat_index, question.end_index));
+          return new _question_Question_js__WEBPACK_IMPORTED_MODULE_7__["default"](question.id, question.start_index, question.end_index, question.file_id, file.text.substring(question.start_index, question.end_index));
         });
       });
       _description_Description_js__WEBPACK_IMPORTED_MODULE_0__["default"].index({
@@ -2097,6 +2098,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _description_Description_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../description/Description.js */ "./resources/js/development/description/Description.js");
+/* harmony import */ var _models_File_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../models/File.js */ "./resources/js/models/File.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -2161,10 +2163,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "description-editor",
   props: {
-    fileId: Number,
+    lessonId: Number,
+    file: Object,
     imageUrls: Object,
     descriptions: Array
   },
@@ -2186,8 +2190,28 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       var index = this.descriptions.length ? Math.max.apply(Math, _toConsumableArray(this.descriptions.map(function (description) {
         return description.index;
       }))) + 1 : 0;
-      var description = new _description_Description_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, index, "", this.fileId);
-      description.store();
+      var description = new _description_Description_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, index, "", this.file.id);
+      description.store(function (response) {
+        _description_Description_js__WEBPACK_IMPORTED_MODULE_0__["default"].index({
+          file_id: that.file.id
+        }, function (response) {
+          if (response.data.length !== 1) {
+            return;
+          }
+
+          _models_File_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
+            lesson_id: that.lessonId
+          }, function (response) {
+            console.log(response);
+            var index = Math.max.apply(Math, _toConsumableArray(response.data.map(function (file) {
+              return file.index;
+            }))) + 1;
+            that.file.index = index;
+            that.file.update();
+            console.log("new index: " + index);
+          });
+        });
+      });
       this.descriptions.push(description);
     },
     onSlideDownDescriptionList: function onSlideDownDescriptionList(descriptionId) {
@@ -2726,6 +2750,7 @@ __webpack_require__.r(__webpack_exports__);
       textBeforeInput: null,
       selectedRangeBeforeInput: null,
       pastedText: null,
+      lastTextLength: null,
       inputQueue: q__WEBPACK_IMPORTED_MODULE_0__["Promise"].resolve(),
       delayedUpdate: _.debounce(this.update, 500)
     };
@@ -2734,33 +2759,38 @@ __webpack_require__.r(__webpack_exports__);
     oninput: function oninput(e) {
       var that = this;
       var selectionStart = e.target.selectionStart;
-      var selectionEnd = e.target.selectionEnd;
       var selectedRangeBeforeInput = this.selectedRangeBeforeInput ? {
         start: this.selectedRangeBeforeInput.start,
         end: this.selectedRangeBeforeInput.end
-      } : null;
+      } : null; // console.log(e.target.value.length);
+      // console.log(that.lastTextLength);
 
-      if (e.inputType === "insertText" || e.inputType === "insertLineBreak") {
+      if (e.inputType === "insertText" || e.inputType === "insertLineBreak" || e.inputType === "insertCompositionText" && this.lastTextLength === null || e.inputType === "insertCompositionText" && selectedRangeBeforeInput !== null && 0 < selectedRangeBeforeInput.end - selectedRangeBeforeInput.start || e.inputType === "insertCompositionText" && e.target.value.length - this.lastTextLength === 1) {
+        console.log("insertText");
         this.inputQueue.then(function () {
-          that.insertText(selectedRangeBeforeInput, selectionStart, selectionEnd);
+          that.insertText(selectedRangeBeforeInput, selectionStart);
         });
-      } else if (e.inputType === "deleteContentBackward") {
+      } else if (e.inputType === "deleteContentBackward" || e.inputType === "insertCompositionText" && this.lastTextLength - e.target.value.length === 1) {
+        console.log("deleteContentBackward");
         this.inputQueue.then(function () {
-          that.deleteContentBackward(selectedRangeBeforeInput, selectionStart, selectionEnd);
+          that.deleteContentBackward(selectedRangeBeforeInput, selectionStart);
         });
+      } else if (e.inputType === "insertCompositionText" && that.lastTextLength !== e.target.value.length) {
+        that.insertCompositionText(selectionStart, e);
       } else if (e.inputType === "insertFromPaste") {
         //console.log(e);
         this.inputQueue.then(function () {
-          that.insertFromPaste(selectedRangeBeforeInput, selectionStart, selectionEnd);
+          that.insertFromPaste(selectedRangeBeforeInput, selectionStart);
         });
       } else if (e.inputType === "deleteByCut") {
         this.inputQueue.then(function () {
-          that.deleteByCut(selectedRangeBeforeInput, selectionStart, selectionEnd);
+          that.deleteByCut(selectedRangeBeforeInput, selectionStart);
         });
       }
 
       this.textarea = e.target;
       this.selectedRangeBeforeInput = null;
+      this.lastTextLength = e.target.value.length;
       this.delayedUpdate();
     },
     onclick: function onclick(e) {
@@ -2784,28 +2814,24 @@ __webpack_require__.r(__webpack_exports__);
     oncontextmenu: function oncontextmenu(e) {
       this.$emit("show-context-menu", e);
     },
-    insertText: function insertText(selectedRangeBeforeInput, selectionStart, selectionEnd) {
-      //console.log("(" + selectionStart + ", " + selectionEnd + ")");
-      // console.log(selectedRangeBeforeInput);
-      // console.log(getSelection().toString());
-      //console.log(this.questions);
-      //const deletedQuestionIds = [];
+    insertText: function insertText(selectedRangeBeforeInput, selectionStart) {
       var that = this;
 
       if (selectedRangeBeforeInput === null || selectedRangeBeforeInput.start === selectedRangeBeforeInput.end) {
         var caretPosition = selectionStart - 1;
+        console.log(caretPosition);
         this.questions.concat(this.descriptionTargets).forEach(function (item) {
-          //console.log(item.startIndex);
+          // console.log(item.startIndex);
           var updated = false;
 
           if (caretPosition <= item.startIndex) {
-            //console.log("START");
+            console.log("START");
             ++item.startIndex;
             updated = true;
           }
 
           if (caretPosition < item.endIndex) {
-            //console.log("END");
+            console.log("END");
             ++item.endIndex;
             updated = true;
           }
@@ -2843,14 +2869,32 @@ __webpack_require__.r(__webpack_exports__);
             that.delayedUpdate();
           }
         });
-      } // if (deletedQuestionIds.length) {
-      //     this.$emit("remove-questions", deletedQuestionIds);
-      // }
-
+      }
     },
-    deleteContentBackward: function deleteContentBackward(selectedRangeBeforeInput, selectionStart, selectionEnd) {
-      //console.log("(" + selectionStart + ", " + selectionEnd + ")");
-      //console.log(selectedRangeBeforeInput);
+    insertCompositionText: function insertCompositionText(selectionStart, e) {
+      var that = this;
+      var diff = e.target.value.length - this.lastTextLength;
+      var caretPosition = selectionStart - diff;
+      this.questions.concat(this.descriptionTargets).forEach(function (item) {
+        var updated = false;
+
+        if (caretPosition <= item.startIndex) {
+          item.startIndex += diff;
+          updated = true;
+        }
+
+        if (caretPosition <= item.endIndex) {
+          item.endIndex += diff;
+          updated = true;
+        }
+
+        if (updated) {
+          item.hasUpdated = true;
+          that.delayedUpdate();
+        }
+      });
+    },
+    deleteContentBackward: function deleteContentBackward(selectedRangeBeforeInput, selectionStart) {
       var that = this;
 
       if (selectedRangeBeforeInput === null || selectedRangeBeforeInput.start === selectedRangeBeforeInput.end) {
@@ -2911,7 +2955,7 @@ __webpack_require__.r(__webpack_exports__);
         });
       }
     },
-    insertFromPaste: function insertFromPaste(selectedRangeBeforeInput, selectionStart, selectionEnd) {
+    insertFromPaste: function insertFromPaste(selectedRangeBeforeInput, selectionStart) {
       var _this = this;
 
       var that = this;
@@ -2973,9 +3017,7 @@ __webpack_require__.r(__webpack_exports__);
         });
       }
     },
-    deleteByCut: function deleteByCut(selectedRangeBeforeInput, selectionStart, selectionEnd) {
-      //console.log("(" + selectionStart + ", " + selectionEnd + ")");
-      //console.log(selectedRangeBeforeInput);
+    deleteByCut: function deleteByCut(selectedRangeBeforeInput, selectionStart) {
       var that = this;
       this.questions.concat(this.descriptionTargets).forEach(function (item) {
         if (selectedRangeBeforeInput.start <= item.startIndex && item.endIndex <= selectedRangeBeforeInput.end //  |---[---]---|
@@ -5812,8 +5854,9 @@ var render = function() {
                       }
                     ],
                     attrs: {
-                      "file-id": _vm.file ? _vm.file.id : null,
+                      "lesson-id": _vm.lesson.id,
                       descriptions: _vm.description.descriptions,
+                      file: _vm.file,
                       "image-urls": _vm.imageUrls
                     },
                     on: {
@@ -7799,6 +7842,7 @@ function (_Model) {
     _this.id = id;
     _this.name = name;
     _this.text = text;
+    _this.index = null;
     _this.parent = parent;
     _this.lessonId = lessonId;
     return _this;
@@ -7810,6 +7854,7 @@ function (_Model) {
       return {
         name: this.name,
         text: this.text,
+        index: this.index ? this.index : "",
         parent_folder_id: this.parent ? this.parent.id : "",
         lesson_id: this.lessonId
       };
@@ -7837,6 +7882,14 @@ function (_Model) {
     },
     set: function set(value) {
       this._text = value;
+    }
+  }, {
+    key: "index",
+    get: function get() {
+      return this._index;
+    },
+    set: function set(value) {
+      this._index = value;
     }
   }, {
     key: "parent",

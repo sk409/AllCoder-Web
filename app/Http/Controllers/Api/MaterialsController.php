@@ -82,6 +82,7 @@ class MaterialsController extends Controller
                         $stdFile->id = $file->id;
                         $stdFile->name = $file->name;
                         $stdFile->text = $file->text;
+                        $stdFile->index = $file->index;
                         $stdFile->created_at = $file->created_at;
                         $stdFile->updated_at = $file->updated_at;
                         $stdFile->descriptions = [];
@@ -116,6 +117,9 @@ class MaterialsController extends Controller
                         }
                         $stdFolder->child_files[] = $stdFile;
                     }
+                    usort($stdFolder->child_files, function ($a, $b) {
+                        return $a->index - $b->index;
+                    });
                     if ($stdFolder->parent_folder_id === null) {
                         unset($stdFolder->parent_folder_id);
                         $stdLesson->root_folder = $stdFolder;

@@ -33,6 +33,7 @@ export default {
       textBeforeInput: null,
       selectedRangeBeforeInput: null,
       pastedText: null,
+      lastTextLength: null,
       inputQueue: Promise.resolve(),
       delayedUpdate: _.debounce(this.update, 500)
     };
@@ -41,49 +42,57 @@ export default {
     oninput(e) {
       const that = this;
       const selectionStart = e.target.selectionStart;
-      const selectionEnd = e.target.selectionEnd;
       const selectedRangeBeforeInput = this.selectedRangeBeforeInput
         ? {
             start: this.selectedRangeBeforeInput.start,
             end: this.selectedRangeBeforeInput.end
           }
         : null;
-      if (e.inputType === "insertText" || e.inputType === "insertLineBreak") {
+      // console.log(e.target.value.length);
+      // console.log(that.lastTextLength);
+      if (
+        e.inputType === "insertText" ||
+        e.inputType === "insertLineBreak" ||
+        (e.inputType === "insertCompositionText" &&
+          this.lastTextLength === null) ||
+        (e.inputType === "insertCompositionText" &&
+          (selectedRangeBeforeInput !== null &&
+            0 <
+              selectedRangeBeforeInput.end - selectedRangeBeforeInput.start)) ||
+        (e.inputType === "insertCompositionText" &&
+          e.target.value.length - this.lastTextLength === 1)
+      ) {
+        console.log("insertText");
         this.inputQueue.then(function() {
-          that.insertText(
-            selectedRangeBeforeInput,
-            selectionStart,
-            selectionEnd
-          );
+          that.insertText(selectedRangeBeforeInput, selectionStart);
         });
-      } else if (e.inputType === "deleteContentBackward") {
+      } else if (
+        e.inputType === "deleteContentBackward" ||
+        (e.inputType === "insertCompositionText" &&
+          this.lastTextLength - e.target.value.length === 1)
+      ) {
+        console.log("deleteContentBackward");
         this.inputQueue.then(function() {
-          that.deleteContentBackward(
-            selectedRangeBeforeInput,
-            selectionStart,
-            selectionEnd
-          );
+          that.deleteContentBackward(selectedRangeBeforeInput, selectionStart);
         });
+      } else if (
+        e.inputType === "insertCompositionText" &&
+        that.lastTextLength !== e.target.value.length
+      ) {
+        that.insertCompositionText(selectionStart, e);
       } else if (e.inputType === "insertFromPaste") {
         //console.log(e);
         this.inputQueue.then(function() {
-          that.insertFromPaste(
-            selectedRangeBeforeInput,
-            selectionStart,
-            selectionEnd
-          );
+          that.insertFromPaste(selectedRangeBeforeInput, selectionStart);
         });
       } else if (e.inputType === "deleteByCut") {
         this.inputQueue.then(function() {
-          that.deleteByCut(
-            selectedRangeBeforeInput,
-            selectionStart,
-            selectionEnd
-          );
+          that.deleteByCut(selectedRangeBeforeInput, selectionStart);
         });
       }
       this.textarea = e.target;
       this.selectedRangeBeforeInput = null;
+      this.lastTextLength = e.target.value.length;
       this.delayedUpdate();
     },
     onclick(e) {
@@ -107,28 +116,24 @@ export default {
     oncontextmenu(e) {
       this.$emit("show-context-menu", e);
     },
-    insertText(selectedRangeBeforeInput, selectionStart, selectionEnd) {
-      //console.log("(" + selectionStart + ", " + selectionEnd + ")");
-      // console.log(selectedRangeBeforeInput);
-      // console.log(getSelection().toString());
-      //console.log(this.questions);
-      //const deletedQuestionIds = [];
+    insertText(selectedRangeBeforeInput, selectionStart) {
       const that = this;
       if (
         selectedRangeBeforeInput === null ||
         selectedRangeBeforeInput.start === selectedRangeBeforeInput.end
       ) {
         const caretPosition = selectionStart - 1;
+        console.log(caretPosition);
         this.questions.concat(this.descriptionTargets).forEach(item => {
-          //console.log(item.startIndex);
+          // console.log(item.startIndex);
           let updated = false;
           if (caretPosition <= item.startIndex) {
-            //console.log("START");
+            console.log("START");
             ++item.startIndex;
             updated = true;
           }
           if (caretPosition < item.endIndex) {
-            //console.log("END");
+            console.log("END");
             ++item.endIndex;
             updated = true;
           }
@@ -186,17 +191,28 @@ export default {
           }
         });
       }
-      // if (deletedQuestionIds.length) {
-      //     this.$emit("remove-questions", deletedQuestionIds);
-      // }
     },
-    deleteContentBackward(
-      selectedRangeBeforeInput,
-      selectionStart,
-      selectionEnd
-    ) {
-      //console.log("(" + selectionStart + ", " + selectionEnd + ")");
-      //console.log(selectedRangeBeforeInput);
+    insertCompositionText(selectionStart, e) {
+      const that = this;
+      const diff = e.target.value.length - this.lastTextLength;
+      const caretPosition = selectionStart - diff;
+      this.questions.concat(this.descriptionTargets).forEach(item => {
+        let updated = false;
+        if (caretPosition <= item.startIndex) {
+          item.startIndex += diff;
+          updated = true;
+        }
+        if (caretPosition <= item.endIndex) {
+          item.endIndex += diff;
+          updated = true;
+        }
+        if (updated) {
+          item.hasUpdated = true;
+          that.delayedUpdate();
+        }
+      });
+    },
+    deleteContentBackward(selectedRangeBeforeInput, selectionStart) {
       const that = this;
       if (
         selectedRangeBeforeInput === null ||
@@ -269,7 +285,7 @@ export default {
         });
       }
     },
-    insertFromPaste(selectedRangeBeforeInput, selectionStart, selectionEnd) {
+    insertFromPaste(selectedRangeBeforeInput, selectionStart) {
       const that = this;
       if (
         selectedRangeBeforeInput === null ||
@@ -342,9 +358,7 @@ export default {
         });
       }
     },
-    deleteByCut(selectedRangeBeforeInput, selectionStart, selectionEnd) {
-      //console.log("(" + selectionStart + ", " + selectionEnd + ")");
-      //console.log(selectedRangeBeforeInput);
+    deleteByCut(selectedRangeBeforeInput, selectionStart) {
       const that = this;
       this.questions.concat(this.descriptionTargets).forEach(item => {
         if (

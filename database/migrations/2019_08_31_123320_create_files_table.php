@@ -17,6 +17,7 @@ class CreateFilesTable extends Migration
             $table->bigIncrements('id');
             $table->string("name", 128);
             $table->string("text", 4096)->default("");
+            $table->smallInteger("index")->unsigned()->nullable();
             $table->bigInteger("parent_folder_id")->unsigned()->nullable(true);
             $table->bigInteger("lesson_id")->unsigned();
             $table->timestamps();

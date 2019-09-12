@@ -55,10 +55,12 @@
 
 <script>
 import Description from "../description/Description.js";
+import File from "../../models/File.js";
 export default {
   name: "description-editor",
   props: {
-    fileId: Number,
+    lessonId: Number,
+    file: Object,
     imageUrls: Object,
     descriptions: Array
   },
@@ -81,8 +83,22 @@ export default {
         ? Math.max(...this.descriptions.map(description => description.index)) +
           1
         : 0;
-      const description = new Description(null, index, "", this.fileId);
-      description.store();
+      const description = new Description(null, index, "", this.file.id);
+      description.store(response => {
+        Description.index({ file_id: that.file.id }, response => {
+          if (response.data.length !== 1) {
+            return;
+          }
+          File.index({ lesson_id: that.lessonId }, response => {
+            console.log(response);
+            const index =
+              Math.max(...response.data.map(file => file.index)) + 1;
+            that.file.index = index;
+            that.file.update();
+            console.log("new index: " + index);
+          });
+        });
+      });
       this.descriptions.push(description);
     },
     onSlideDownDescriptionList(descriptionId) {
