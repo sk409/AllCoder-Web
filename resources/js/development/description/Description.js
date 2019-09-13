@@ -9,12 +9,23 @@ export default class Description extends Model {
         Model.index(Description.baseRoute(), parameters, completion);
     }
 
-    constructor(id, index, text, fileId) {
+    constructor(
+        id,
+        index,
+        text,
+        fileId,
+        isSelected = false,
+        targets = [],
+        questions = []
+    ) {
         super(Description.baseRoute());
         this.id = id;
         this.index = index;
         this.text = text;
         this.fileId = fileId;
+        this.isSelected = isSelected;
+        this.targets = targets;
+        this.questions = questions;
     }
 
     parameters() {
@@ -55,5 +66,29 @@ export default class Description extends Model {
 
     set fileId(value) {
         this._fileId = value;
+    }
+
+    get isSelected() {
+        return this._isSelected;
+    }
+
+    set isSelected(value) {
+        this._isSelected = value;
+    }
+
+    get targets() {
+        return this._targets;
+    }
+
+    set targets(value) {
+        this._targets = value;
+    }
+
+    get questions() {
+        return this._questions;
+    }
+
+    set questions(value) {
+        this._questions = value;
     }
 }

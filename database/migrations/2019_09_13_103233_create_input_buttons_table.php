@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateQuestionsTable extends Migration
+class CreateInputButtonsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,16 @@ class CreateQuestionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('questions', function (Blueprint $table) {
+        Schema::create('input_buttons', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->smallInteger("index")->unsigned();
             $table->smallInteger("start_index")->unsigned();
             $table->smallInteger("end_index")->unsigned();
-            $table->bigInteger("description_id")->unsigned();
+            $table->bigInteger("question_id")->unsigned();
             $table->timestamps();
-            $table->foreign("description_id")->references("id")->on("descriptions")->onUpdate("cascade")->onDelete("cascade");
-            $table->unique(["start_index", "end_index", "description_id"]);
+            $table->unique(["question_id", "index"]);
+            $table->unique(["question_id", "start_index", "end_index"]);
+            $table->foreign("question_id")->references("id")->on("questions")->onUpdate("cascade")->onDelete("cascade");
         });
     }
 
@@ -31,6 +33,6 @@ class CreateQuestionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('questions');
+        Schema::dropIfExists('input_buttons');
     }
 }

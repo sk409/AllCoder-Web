@@ -2,18 +2,12 @@
 
 namespace App;
 
-use App\File;
 use App\Description;
 use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    protected $fillable = ["start_index", "end_index", "file_id"];
-
-    public function file()
-    {
-        return $this->belongsTo(File::class);
-    }
+    protected $fillable = ["start_index", "end_index", "description_id"];
 
     public function description()
     {

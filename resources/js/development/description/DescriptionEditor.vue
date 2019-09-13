@@ -1,6 +1,6 @@
 <template>
   <div id="description" class="w-100 h-100">
-    <transition name="slide-up" @after-leave="onAfterLeaveSlideUpEditingView">
+    <transition name="slide-up">
       <div id="description-editing-view" class="w-100 h-100" v-show="editingView.isShown">
         <div
           id="description-editing-header"
@@ -28,7 +28,7 @@
       </div>
     </transition>
     <transition name="slide-down" @after-leave="onAfterLeaveSlideDownDescriptionList">
-      <div class="w-100 h-100" v-show="descriptionList.isShown">
+      <div class="w-100 h-100" v-show="!selectedDescription">
         <div
           id="description-list-header"
           class="d-flex align-items-center border-bottom border-dark"
@@ -42,7 +42,7 @@
             class="border-bottom"
             v-for="description in descriptions"
             :key="description.id"
-            @click="onSlideDownDescriptionList(description.id)"
+            @click="onSelecteDescription(description.id)"
           >
             {{description.index}}:
             <pre>{{description.text}}</pre>
@@ -62,13 +62,11 @@ export default {
     lessonId: Number,
     file: Object,
     imageUrls: Object,
+    selectedDescription: Object,
     descriptions: Array
   },
   data: function() {
     return {
-      descriptionList: {
-        isShown: true
-      },
       editingView: {
         isShown: false,
         description: Object
@@ -90,33 +88,24 @@ export default {
             return;
           }
           File.index({ lesson_id: that.lessonId }, response => {
-            console.log(response);
             const index =
               Math.max(...response.data.map(file => file.index)) + 1;
             that.file.index = index;
             that.file.update();
-            console.log("new index: " + index);
           });
         });
       });
       this.descriptions.push(description);
     },
-    onSlideDownDescriptionList(descriptionId) {
-      this.descriptionList.isShown = false;
-      this.editingView.description = this.descriptions.find(
-        description => description.id === descriptionId
-      );
-      this.$emit("set-selected-description", this.editingView.description);
+    onSelecteDescription(descriptionId) {
+      this.$emit("select-description", descriptionId);
     },
     onInputDescription(e) {
       this.editingView.description.text = e.target.value;
       this.delayedUpdate();
     },
     onCloseEditingView() {
-      this.editingView.isShown = false;
-    },
-    onAfterLeaveSlideUpEditingView() {
-      this.descriptionList.isShown = true;
+      this.$emit("select-description", null);
     },
     onAfterLeaveSlideDownDescriptionList() {
       this.editingView.isShown = true;

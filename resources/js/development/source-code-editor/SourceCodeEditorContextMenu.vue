@@ -7,13 +7,13 @@
     <button
       type="button"
       class="btn btn-light"
-      v-show="isTextSelected"
+      v-show="isTextSelected && selectedDescription"
       @click="onStoreQuestion"
     >問題に追加</button>
     <button
       type="button"
       class="btn btn-light"
-      v-show="selectedDescription"
+      v-show="isTextSelected && selectedDescription"
       @click="onStoreDescriptionTarget"
     >説明対象に追加</button>
     <button type="button" class="btn btn-light">テストボタン</button>
@@ -42,7 +42,7 @@ export default {
         null,
         this.startIndex,
         this.endIndex,
-        this.file.id,
+        this.selectedDescription.id,
         answer
       );
       question.store();

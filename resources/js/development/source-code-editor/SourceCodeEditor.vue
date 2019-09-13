@@ -40,6 +40,7 @@ export default {
   },
   methods: {
     oninput(e) {
+      console.log(this.questions.length);
       const that = this;
       const selectionStart = e.target.selectionStart;
       const selectedRangeBeforeInput = this.selectedRangeBeforeInput
@@ -62,7 +63,7 @@ export default {
         (e.inputType === "insertCompositionText" &&
           e.target.value.length - this.lastTextLength === 1)
       ) {
-        console.log("insertText");
+        // console.log("insertText");
         this.inputQueue.then(function() {
           that.insertText(selectedRangeBeforeInput, selectionStart);
         });
@@ -71,7 +72,7 @@ export default {
         (e.inputType === "insertCompositionText" &&
           this.lastTextLength - e.target.value.length === 1)
       ) {
-        console.log("deleteContentBackward");
+        // console.log("deleteContentBackward");
         this.inputQueue.then(function() {
           that.deleteContentBackward(selectedRangeBeforeInput, selectionStart);
         });
@@ -123,17 +124,17 @@ export default {
         selectedRangeBeforeInput.start === selectedRangeBeforeInput.end
       ) {
         const caretPosition = selectionStart - 1;
-        console.log(caretPosition);
+        // console.log(caretPosition);
         this.questions.concat(this.descriptionTargets).forEach(item => {
           // console.log(item.startIndex);
           let updated = false;
           if (caretPosition <= item.startIndex) {
-            console.log("START");
+            // console.log("START");
             ++item.startIndex;
             updated = true;
           }
           if (caretPosition < item.endIndex) {
-            console.log("END");
+            // console.log("END");
             ++item.endIndex;
             updated = true;
           }

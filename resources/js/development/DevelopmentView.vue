@@ -34,7 +34,7 @@
               class="w-100 h-100"
               :file="file"
               :questions="questions"
-              :description-targets="description.targets"
+              :description-targets="descriptionTargets"
               @show-context-menu.stop.prevent="onShowSourceCodeEditorContextMenu"
             ></source-code-editor>
           </div>
@@ -51,10 +51,11 @@
             <description-editor
               v-show="file"
               :lesson-id="lesson.id"
-              :descriptions="description.descriptions"
               :file="file"
               :image-urls="imageUrls"
-              @set-selected-description="onSetSelectedDescription"
+              :selected-description="selectedDescription"
+              :descriptions="descriptions"
+              @select-description="onSelectDescription"
             ></description-editor>
           </div>
         </div>
@@ -83,8 +84,7 @@
       :end-index="sourceCodeEditor.contextMenu.selection.endIndex"
       :file="file"
       :questions="questions"
-      :description-targets="description.targets"
-      :selected-description="description.selectedDescription"
+      :selected-description="selectedDescription"
     ></source-code-editor-context-menu>
   </div>
 </template>
@@ -105,18 +105,22 @@ import SourceCodeEditorContextMenu from "./source-code-editor/SourceCodeEditorCo
 export default {
   name: "development-view",
   props: {
-    // lessonId: Number,
-    // lessonTitle: String,
-    // plusButtonUrl: String,
-    // prevButtonUrl: String,
-    // nextButtonUrl: String,
-    // crossButtonUrl: String
     lesson: Object,
     imageUrls: Object
+  },
+  components: {
+    FileTreeContextMenu,
+    FileTree,
+    FileCreationView,
+    SourceCodeEditorContextMenu,
+    QuestionItem,
+    SourceCodeEditor,
+    DescriptionEditor
   },
   data: function() {
     return {
       file: null,
+      descriptions: null,
       fileCreationView: {
         isShown: false
       },
@@ -137,26 +141,28 @@ export default {
           top: 0,
           selection: {}
         }
-      },
-      questions: [],
-      description: {
-        selectedDescription: null,
-        descriptions: [],
-        targets: []
       }
     };
   },
-  components: {
-    FileTreeContextMenu,
-    FileTree,
-    FileCreationView,
-    SourceCodeEditorContextMenu,
-    QuestionItem,
-    SourceCodeEditor,
-    DescriptionEditor
-  },
   created() {
     this.fileTree.items = File.index({ lesson_id: this.lesson.id });
+  },
+  computed: {
+    questions() {
+      return this.descriptions
+        ? this.descriptions.map(description => description.questions).flat()
+        : [];
+    },
+    descriptionTargets() {
+      return this.descriptions
+        ? this.descriptions.map(description => description.targets).flat()
+        : [];
+    },
+    selectedDescription() {
+      return this.descriptions
+        ? this.descriptions.find(description => description.isSelected)
+        : null;
+    }
   },
   methods: {
     onclick() {
@@ -167,45 +173,42 @@ export default {
     onundo() {
       alert("ごめんなさい!UNDO機能はまだ実装していません。");
     },
-    onSetSelectedDescription(selectedDescription) {
-      this.description.selectedDescription = selectedDescription;
+    onSelectDescription(id) {
+      const that = this;
+      const unselectDescriptions = function() {
+        that.descriptions.forEach(description => {
+          description.isSelected = false;
+        });
+      };
+      if (isNull(id)) {
+        unselectDescriptions();
+        return;
+      }
+      const description = this.descriptions.find(
+        description => description.id === id
+      );
+      if (!description) {
+        return;
+      }
+      unselectDescriptions();
+      description.isSelected = true;
     },
     onSetFile(file) {
       this.file = file;
       const that = this;
-      Question.index({ file_id: file.id }, response => {
-        that.questions = response.data.map(question => {
-          return new Question(
-            question.id,
-            question.start_index,
-            question.end_index,
-            question.file_id,
-            file.text.substring(question.start_index, question.end_index)
-          );
-        });
-      });
       Description.index({ file_id: file.id }, response => {
-        that.description.descriptions = response.data.map(description => {
-          return new Description(
-            description.id,
-            description.index,
-            description.text,
-            description.file_id
+        that.descriptions = response.data.map(data => {
+          const description = new Description(
+            data.id,
+            data.index,
+            data.text,
+            data.file_id
           );
-        });
-        that.description.targets = [];
-        that.description.descriptions.forEach(description => {
           DescriptionTarget.index(
             { description_id: description.id },
             response => {
-              that.description.targets.push(
+              description.targets.push(
                 ...response.data.map(descriptionTarget => {
-                  console.log(
-                    this.file.text.substring(
-                      descriptionTarget.start_index,
-                      descriptionTarget.end_index
-                    )
-                  );
                   return new DescriptionTarget(
                     descriptionTarget.id,
                     descriptionTarget.start_index,
@@ -214,8 +217,25 @@ export default {
                   );
                 })
               );
+              Question.index({ description_id: description.id }, response => {
+                description.questions.push(
+                  ...response.data.map(question => {
+                    return new Question(
+                      question.id,
+                      question.start_index,
+                      question.end_index,
+                      question.description_id,
+                      that.file.text.substring(
+                        question.start_index,
+                        question.end_index
+                      )
+                    );
+                  })
+                );
+              });
             }
           );
+          return description;
         });
       });
       this.sourceCodeEditor.disabled = false;

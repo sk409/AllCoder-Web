@@ -1962,18 +1962,22 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "development-view",
   props: {
-    // lessonId: Number,
-    // lessonTitle: String,
-    // plusButtonUrl: String,
-    // prevButtonUrl: String,
-    // nextButtonUrl: String,
-    // crossButtonUrl: String
     lesson: Object,
     imageUrls: Object
+  },
+  components: {
+    FileTreeContextMenu: _file_tree_FileTreeContextMenu_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
+    FileTree: _file_tree_FileTree_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
+    FileCreationView: _file_tree_FileCreationView_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    SourceCodeEditorContextMenu: _source_code_editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_10__["default"],
+    QuestionItem: _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_8__["default"],
+    SourceCodeEditor: _source_code_editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_9__["default"],
+    DescriptionEditor: _description_DescriptionEditor_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   data: function data() {
     return {
       file: null,
+      descriptions: null,
       fileCreationView: {
         isShown: false
       },
@@ -1994,28 +1998,30 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           top: 0,
           selection: {}
         }
-      },
-      questions: [],
-      description: {
-        selectedDescription: null,
-        descriptions: [],
-        targets: []
       }
     };
-  },
-  components: {
-    FileTreeContextMenu: _file_tree_FileTreeContextMenu_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
-    FileTree: _file_tree_FileTree_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
-    FileCreationView: _file_tree_FileCreationView_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
-    SourceCodeEditorContextMenu: _source_code_editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_10__["default"],
-    QuestionItem: _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_8__["default"],
-    SourceCodeEditor: _source_code_editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_9__["default"],
-    DescriptionEditor: _description_DescriptionEditor_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   created: function created() {
     this.fileTree.items = _models_File_js__WEBPACK_IMPORTED_MODULE_3__["default"].index({
       lesson_id: this.lesson.id
     });
+  },
+  computed: {
+    questions: function questions() {
+      return this.descriptions ? this.descriptions.map(function (description) {
+        return description.questions;
+      }).flat() : [];
+    },
+    descriptionTargets: function descriptionTargets() {
+      return this.descriptions ? this.descriptions.map(function (description) {
+        return description.targets;
+      }).flat() : [];
+    },
+    selectedDescription: function selectedDescription() {
+      return this.descriptions ? this.descriptions.find(function (description) {
+        return description.isSelected;
+      }) : null;
+    }
   },
   methods: {
     onclick: function onclick() {
@@ -2026,39 +2032,59 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     onundo: function onundo() {
       alert("ごめんなさい!UNDO機能はまだ実装していません。");
     },
-    onSetSelectedDescription: function onSetSelectedDescription(selectedDescription) {
-      this.description.selectedDescription = selectedDescription;
+    onSelectDescription: function onSelectDescription(id) {
+      var that = this;
+
+      var unselectDescriptions = function unselectDescriptions() {
+        that.descriptions.forEach(function (description) {
+          description.isSelected = false;
+        });
+      };
+
+      if (isNull(id)) {
+        unselectDescriptions();
+        return;
+      }
+
+      var description = this.descriptions.find(function (description) {
+        return description.id === id;
+      });
+
+      if (!description) {
+        return;
+      }
+
+      unselectDescriptions();
+      description.isSelected = true;
     },
     onSetFile: function onSetFile(file) {
-      var _this = this;
-
       this.file = file;
       var that = this;
-      _question_Question_js__WEBPACK_IMPORTED_MODULE_7__["default"].index({
-        file_id: file.id
-      }, function (response) {
-        that.questions = response.data.map(function (question) {
-          return new _question_Question_js__WEBPACK_IMPORTED_MODULE_7__["default"](question.id, question.start_index, question.end_index, question.file_id, file.text.substring(question.start_index, question.end_index));
-        });
-      });
       _description_Description_js__WEBPACK_IMPORTED_MODULE_0__["default"].index({
         file_id: file.id
       }, function (response) {
-        that.description.descriptions = response.data.map(function (description) {
-          return new _description_Description_js__WEBPACK_IMPORTED_MODULE_0__["default"](description.id, description.index, description.text, description.file_id);
-        });
-        that.description.targets = [];
-        that.description.descriptions.forEach(function (description) {
+        that.descriptions = response.data.map(function (data) {
+          var description = new _description_Description_js__WEBPACK_IMPORTED_MODULE_0__["default"](data.id, data.index, data.text, data.file_id);
           _description_DescriptionTarget_js__WEBPACK_IMPORTED_MODULE_2__["default"].index({
             description_id: description.id
           }, function (response) {
-            var _that$description$tar;
+            var _description$targets;
 
-            (_that$description$tar = that.description.targets).push.apply(_that$description$tar, _toConsumableArray(response.data.map(function (descriptionTarget) {
-              console.log(_this.file.text.substring(descriptionTarget.start_index, descriptionTarget.end_index));
+            (_description$targets = description.targets).push.apply(_description$targets, _toConsumableArray(response.data.map(function (descriptionTarget) {
               return new _description_DescriptionTarget_js__WEBPACK_IMPORTED_MODULE_2__["default"](descriptionTarget.id, descriptionTarget.start_index, descriptionTarget.end_index, description.id);
             })));
+
+            _question_Question_js__WEBPACK_IMPORTED_MODULE_7__["default"].index({
+              description_id: description.id
+            }, function (response) {
+              var _description$question;
+
+              (_description$question = description.questions).push.apply(_description$question, _toConsumableArray(response.data.map(function (question) {
+                return new _question_Question_js__WEBPACK_IMPORTED_MODULE_7__["default"](question.id, question.start_index, question.end_index, question.description_id, that.file.text.substring(question.start_index, question.end_index));
+              })));
+            });
           });
+          return description;
         });
       });
       this.sourceCodeEditor.disabled = false;
@@ -2170,13 +2196,11 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     lessonId: Number,
     file: Object,
     imageUrls: Object,
+    selectedDescription: Object,
     descriptions: Array
   },
   data: function data() {
     return {
-      descriptionList: {
-        isShown: true
-      },
       editingView: {
         isShown: false,
         description: Object
@@ -2202,34 +2226,25 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           _models_File_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
             lesson_id: that.lessonId
           }, function (response) {
-            console.log(response);
             var index = Math.max.apply(Math, _toConsumableArray(response.data.map(function (file) {
               return file.index;
             }))) + 1;
             that.file.index = index;
             that.file.update();
-            console.log("new index: " + index);
           });
         });
       });
       this.descriptions.push(description);
     },
-    onSlideDownDescriptionList: function onSlideDownDescriptionList(descriptionId) {
-      this.descriptionList.isShown = false;
-      this.editingView.description = this.descriptions.find(function (description) {
-        return description.id === descriptionId;
-      });
-      this.$emit("set-selected-description", this.editingView.description);
+    onSelecteDescription: function onSelecteDescription(descriptionId) {
+      this.$emit("select-description", descriptionId);
     },
     onInputDescription: function onInputDescription(e) {
       this.editingView.description.text = e.target.value;
       this.delayedUpdate();
     },
     onCloseEditingView: function onCloseEditingView() {
-      this.editingView.isShown = false;
-    },
-    onAfterLeaveSlideUpEditingView: function onAfterLeaveSlideUpEditingView() {
-      this.descriptionList.isShown = true;
+      this.$emit("select-description", null);
     },
     onAfterLeaveSlideDownDescriptionList: function onAfterLeaveSlideDownDescriptionList() {
       this.editingView.isShown = true;
@@ -2757,6 +2772,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     oninput: function oninput(e) {
+      console.log(this.questions.length);
       var that = this;
       var selectionStart = e.target.selectionStart;
       var selectedRangeBeforeInput = this.selectedRangeBeforeInput ? {
@@ -2766,12 +2782,12 @@ __webpack_require__.r(__webpack_exports__);
       // console.log(that.lastTextLength);
 
       if (e.inputType === "insertText" || e.inputType === "insertLineBreak" || e.inputType === "insertCompositionText" && this.lastTextLength === null || e.inputType === "insertCompositionText" && selectedRangeBeforeInput !== null && 0 < selectedRangeBeforeInput.end - selectedRangeBeforeInput.start || e.inputType === "insertCompositionText" && e.target.value.length - this.lastTextLength === 1) {
-        console.log("insertText");
+        // console.log("insertText");
         this.inputQueue.then(function () {
           that.insertText(selectedRangeBeforeInput, selectionStart);
         });
       } else if (e.inputType === "deleteContentBackward" || e.inputType === "insertCompositionText" && this.lastTextLength - e.target.value.length === 1) {
-        console.log("deleteContentBackward");
+        // console.log("deleteContentBackward");
         this.inputQueue.then(function () {
           that.deleteContentBackward(selectedRangeBeforeInput, selectionStart);
         });
@@ -2818,20 +2834,20 @@ __webpack_require__.r(__webpack_exports__);
       var that = this;
 
       if (selectedRangeBeforeInput === null || selectedRangeBeforeInput.start === selectedRangeBeforeInput.end) {
-        var caretPosition = selectionStart - 1;
-        console.log(caretPosition);
+        var caretPosition = selectionStart - 1; // console.log(caretPosition);
+
         this.questions.concat(this.descriptionTargets).forEach(function (item) {
           // console.log(item.startIndex);
           var updated = false;
 
           if (caretPosition <= item.startIndex) {
-            console.log("START");
+            // console.log("START");
             ++item.startIndex;
             updated = true;
           }
 
           if (caretPosition < item.endIndex) {
-            console.log("END");
+            // console.log("END");
             ++item.endIndex;
             updated = true;
           }
@@ -3132,7 +3148,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     onStoreQuestion: function onStoreQuestion() {
       var answer = this.file.text.substring(this.startIndex, this.endIndex);
-      var question = new _question_Question_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, this.startIndex, this.endIndex, this.file.id, answer);
+      var question = new _question_Question_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, this.startIndex, this.endIndex, this.selectedDescription.id, answer);
       question.store();
       this.questions.push(question);
     },
@@ -5805,7 +5821,7 @@ var render = function() {
                       id: "source-code-editor",
                       file: _vm.file,
                       questions: _vm.questions,
-                      "description-targets": _vm.description.targets
+                      "description-targets": _vm.descriptionTargets
                     },
                     on: {
                       "show-context-menu": function($event) {
@@ -5855,13 +5871,12 @@ var render = function() {
                     ],
                     attrs: {
                       "lesson-id": _vm.lesson.id,
-                      descriptions: _vm.description.descriptions,
                       file: _vm.file,
-                      "image-urls": _vm.imageUrls
+                      "image-urls": _vm.imageUrls,
+                      "selected-description": _vm.selectedDescription,
+                      descriptions: _vm.descriptions
                     },
-                    on: {
-                      "set-selected-description": _vm.onSetSelectedDescription
-                    }
+                    on: { "select-description": _vm.onSelectDescription }
                   })
                 ],
                 1
@@ -5926,8 +5941,7 @@ var render = function() {
           "end-index": _vm.sourceCodeEditor.contextMenu.selection.endIndex,
           file: _vm.file,
           questions: _vm.questions,
-          "description-targets": _vm.description.targets,
-          "selected-description": _vm.description.selectedDescription
+          "selected-description": _vm.selectedDescription
         }
       })
     ],
@@ -5960,79 +5974,70 @@ var render = function() {
     "div",
     { staticClass: "w-100 h-100", attrs: { id: "description" } },
     [
-      _c(
-        "transition",
-        {
-          attrs: { name: "slide-up" },
-          on: { "after-leave": _vm.onAfterLeaveSlideUpEditingView }
-        },
-        [
-          _c(
-            "div",
-            {
-              directives: [
-                {
-                  name: "show",
-                  rawName: "v-show",
-                  value: _vm.editingView.isShown,
-                  expression: "editingView.isShown"
-                }
-              ],
-              staticClass: "w-100 h-100",
-              attrs: { id: "description-editing-view" }
-            },
-            [
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "d-flex align-items-center border-bottom border-dark",
-                  attrs: { id: "description-editing-header" }
-                },
-                [
-                  _c("div", [
-                    _vm._v(_vm._s(_vm.editingView.description.index))
-                  ]),
-                  _vm._v(" "),
-                  _c("button", { staticClass: "ml-auto" }, [
+      _c("transition", { attrs: { name: "slide-up" } }, [
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.editingView.isShown,
+                expression: "editingView.isShown"
+              }
+            ],
+            staticClass: "w-100 h-100",
+            attrs: { id: "description-editing-view" }
+          },
+          [
+            _c(
+              "div",
+              {
+                staticClass:
+                  "d-flex align-items-center border-bottom border-dark",
+                attrs: { id: "description-editing-header" }
+              },
+              [
+                _c("div", [_vm._v(_vm._s(_vm.editingView.description.index))]),
+                _vm._v(" "),
+                _c("button", { staticClass: "ml-auto" }, [
+                  _c("img", {
+                    attrs: { src: _vm.imageUrls.prevButton, alt: "前" }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("button", { staticClass: "ml-3" }, [
+                  _c("img", {
+                    attrs: { src: _vm.imageUrls.nextButton, alt: "次" }
+                  })
+                ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "ml-3 mr-2",
+                    on: { click: _vm.onCloseEditingView }
+                  },
+                  [
                     _c("img", {
-                      attrs: { src: _vm.imageUrls.prevButton, alt: "前" }
+                      attrs: { src: _vm.imageUrls.crossButton, alt: "閉じる" }
                     })
-                  ]),
-                  _vm._v(" "),
-                  _c("button", { staticClass: "ml-3" }, [
-                    _c("img", {
-                      attrs: { src: _vm.imageUrls.nextButton, alt: "次" }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "ml-3 mr-2",
-                      on: { click: _vm.onCloseEditingView }
-                    },
-                    [
-                      _c("img", {
-                        attrs: { src: _vm.imageUrls.crossButton, alt: "閉じる" }
-                      })
-                    ]
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c("div", { attrs: { id: "description-editing-body" } }, [
-                _c("textarea", {
-                  staticClass: "w-100 h-100",
-                  attrs: { id: "description-editor" },
-                  domProps: { value: _vm.editingView.description.text },
-                  on: { input: _vm.onInputDescription }
-                })
-              ])
-            ]
-          )
-        ]
-      ),
+                  ]
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c("div", { attrs: { id: "description-editing-body" } }, [
+              _c("textarea", {
+                staticClass: "w-100 h-100",
+                attrs: { id: "description-editor" },
+                domProps: { value: _vm.editingView.description.text },
+                on: { input: _vm.onInputDescription }
+              })
+            ])
+          ]
+        )
+      ]),
       _vm._v(" "),
       _c(
         "transition",
@@ -6048,8 +6053,8 @@ var render = function() {
                 {
                   name: "show",
                   rawName: "v-show",
-                  value: _vm.descriptionList.isShown,
-                  expression: "descriptionList.isShown"
+                  value: !_vm.selectedDescription,
+                  expression: "!selectedDescription"
                 }
               ],
               staticClass: "w-100 h-100"
@@ -6089,7 +6094,7 @@ var render = function() {
                       staticClass: "border-bottom",
                       on: {
                         click: function($event) {
-                          return _vm.onSlideDownDescriptionList(description.id)
+                          return _vm.onSelecteDescription(description.id)
                         }
                       }
                     },
@@ -6584,8 +6589,8 @@ var render = function() {
             {
               name: "show",
               rawName: "v-show",
-              value: _vm.isTextSelected,
-              expression: "isTextSelected"
+              value: _vm.isTextSelected && _vm.selectedDescription,
+              expression: "isTextSelected && selectedDescription"
             }
           ],
           staticClass: "btn btn-light",
@@ -6602,8 +6607,8 @@ var render = function() {
             {
               name: "show",
               rawName: "v-show",
-              value: _vm.selectedDescription,
-              expression: "selectedDescription"
+              value: _vm.isTextSelected && _vm.selectedDescription,
+              expression: "isTextSelected && selectedDescription"
             }
           ],
           staticClass: "btn btn-light",
@@ -6886,6 +6891,10 @@ function (_Model) {
   function Description(id, index, text, fileId) {
     var _this;
 
+    var isSelected = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    var targets = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : [];
+    var questions = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : [];
+
     _classCallCheck(this, Description);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Description).call(this, Description.baseRoute()));
@@ -6893,6 +6902,9 @@ function (_Model) {
     _this.index = index;
     _this.text = text;
     _this.fileId = fileId;
+    _this.isSelected = isSelected;
+    _this.targets = targets;
+    _this.questions = questions;
     return _this;
   }
 
@@ -6936,6 +6948,30 @@ function (_Model) {
     },
     set: function set(value) {
       this._fileId = value;
+    }
+  }, {
+    key: "isSelected",
+    get: function get() {
+      return this._isSelected;
+    },
+    set: function set(value) {
+      this._isSelected = value;
+    }
+  }, {
+    key: "targets",
+    get: function get() {
+      return this._targets;
+    },
+    set: function set(value) {
+      this._targets = value;
+    }
+  }, {
+    key: "questions",
+    get: function get() {
+      return this._questions;
+    },
+    set: function set(value) {
+      this._questions = value;
     }
   }]);
 
@@ -7488,7 +7524,7 @@ function (_Model) {
     }
   }]);
 
-  function Question(id, startIndex, endIndex, fileId, answer) {
+  function Question(id, startIndex, endIndex, descriptionId, answer) {
     var _this;
 
     _classCallCheck(this, Question);
@@ -7497,7 +7533,7 @@ function (_Model) {
     _this.id = id;
     _this.startIndex = startIndex;
     _this.endIndex = endIndex;
-    _this.fileId = fileId;
+    _this.descriptionId = descriptionId;
     _this.answer = answer;
     _this.hasUpdated = false;
     _this.hasDeleted = false;
@@ -7510,7 +7546,7 @@ function (_Model) {
       return {
         start_index: this.startIndex,
         end_index: this.endIndex,
-        file_id: this.fileId
+        description_id: this.descriptionId
       };
     }
   }, {
@@ -7538,12 +7574,12 @@ function (_Model) {
       this._endIndex = value;
     }
   }, {
-    key: "fileId",
+    key: "descriptionId",
     get: function get() {
-      return this._fileId;
+      return this._descriptionId;
     },
     set: function set(value) {
-      this._fileId = value;
+      this._descriptionId = value;
     }
   }, {
     key: "answer",

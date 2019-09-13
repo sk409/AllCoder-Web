@@ -9,12 +9,12 @@ export default class Question extends Model {
         Model.index(Question.baseRoute(), parameters, completion);
     }
 
-    constructor(id, startIndex, endIndex, fileId, answer) {
+    constructor(id, startIndex, endIndex, descriptionId, answer) {
         super(Question.baseRoute());
         this.id = id;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
-        this.fileId = fileId;
+        this.descriptionId = descriptionId;
         this.answer = answer;
         this.hasUpdated = false;
         this.hasDeleted = false;
@@ -24,7 +24,7 @@ export default class Question extends Model {
         return {
             start_index: this.startIndex,
             end_index: this.endIndex,
-            file_id: this.fileId
+            description_id: this.descriptionId
         };
     }
 
@@ -52,12 +52,12 @@ export default class Question extends Model {
         this._endIndex = value;
     }
 
-    get fileId() {
-        return this._fileId;
+    get descriptionId() {
+        return this._descriptionId;
     }
 
-    set fileId(value) {
-        this._fileId = value;
+    set descriptionId(value) {
+        this._descriptionId = value;
     }
 
     get answer() {

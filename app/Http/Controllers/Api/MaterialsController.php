@@ -113,8 +113,14 @@ class MaterialsController extends Controller
                                 $stdQuestion->updated_at = $question->updated_at;
                                 $stdDescription->questions[] = $stdQuestion;
                             }
+                            usort($stdDescription->questions, function ($a, $b) {
+                                return $a->start_index - $b->end_index;
+                            });
                             $stdFile->descriptions[] = $stdDescription;
                         }
+                        usort($stdFile->descriptions, function ($a, $b) {
+                            return $a->index - $b->index;
+                        });
                         $stdFolder->child_files[] = $stdFile;
                     }
                     usort($stdFolder->child_files, function ($a, $b) {
