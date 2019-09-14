@@ -18,6 +18,7 @@ class DescriptionTargetsController extends Controller
 
     public function store(Request $request)
     {
+        //return $request->all();
         $descriptionTarget = DescriptionTarget::create($request->all());
         return $descriptionTarget->id;
     }

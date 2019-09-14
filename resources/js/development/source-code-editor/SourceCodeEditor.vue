@@ -40,7 +40,6 @@ export default {
   },
   methods: {
     oninput(e) {
-      console.log(this.questions.length);
       const that = this;
       const selectionStart = e.target.selectionStart;
       const selectedRangeBeforeInput = this.selectedRangeBeforeInput
@@ -420,11 +419,11 @@ export default {
           return;
         }
         item.update();
+        const text = that.file.text.substring(item.startIndex, item.endIndex);
         if (item instanceof Question) {
-          item.answer = that.file.text.substring(
-            item.startIndex,
-            item.endIndex
-          );
+          item.answer = text;
+        } else {
+          item.text = text;
         }
         item.hasUpdated = false;
       });

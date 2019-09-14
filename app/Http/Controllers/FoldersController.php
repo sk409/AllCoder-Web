@@ -23,6 +23,7 @@ class FoldersController extends Controller
         if ($parameters["name"] === null) {
             $parameters["name"] = "";
         }
+        //return $parameters;
         $folder = Folder::create($parameters);
         return $folder->id;
     }

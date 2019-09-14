@@ -21,8 +21,9 @@
 </template>
 
 <script>
-import Question from "../question/Question.js";
 import DescriptionTarget from "../description/DescriptionTarget";
+import InputButton from "../question/InputButton.js";
+import Question from "../question/Question.js";
 export default {
   name: "source-code-editor-context-menu",
   props: {
@@ -45,18 +46,117 @@ export default {
         this.selectedDescription.id,
         answer
       );
-      question.store();
-      this.questions.push(question);
+      const that = this;
+      question.store(response => {
+        that.questions.push(question);
+        const lineRegex = /\n/g;
+        let lineMatch = lineRegex.exec(answer);
+        let lineStartIndex = 0;
+        let inputButtonIndex = 0;
+        while (true) {
+          const storeInputButton = function(line) {
+            console.log("*************");
+            console.log(line);
+            console.log("*************");
+            const spaceRegex = / /g;
+            let spaceMatch = spaceRegex.exec(line);
+            let spaceStartIndex = 0;
+            while (true) {
+              if (!spaceMatch) {
+                const startIndex = lineStartIndex + spaceStartIndex;
+                let endIndex = lineMatch ? lineMatch.index : answer.length;
+                if (startIndex === endIndex) {
+                  ++endIndex;
+                }
+                const inputButton = new InputButton(
+                  null,
+                  inputButtonIndex,
+                  startIndex,
+                  endIndex,
+                  question.id
+                );
+                ++inputButtonIndex;
+                inputButton.store();
+                console.log(
+                  that.file.text.substring(
+                    question.startIndex + inputButton.startIndex,
+                    question.startIndex + inputButton.endIndex
+                  )
+                );
+                break;
+              }
+              const startIndex = lineStartIndex + spaceStartIndex;
+              let endIndex = lineStartIndex + spaceMatch.index;
+              if (startIndex === endIndex) {
+                ++endIndex;
+              }
+              const inputButton = new InputButton(
+                null,
+                inputButtonIndex,
+                startIndex,
+                endIndex,
+                question.id
+              );
+              ++inputButtonIndex;
+              inputButton.store();
+              console.log(
+                that.file.text.substring(
+                  question.startIndex + inputButton.startIndex,
+                  question.startIndex + inputButton.endIndex
+                )
+              );
+              if (spaceStartIndex !== spaceMatch.index) {
+                const spaceButton = new InputButton(
+                  null,
+                  inputButtonIndex,
+                  lineStartIndex + spaceMatch.index,
+                  lineStartIndex + spaceMatch.index + 1,
+                  question.id
+                );
+                ++inputButtonIndex;
+                spaceButton.store();
+                console.log(
+                  that.file.text.substring(
+                    question.startIndex + spaceButton.startIndex,
+                    question.startIndex + spaceButton.endIndex
+                  )
+                );
+              }
+              spaceStartIndex = spaceMatch.index + 1;
+              spaceMatch = spaceRegex.exec(line);
+            }
+            if (line && lineMatch) {
+              const inputButton = new InputButton(
+                null,
+                inputButtonIndex,
+                lineMatch.index,
+                lineMatch.index + 1,
+                question.id
+              );
+              inputButton.store();
+              ++inputButtonIndex;
+            }
+          };
+          if (!lineMatch) {
+            storeInputButton(answer.substring(lineStartIndex));
+            break;
+          }
+          storeInputButton(answer.substring(lineStartIndex, lineMatch.index));
+          lineStartIndex = lineMatch.index + 1;
+          lineMatch = lineRegex.exec(answer);
+        }
+      });
     },
     onStoreDescriptionTarget() {
       const descriptionTarget = new DescriptionTarget(
         null,
         this.startIndex,
         this.endIndex,
-        this.selectedDescription.id
+        this.selectedDescription.id,
+        this.file.text.substring(this.startIndex, this.endIndex)
       );
       descriptionTarget.store();
-      this.descriptionTargets.push(descriptionTarget);
+      this.selectedDescription.targets.push(descriptionTarget);
     },
     isTextSelected() {
       return getSelection().toString().length;

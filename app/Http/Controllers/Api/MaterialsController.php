@@ -103,6 +103,9 @@ class MaterialsController extends Controller
                                 $stdTarget->updated_at = $target->updated_at;
                                 $stdDescription->targets[] = $stdTarget;
                             }
+                            usort($stdDescription->targets, function ($a, $b) {
+                                return $a->start_index - $b->start_index;
+                            });
                             $stdDescription->questions = [];
                             foreach ($description->questions as $question) {
                                 $stdQuestion = new stdClass();
@@ -111,10 +114,21 @@ class MaterialsController extends Controller
                                 $stdQuestion->end_index = $question->end_index;
                                 $stdQuestion->created_at = $question->created_at;
                                 $stdQuestion->updated_at = $question->updated_at;
+                                $stdQuestion->input_buttons = [];
+                                foreach ($question->inputButtons as $inputButton) {
+                                    $stdInputButton = new stdClass();
+                                    $stdInputButton->id = $inputButton->id;
+                                    $stdInputButton->index = $inputButton->index;
+                                    $stdInputButton->start_index = $inputButton->start_index;
+                                    $stdInputButton->end_index = $inputButton->end_index;
+                                    $stdInputButton->created_at = $inputButton->created_at;
+                                    $stdInputButton->updated_at = $inputButton->updated_at;
+                                    $stdQuestion->input_buttons[] = $stdInputButton;
+                                }
                                 $stdDescription->questions[] = $stdQuestion;
                             }
                             usort($stdDescription->questions, function ($a, $b) {
-                                return $a->start_index - $b->end_index;
+                                return $a->start_index - $b->start_index;
                             });
                             $stdFile->descriptions[] = $stdDescription;
                         }
@@ -123,9 +137,6 @@ class MaterialsController extends Controller
                         });
                         $stdFolder->child_files[] = $stdFile;
                     }
-                    usort($stdFolder->child_files, function ($a, $b) {
-                        return $a->index - $b->index;
-                    });
                     if ($stdFolder->parent_folder_id === null) {
                         unset($stdFolder->parent_folder_id);
                         $stdLesson->root_folder = $stdFolder;

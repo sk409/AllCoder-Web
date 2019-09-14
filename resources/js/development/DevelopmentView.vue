@@ -7,11 +7,7 @@
   >
     <div id="development-header" class="d-flex bg-light border-bottom border-dark row">
       <div class="d-flex align-items-center" contenteditable="true">{{ lesson.title }}</div>
-      <div class="ml-3 d-flex align-items-center">
-        <!-- <button class="ml-2" type="button">ファイル</button>
-                <button class="ml-2" type="button">ファイル</button>
-        <button class="ml-2" type="button">ファイル</button>-->
-      </div>
+      <div class="ml-3 d-flex align-items-center"></div>
     </div>
     <div id="development-body" class="row">
       <div class="col-9 h-100 p-0">
@@ -40,12 +36,25 @@
           </div>
         </div>
         <div id="development-body-bottom" class="d-flex">
-          <div id="questions-view" class="w-25 border-right border-dark">
-            <question-item
-              v-for="question in questions"
-              :key="question.id"
-              :answer="question.answer"
-            ></question-item>
+          <div class="w-25 border-right border-dark">
+            <div id="questions">
+              <div>問題</div>
+              <question-item
+                v-for="question in questions"
+                :key="question.id"
+                :question="question"
+                @select-description="onSelectDescription"
+              ></question-item>
+            </div>
+            <div id="description-targets">
+              <div>説明対象</div>
+              <description-target-item
+                v-for="descriptionTarget in descriptionTargets"
+                :key="descriptionTarget.id"
+                :description-target="descriptionTarget"
+                @select-description="onSelectDescription"
+              ></description-target-item>
+            </div>
           </div>
           <div class="w-75">
             <description-editor
@@ -93,6 +102,7 @@
 import Description from "./description/Description.js";
 import DescriptionEditor from "./description/DescriptionEditor.vue";
 import DescriptionTarget from "./description/DescriptionTarget.js";
+import DescriptionTargetItem from "./description/DescriptionTargetItem.vue";
 import File from "../models/File.js";
 import FileCreationView from "./file-tree/FileCreationView.vue";
 import FileTree from "./file-tree/FileTree.vue";
@@ -115,7 +125,8 @@ export default {
     SourceCodeEditorContextMenu,
     QuestionItem,
     SourceCodeEditor,
-    DescriptionEditor
+    DescriptionEditor,
+    DescriptionTargetItem
   },
   data: function() {
     return {
@@ -180,7 +191,7 @@ export default {
           description.isSelected = false;
         });
       };
-      if (isNull(id)) {
+      if (id === null) {
         unselectDescriptions();
         return;
       }
@@ -213,7 +224,11 @@ export default {
                     descriptionTarget.id,
                     descriptionTarget.start_index,
                     descriptionTarget.end_index,
-                    description.id
+                    description.id,
+                    file.text.substring(
+                      descriptionTarget.start_index,
+                      descriptionTarget.end_index
+                    )
                   );
                 })
               );

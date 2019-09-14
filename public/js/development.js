@@ -1841,14 +1841,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _description_Description_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./description/Description.js */ "./resources/js/development/description/Description.js");
 /* harmony import */ var _description_DescriptionEditor_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./description/DescriptionEditor.vue */ "./resources/js/development/description/DescriptionEditor.vue");
 /* harmony import */ var _description_DescriptionTarget_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./description/DescriptionTarget.js */ "./resources/js/development/description/DescriptionTarget.js");
-/* harmony import */ var _models_File_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../models/File.js */ "./resources/js/models/File.js");
-/* harmony import */ var _file_tree_FileCreationView_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./file-tree/FileCreationView.vue */ "./resources/js/development/file-tree/FileCreationView.vue");
-/* harmony import */ var _file_tree_FileTree_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./file-tree/FileTree.vue */ "./resources/js/development/file-tree/FileTree.vue");
-/* harmony import */ var _file_tree_FileTreeContextMenu_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./file-tree/FileTreeContextMenu.vue */ "./resources/js/development/file-tree/FileTreeContextMenu.vue");
-/* harmony import */ var _question_Question_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./question/Question.js */ "./resources/js/development/question/Question.js");
-/* harmony import */ var _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./question/QuestionItem.vue */ "./resources/js/development/question/QuestionItem.vue");
-/* harmony import */ var _source_code_editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./source-code-editor/SourceCodeEditor.vue */ "./resources/js/development/source-code-editor/SourceCodeEditor.vue");
-/* harmony import */ var _source_code_editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./source-code-editor/SourceCodeEditorContextMenu.vue */ "./resources/js/development/source-code-editor/SourceCodeEditorContextMenu.vue");
+/* harmony import */ var _description_DescriptionTargetItem_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./description/DescriptionTargetItem.vue */ "./resources/js/development/description/DescriptionTargetItem.vue");
+/* harmony import */ var _models_File_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../models/File.js */ "./resources/js/models/File.js");
+/* harmony import */ var _file_tree_FileCreationView_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./file-tree/FileCreationView.vue */ "./resources/js/development/file-tree/FileCreationView.vue");
+/* harmony import */ var _file_tree_FileTree_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./file-tree/FileTree.vue */ "./resources/js/development/file-tree/FileTree.vue");
+/* harmony import */ var _file_tree_FileTreeContextMenu_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./file-tree/FileTreeContextMenu.vue */ "./resources/js/development/file-tree/FileTreeContextMenu.vue");
+/* harmony import */ var _question_Question_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./question/Question.js */ "./resources/js/development/question/Question.js");
+/* harmony import */ var _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./question/QuestionItem.vue */ "./resources/js/development/question/QuestionItem.vue");
+/* harmony import */ var _source_code_editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./source-code-editor/SourceCodeEditor.vue */ "./resources/js/development/source-code-editor/SourceCodeEditor.vue");
+/* harmony import */ var _source_code_editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./source-code-editor/SourceCodeEditorContextMenu.vue */ "./resources/js/development/source-code-editor/SourceCodeEditorContextMenu.vue");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -1948,6 +1949,16 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -1966,13 +1977,14 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     imageUrls: Object
   },
   components: {
-    FileTreeContextMenu: _file_tree_FileTreeContextMenu_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
-    FileTree: _file_tree_FileTree_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
-    FileCreationView: _file_tree_FileCreationView_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
-    SourceCodeEditorContextMenu: _source_code_editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_10__["default"],
-    QuestionItem: _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_8__["default"],
-    SourceCodeEditor: _source_code_editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_9__["default"],
-    DescriptionEditor: _description_DescriptionEditor_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+    FileTreeContextMenu: _file_tree_FileTreeContextMenu_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
+    FileTree: _file_tree_FileTree_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
+    FileCreationView: _file_tree_FileCreationView_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
+    SourceCodeEditorContextMenu: _source_code_editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_11__["default"],
+    QuestionItem: _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_9__["default"],
+    SourceCodeEditor: _source_code_editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_10__["default"],
+    DescriptionEditor: _description_DescriptionEditor_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    DescriptionTargetItem: _description_DescriptionTargetItem_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
   data: function data() {
     return {
@@ -2002,7 +2014,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     };
   },
   created: function created() {
-    this.fileTree.items = _models_File_js__WEBPACK_IMPORTED_MODULE_3__["default"].index({
+    this.fileTree.items = _models_File_js__WEBPACK_IMPORTED_MODULE_4__["default"].index({
       lesson_id: this.lesson.id
     });
   },
@@ -2041,7 +2053,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         });
       };
 
-      if (isNull(id)) {
+      if (id === null) {
         unselectDescriptions();
         return;
       }
@@ -2071,16 +2083,16 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             var _description$targets;
 
             (_description$targets = description.targets).push.apply(_description$targets, _toConsumableArray(response.data.map(function (descriptionTarget) {
-              return new _description_DescriptionTarget_js__WEBPACK_IMPORTED_MODULE_2__["default"](descriptionTarget.id, descriptionTarget.start_index, descriptionTarget.end_index, description.id);
+              return new _description_DescriptionTarget_js__WEBPACK_IMPORTED_MODULE_2__["default"](descriptionTarget.id, descriptionTarget.start_index, descriptionTarget.end_index, description.id, file.text.substring(descriptionTarget.start_index, descriptionTarget.end_index));
             })));
 
-            _question_Question_js__WEBPACK_IMPORTED_MODULE_7__["default"].index({
+            _question_Question_js__WEBPACK_IMPORTED_MODULE_8__["default"].index({
               description_id: description.id
             }, function (response) {
               var _description$question;
 
               (_description$question = description.questions).push.apply(_description$question, _toConsumableArray(response.data.map(function (question) {
-                return new _question_Question_js__WEBPACK_IMPORTED_MODULE_7__["default"](question.id, question.start_index, question.end_index, question.description_id, that.file.text.substring(question.start_index, question.end_index));
+                return new _question_Question_js__WEBPACK_IMPORTED_MODULE_8__["default"](question.id, question.start_index, question.end_index, question.description_id, that.file.text.substring(question.start_index, question.end_index));
               })));
             });
           });
@@ -2202,8 +2214,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   data: function data() {
     return {
       editingView: {
-        isShown: false,
-        description: Object
+        isShown: false
       },
       delayedUpdate: _.debounce(this.updateDescription, 500)
     };
@@ -2229,7 +2240,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             var index = Math.max.apply(Math, _toConsumableArray(response.data.map(function (file) {
               return file.index;
             }))) + 1;
-            that.file.index = index;
+            that.file.index = index; //console.log(that.file.index);
+
             that.file.update();
           });
         });
@@ -2240,27 +2252,49 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       this.$emit("select-description", descriptionId);
     },
     onInputDescription: function onInputDescription(e) {
-      this.editingView.description.text = e.target.value;
+      this.selectedDescription.text = e.target.value;
       this.delayedUpdate();
     },
     onCloseEditingView: function onCloseEditingView() {
+      this.editingView.isShown = false;
+    },
+    onAfterLeaveSlideUpEditingView: function onAfterLeaveSlideUpEditingView() {
       this.$emit("select-description", null);
     },
     onAfterLeaveSlideDownDescriptionList: function onAfterLeaveSlideDownDescriptionList() {
       this.editingView.isShown = true;
     },
     updateDescription: function updateDescription() {
-      var _this = this;
+      this.selectedDescription.update();
+    }
+  }
+});
 
-      var description = this.descriptions.find(function (description) {
-        return description.id === _this.editingView.description.id;
-      });
+/***/ }),
 
-      if (!description) {
-        return;
-      }
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/development/description/DescriptionTargetItem.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/development/description/DescriptionTargetItem.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-      description.update();
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: "description-target-item",
+  props: {
+    descriptionTarget: Object
+  },
+  methods: {
+    onclick: function onclick() {
+      this.$emit("select-description", this.descriptionTarget.descriptionId);
     }
   }
 });
@@ -2686,34 +2720,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "question-item",
   props: {
-    answer: String
+    question: Object
   },
   methods: {
     onclick: function onclick() {
-      console.log(this.answer);
-    } // escape(text) {
-    //     if (!text) {
-    //         return;
-    //     }
-    //     return text.replace(/[<>&"'`]/g, function(match) {
-    //         const escape = {
-    //             '<': '&lt;',
-    //             '>': '&gt;',
-    //             '&': '&amp;',
-    //             '"': '&quot;',
-    //             "'": '&#39;',
-    //             '`': '&#x60;'
-    //         };
-    //         return escape[match];
-    //     });
-    // },
-    // nl2br(text) {
-    //     if (!text) {
-    //         return;
-    //     }
-    //     return text.replace(/\r?\n/g, "<br>");
-    // }
-
+      this.$emit("select-description", this.question.descriptionId);
+    }
   }
 });
 
@@ -2772,7 +2784,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     oninput: function oninput(e) {
-      console.log(this.questions.length);
       var that = this;
       var selectionStart = e.target.selectionStart;
       var selectedRangeBeforeInput = this.selectedRangeBeforeInput ? {
@@ -3085,9 +3096,12 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         item.update();
+        var text = that.file.text.substring(item.startIndex, item.endIndex);
 
         if (item instanceof _question_Question_js__WEBPACK_IMPORTED_MODULE_1__["default"]) {
-          item.answer = that.file.text.substring(item.startIndex, item.endIndex);
+          item.answer = text;
+        } else {
+          item.text = text;
         }
 
         item.hasUpdated = false;
@@ -3107,8 +3121,9 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _question_Question_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../question/Question.js */ "./resources/js/development/question/Question.js");
-/* harmony import */ var _description_DescriptionTarget__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../description/DescriptionTarget */ "./resources/js/development/description/DescriptionTarget.js");
+/* harmony import */ var _description_DescriptionTarget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../description/DescriptionTarget */ "./resources/js/development/description/DescriptionTarget.js");
+/* harmony import */ var _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../question/InputButton.js */ "./resources/js/development/question/InputButton.js");
+/* harmony import */ var _question_Question_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../question/Question.js */ "./resources/js/development/question/Question.js");
 //
 //
 //
@@ -3131,6 +3146,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -3148,14 +3164,91 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     onStoreQuestion: function onStoreQuestion() {
       var answer = this.file.text.substring(this.startIndex, this.endIndex);
-      var question = new _question_Question_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, this.startIndex, this.endIndex, this.selectedDescription.id, answer);
-      question.store();
-      this.questions.push(question);
+      var question = new _question_Question_js__WEBPACK_IMPORTED_MODULE_2__["default"](null, this.startIndex, this.endIndex, this.selectedDescription.id, answer);
+      var that = this;
+      question.store(function (response) {
+        that.questions.push(question);
+        var lineRegex = /\n/g;
+        var lineMatch = lineRegex.exec(answer);
+        var lineStartIndex = 0;
+        var inputButtonIndex = 0;
+
+        while (true) {
+          var storeInputButton = function storeInputButton(line) {
+            console.log("*************");
+            console.log(line);
+            console.log("*************");
+            var spaceRegex = / /g;
+            var spaceMatch = spaceRegex.exec(line);
+            var spaceStartIndex = 0;
+
+            while (true) {
+              if (!spaceMatch) {
+                var _startIndex = lineStartIndex + spaceStartIndex;
+
+                var _endIndex = lineMatch ? lineMatch.index : answer.length;
+
+                if (_startIndex === _endIndex) {
+                  ++_endIndex;
+                }
+
+                var _inputButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, _startIndex, _endIndex, question.id);
+
+                ++inputButtonIndex;
+
+                _inputButton.store();
+
+                console.log(that.file.text.substring(question.startIndex + _inputButton.startIndex, question.startIndex + _inputButton.endIndex));
+                break;
+              }
+
+              var startIndex = lineStartIndex + spaceStartIndex;
+              var endIndex = lineStartIndex + spaceMatch.index;
+
+              if (startIndex === endIndex) {
+                ++endIndex;
+              }
+
+              var inputButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, startIndex, endIndex, question.id);
+              ++inputButtonIndex;
+              inputButton.store();
+              console.log(that.file.text.substring(question.startIndex + inputButton.startIndex, question.startIndex + inputButton.endIndex));
+
+              if (spaceStartIndex !== spaceMatch.index) {
+                var spaceButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, lineStartIndex + spaceMatch.index, lineStartIndex + spaceMatch.index + 1, question.id);
+                ++inputButtonIndex;
+                spaceButton.store();
+                console.log(that.file.text.substring(question.startIndex + spaceButton.startIndex, question.startIndex + spaceButton.endIndex));
+              }
+
+              spaceStartIndex = spaceMatch.index + 1;
+              spaceMatch = spaceRegex.exec(line);
+            }
+
+            if (line && lineMatch) {
+              var _inputButton2 = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, lineMatch.index, lineMatch.index + 1, question.id);
+
+              _inputButton2.store();
+
+              ++inputButtonIndex;
+            }
+          };
+
+          if (!lineMatch) {
+            storeInputButton(answer.substring(lineStartIndex));
+            break;
+          }
+
+          storeInputButton(answer.substring(lineStartIndex, lineMatch.index));
+          lineStartIndex = lineMatch.index + 1;
+          lineMatch = lineRegex.exec(answer);
+        }
+      });
     },
     onStoreDescriptionTarget: function onStoreDescriptionTarget() {
-      var descriptionTarget = new _description_DescriptionTarget__WEBPACK_IMPORTED_MODULE_1__["default"](null, this.startIndex, this.endIndex, this.selectedDescription.id);
+      var descriptionTarget = new _description_DescriptionTarget__WEBPACK_IMPORTED_MODULE_0__["default"](null, this.startIndex, this.endIndex, this.selectedDescription.id, this.file.text.substring(this.startIndex, this.endIndex));
       descriptionTarget.store();
-      this.descriptionTargets.push(descriptionTarget);
+      this.selectedDescription.targets.push(descriptionTarget);
     },
     isTextSelected: function isTextSelected() {
       return getSelection().toString().length;
@@ -5841,20 +5934,41 @@ var render = function() {
             "div",
             { staticClass: "d-flex", attrs: { id: "development-body-bottom" } },
             [
-              _c(
-                "div",
-                {
-                  staticClass: "w-25 border-right border-dark",
-                  attrs: { id: "questions-view" }
-                },
-                _vm._l(_vm.questions, function(question) {
-                  return _c("question-item", {
-                    key: question.id,
-                    attrs: { answer: question.answer }
-                  })
-                }),
-                1
-              ),
+              _c("div", { staticClass: "w-25 border-right border-dark" }, [
+                _c(
+                  "div",
+                  { attrs: { id: "questions" } },
+                  [
+                    _c("div", [_vm._v("問題")]),
+                    _vm._v(" "),
+                    _vm._l(_vm.questions, function(question) {
+                      return _c("question-item", {
+                        key: question.id,
+                        attrs: { question: question },
+                        on: { "select-description": _vm.onSelectDescription }
+                      })
+                    })
+                  ],
+                  2
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { attrs: { id: "description-targets" } },
+                  [
+                    _c("div", [_vm._v("説明対象")]),
+                    _vm._v(" "),
+                    _vm._l(_vm.descriptionTargets, function(descriptionTarget) {
+                      return _c("description-target-item", {
+                        key: descriptionTarget.id,
+                        attrs: { "description-target": descriptionTarget },
+                        on: { "select-description": _vm.onSelectDescription }
+                      })
+                    })
+                  ],
+                  2
+                )
+              ]),
               _vm._v(" "),
               _c(
                 "div",
@@ -5974,70 +6088,89 @@ var render = function() {
     "div",
     { staticClass: "w-100 h-100", attrs: { id: "description" } },
     [
-      _c("transition", { attrs: { name: "slide-up" } }, [
-        _c(
-          "div",
-          {
-            directives: [
-              {
-                name: "show",
-                rawName: "v-show",
-                value: _vm.editingView.isShown,
-                expression: "editingView.isShown"
-              }
-            ],
-            staticClass: "w-100 h-100",
-            attrs: { id: "description-editing-view" }
-          },
-          [
-            _c(
-              "div",
-              {
-                staticClass:
-                  "d-flex align-items-center border-bottom border-dark",
-                attrs: { id: "description-editing-header" }
-              },
-              [
-                _c("div", [_vm._v(_vm._s(_vm.editingView.description.index))]),
-                _vm._v(" "),
-                _c("button", { staticClass: "ml-auto" }, [
-                  _c("img", {
-                    attrs: { src: _vm.imageUrls.prevButton, alt: "前" }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("button", { staticClass: "ml-3" }, [
-                  _c("img", {
-                    attrs: { src: _vm.imageUrls.nextButton, alt: "次" }
-                  })
-                ]),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "ml-3 mr-2",
-                    on: { click: _vm.onCloseEditingView }
-                  },
-                  [
+      _c(
+        "transition",
+        {
+          attrs: { name: "slide-up" },
+          on: { "after-leave": _vm.onAfterLeaveSlideUpEditingView }
+        },
+        [
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.editingView.isShown,
+                  expression: "editingView.isShown"
+                }
+              ],
+              staticClass: "w-100 h-100",
+              attrs: { id: "description-editing-view" }
+            },
+            [
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "d-flex align-items-center border-bottom border-dark",
+                  attrs: { id: "description-editing-header" }
+                },
+                [
+                  _c("div", [
+                    _vm._v(
+                      _vm._s(
+                        _vm.selectedDescription
+                          ? _vm.selectedDescription.index + 1
+                          : 0
+                      )
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("button", { staticClass: "ml-auto" }, [
                     _c("img", {
-                      attrs: { src: _vm.imageUrls.crossButton, alt: "閉じる" }
+                      attrs: { src: _vm.imageUrls.prevButton, alt: "前" }
                     })
-                  ]
-                )
-              ]
-            ),
-            _vm._v(" "),
-            _c("div", { attrs: { id: "description-editing-body" } }, [
-              _c("textarea", {
-                staticClass: "w-100 h-100",
-                attrs: { id: "description-editor" },
-                domProps: { value: _vm.editingView.description.text },
-                on: { input: _vm.onInputDescription }
-              })
-            ])
-          ]
-        )
-      ]),
+                  ]),
+                  _vm._v(" "),
+                  _c("button", { staticClass: "ml-3" }, [
+                    _c("img", {
+                      attrs: { src: _vm.imageUrls.nextButton, alt: "次" }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "ml-3 mr-2",
+                      on: { click: _vm.onCloseEditingView }
+                    },
+                    [
+                      _c("img", {
+                        attrs: { src: _vm.imageUrls.crossButton, alt: "閉じる" }
+                      })
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c("div", { attrs: { id: "description-editing-body" } }, [
+                _c("textarea", {
+                  staticClass: "w-100 h-100",
+                  attrs: { id: "description-editor" },
+                  domProps: {
+                    value: _vm.selectedDescription
+                      ? _vm.selectedDescription.text
+                      : ""
+                  },
+                  on: { input: _vm.onInputDescription }
+                })
+              ])
+            ]
+          )
+        ]
+      ),
       _vm._v(" "),
       _c(
         "transition",
@@ -6101,7 +6234,7 @@ var render = function() {
                     [
                       _vm._v(
                         "\n          " +
-                          _vm._s(description.index) +
+                          _vm._s(description.index + 1) +
                           ":\n          "
                       ),
                       _c("pre", [_vm._v(_vm._s(description.text))])
@@ -6117,6 +6250,34 @@ var render = function() {
     ],
     1
   )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/development/description/DescriptionTargetItem.vue?vue&type=template&id=6bfd54ea&":
+/*!*************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/development/description/DescriptionTargetItem.vue?vue&type=template&id=6bfd54ea& ***!
+  \*************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "border-bottom" }, [
+    _c("pre", { on: { click: _vm.onclick } }, [
+      _vm._v(_vm._s(_vm.descriptionTarget.text))
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -6456,7 +6617,9 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "border-bottom" }, [
-    _c("pre", { on: { click: _vm.onclick } }, [_vm._v(_vm._s(_vm.answer))])
+    _c("pre", { on: { click: _vm.onclick } }, [
+      _vm._v(_vm._s(_vm.question.answer))
+    ])
   ])
 }
 var staticRenderFns = []
@@ -7099,7 +7262,7 @@ function (_Model) {
     }
   }]);
 
-  function DescriptionTarget(id, startIndex, endIndex, descriptionId) {
+  function DescriptionTarget(id, startIndex, endIndex, descriptionId, text) {
     var _this;
 
     _classCallCheck(this, DescriptionTarget);
@@ -7109,6 +7272,7 @@ function (_Model) {
     _this.startIndex = startIndex;
     _this.endIndex = endIndex;
     _this.descriptionId = descriptionId;
+    _this.text = text;
     _this.hasUpdated = false;
     _this.hasDeleted = false;
     return _this;
@@ -7156,6 +7320,14 @@ function (_Model) {
       this._descriptionId = value;
     }
   }, {
+    key: "text",
+    get: function get() {
+      return this._text;
+    },
+    set: function set(value) {
+      this._text = value;
+    }
+  }, {
     key: "hasUpdated",
     get: function get() {
       return this._hasUpdated;
@@ -7175,6 +7347,75 @@ function (_Model) {
 
   return DescriptionTarget;
 }(_models_Model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
+/***/ "./resources/js/development/description/DescriptionTargetItem.vue":
+/*!************************************************************************!*\
+  !*** ./resources/js/development/description/DescriptionTargetItem.vue ***!
+  \************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _DescriptionTargetItem_vue_vue_type_template_id_6bfd54ea___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DescriptionTargetItem.vue?vue&type=template&id=6bfd54ea& */ "./resources/js/development/description/DescriptionTargetItem.vue?vue&type=template&id=6bfd54ea&");
+/* harmony import */ var _DescriptionTargetItem_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DescriptionTargetItem.vue?vue&type=script&lang=js& */ "./resources/js/development/description/DescriptionTargetItem.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _DescriptionTargetItem_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _DescriptionTargetItem_vue_vue_type_template_id_6bfd54ea___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _DescriptionTargetItem_vue_vue_type_template_id_6bfd54ea___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/development/description/DescriptionTargetItem.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/development/description/DescriptionTargetItem.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************************!*\
+  !*** ./resources/js/development/description/DescriptionTargetItem.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DescriptionTargetItem_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./DescriptionTargetItem.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/development/description/DescriptionTargetItem.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DescriptionTargetItem_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/development/description/DescriptionTargetItem.vue?vue&type=template&id=6bfd54ea&":
+/*!*******************************************************************************************************!*\
+  !*** ./resources/js/development/description/DescriptionTargetItem.vue?vue&type=template&id=6bfd54ea& ***!
+  \*******************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DescriptionTargetItem_vue_vue_type_template_id_6bfd54ea___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./DescriptionTargetItem.vue?vue&type=template&id=6bfd54ea& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/development/description/DescriptionTargetItem.vue?vue&type=template&id=6bfd54ea&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DescriptionTargetItem_vue_vue_type_template_id_6bfd54ea___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DescriptionTargetItem_vue_vue_type_template_id_6bfd54ea___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -7471,6 +7712,127 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FileTreeItem_vue_vue_type_template_id_2cd057c2___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FileTreeItem_vue_vue_type_template_id_2cd057c2___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/development/question/InputButton.js":
+/*!**********************************************************!*\
+  !*** ./resources/js/development/question/InputButton.js ***!
+  \**********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return InputButton; });
+/* harmony import */ var _models_Model_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../models/Model.js */ "./resources/js/models/Model.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var InputButton =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(InputButton, _Model);
+
+  _createClass(InputButton, null, [{
+    key: "baseRoute",
+    value: function baseRoute() {
+      return "input_buttons";
+    }
+  }, {
+    key: "index",
+    value: function index(parameters, completion) {
+      _models_Model_js__WEBPACK_IMPORTED_MODULE_0__["default"].index(InputButton.baseRoute(), parameters, completion);
+    }
+  }]);
+
+  function InputButton(id, index, startIndex, endIndex, questionId) {
+    var _this;
+
+    _classCallCheck(this, InputButton);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(InputButton).call(this, InputButton.baseRoute()));
+    _this.id = id;
+    _this.index = index;
+    _this.startIndex = startIndex;
+    _this.endIndex = endIndex;
+    _this.questionId = questionId;
+    return _this;
+  }
+
+  _createClass(InputButton, [{
+    key: "parameters",
+    value: function parameters() {
+      return {
+        index: this.index,
+        start_index: this.startIndex,
+        end_index: this.endIndex,
+        question_id: this.questionId
+      };
+    }
+  }, {
+    key: "id",
+    get: function get() {
+      return this._id;
+    },
+    set: function set(value) {
+      this._id = value;
+    }
+  }, {
+    key: "index",
+    get: function get() {
+      return this._index;
+    },
+    set: function set(value) {
+      this._index = value;
+    }
+  }, {
+    key: "startIndex",
+    get: function get() {
+      return this._startIndex;
+    },
+    set: function set(value) {
+      this._startIndex = value;
+    }
+  }, {
+    key: "endIndex",
+    get: function get() {
+      return this._endIndex;
+    },
+    set: function set(value) {
+      this._endIndex = value;
+    }
+  }, {
+    key: "questionId",
+    get: function get() {
+      return this._questionId;
+    },
+    set: function set(value) {
+      this._questionId = value;
+    }
+  }]);
+
+  return InputButton;
+}(_models_Model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
 
@@ -8180,7 +8542,7 @@ function () {
     key: "store",
     value: function store(completion) {
       var that = this;
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(this.uri.store(), this.parameters()).then(function (response) {
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.post(this.uri.store(), this.query()).then(function (response) {
         that.id = response.data;
         Model.handleResponse(response, completion);
       });
@@ -8195,9 +8557,25 @@ function () {
   }, {
     key: "update",
     value: function update(completion) {
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.put(this.uri.update(this.id), this.parameters()).then(function (response) {
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.put(this.uri.update(this.id), this.query()).then(function (response) {
         Model.handleResponse(response, completion);
       });
+    }
+  }, {
+    key: "query",
+    value: function query() {
+      return this.parameters(); // const parameters = this.parameters();
+      // const query = {};
+      // Object.keys(parameters).forEach(key => {
+      //     const value = parameters[key];
+      //     // if (typeof value == "string" || value instanceof String) {
+      //     //     value = value.replace(" ", "%20");
+      //     //     console.log(value);
+      //     //     console.log(value.length);
+      //     // }
+      //     query[key] = encodeURIComponent(value);
+      // });
+      // return query;
     }
   }, {
     key: "baseRoute",

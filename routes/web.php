@@ -50,4 +50,7 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::post("/description_targets", "DescriptionTargetsController@store")->name("descriptionTarget.store");
     Route::put("/description_targets/{description_target}", "DescriptionTargetsController@update")->name("descriptionTargets.update");
     Route::delete("/description_targets/{description_target}", "DescriptionTargetsController@destroy")->name("descriptionTargets.destroy");
+
+    Route::get("/input_buttons", "InputButtonsController@index")->name("input_buttons.index");
+    Route::post("/input_buttons", "InputButtonsController@store")->name("input_buttons.store");
 });

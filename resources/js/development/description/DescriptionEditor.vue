@@ -1,12 +1,12 @@
 <template>
   <div id="description" class="w-100 h-100">
-    <transition name="slide-up">
+    <transition name="slide-up" @after-leave="onAfterLeaveSlideUpEditingView">
       <div id="description-editing-view" class="w-100 h-100" v-show="editingView.isShown">
         <div
           id="description-editing-header"
           class="d-flex align-items-center border-bottom border-dark"
         >
-          <div>{{editingView.description.index}}</div>
+          <div>{{selectedDescription ? selectedDescription.index + 1 : 0}}</div>
           <button class="ml-auto">
             <img :src="imageUrls.prevButton" alt="前" />
           </button>
@@ -21,7 +21,7 @@
           <textarea
             id="description-editor"
             class="w-100 h-100"
-            :value="editingView.description.text"
+            :value="selectedDescription ? selectedDescription.text : ''"
             @input="onInputDescription"
           ></textarea>
         </div>
@@ -44,7 +44,7 @@
             :key="description.id"
             @click="onSelecteDescription(description.id)"
           >
-            {{description.index}}:
+            {{description.index + 1}}:
             <pre>{{description.text}}</pre>
           </div>
         </div>
@@ -68,8 +68,7 @@ export default {
   data: function() {
     return {
       editingView: {
-        isShown: false,
-        description: Object
+        isShown: false
       },
       delayedUpdate: _.debounce(this.updateDescription, 500)
     };
@@ -91,6 +90,7 @@ export default {
             const index =
               Math.max(...response.data.map(file => file.index)) + 1;
             that.file.index = index;
+            //console.log(that.file.index);
             that.file.update();
           });
         });
@@ -101,23 +101,20 @@ export default {
       this.$emit("select-description", descriptionId);
     },
     onInputDescription(e) {
-      this.editingView.description.text = e.target.value;
+      this.selectedDescription.text = e.target.value;
       this.delayedUpdate();
     },
     onCloseEditingView() {
+      this.editingView.isShown = false;
+    },
+    onAfterLeaveSlideUpEditingView() {
       this.$emit("select-description", null);
     },
     onAfterLeaveSlideDownDescriptionList() {
       this.editingView.isShown = true;
     },
     updateDescription() {
-      const description = this.descriptions.find(
-        description => description.id === this.editingView.description.id
-      );
-      if (!description) {
-        return;
-      }
-      description.update();
+      this.selectedDescription.update();
     }
   }
 };

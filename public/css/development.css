@@ -54,8 +54,10 @@
   position: absolute;
 }
 
-#questions-view {
+#questions,
+#descriptions {
   overflow: scroll;
+  height: 50%;
 }
 
 #description {

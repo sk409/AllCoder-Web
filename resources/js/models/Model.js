@@ -64,7 +64,7 @@ export default class Model {
 
     store(completion) {
         const that = this;
-        Axios.post(this.uri.store(), this.parameters()).then(response => {
+        Axios.post(this.uri.store(), this.query()).then(response => {
             that.id = response.data;
             Model.handleResponse(response, completion);
         });
@@ -77,11 +77,25 @@ export default class Model {
     }
 
     update(completion) {
-        Axios.put(this.uri.update(this.id), this.parameters()).then(
-            response => {
-                Model.handleResponse(response, completion);
-            }
-        );
+        Axios.put(this.uri.update(this.id), this.query()).then(response => {
+            Model.handleResponse(response, completion);
+        });
+    }
+
+    query() {
+        return this.parameters();
+        // const parameters = this.parameters();
+        // const query = {};
+        // Object.keys(parameters).forEach(key => {
+        //     const value = parameters[key];
+        //     // if (typeof value == "string" || value instanceof String) {
+        //     //     value = value.replace(" ", "%20");
+        //     //     console.log(value);
+        //     //     console.log(value.length);
+        //     // }
+        //     query[key] = encodeURIComponent(value);
+        // });
+        // return query;
     }
 
     get baseRoute() {

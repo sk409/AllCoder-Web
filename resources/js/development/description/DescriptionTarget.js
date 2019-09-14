@@ -9,12 +9,13 @@ export default class DescriptionTarget extends Model {
         Model.index(DescriptionTarget.baseRoute(), parameters, completion);
     }
 
-    constructor(id, startIndex, endIndex, descriptionId) {
+    constructor(id, startIndex, endIndex, descriptionId, text) {
         super(DescriptionTarget.baseRoute());
         this.id = id;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
         this.descriptionId = descriptionId;
+        this.text = text;
         this.hasUpdated = false;
         this.hasDeleted = false;
     }
@@ -57,6 +58,14 @@ export default class DescriptionTarget extends Model {
 
     set descriptionId(value) {
         this._descriptionId = value;
+    }
+
+    get text() {
+        return this._text;
+    }
+
+    set text(value) {
+        this._text = value;
     }
 
     get hasUpdated() {

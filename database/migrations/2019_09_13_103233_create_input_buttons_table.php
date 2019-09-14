@@ -21,7 +21,6 @@ class CreateInputButtonsTable extends Migration
             $table->bigInteger("question_id")->unsigned();
             $table->timestamps();
             $table->unique(["question_id", "index"]);
-            $table->unique(["question_id", "start_index", "end_index"]);
             $table->foreign("question_id")->references("id")->on("questions")->onUpdate("cascade")->onDelete("cascade");
         });
     }
