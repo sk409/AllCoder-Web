@@ -3124,6 +3124,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _description_DescriptionTarget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../description/DescriptionTarget */ "./resources/js/development/description/DescriptionTarget.js");
 /* harmony import */ var _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../question/InputButton.js */ "./resources/js/development/question/InputButton.js");
 /* harmony import */ var _question_Question_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../question/Question.js */ "./resources/js/development/question/Question.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 //
 //
 //
@@ -3163,86 +3171,96 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     onStoreQuestion: function onStoreQuestion() {
-      var answer = this.file.text.substring(this.startIndex, this.endIndex);
-      var question = new _question_Question_js__WEBPACK_IMPORTED_MODULE_2__["default"](null, this.startIndex, this.endIndex, this.selectedDescription.id, answer);
+      var _this = this;
+
       var that = this;
-      question.store(function (response) {
-        that.questions.push(question);
-        var lineRegex = /\n/g;
-        var lineMatch = lineRegex.exec(answer);
-        var lineStartIndex = 0;
-        var inputButtonIndex = 0;
+      var answer = this.file.text.substring(this.startIndex, this.endIndex);
+      _question_Question_js__WEBPACK_IMPORTED_MODULE_2__["default"].index({
+        description_id: this.selectedDescription.id
+      }, function (response) {
+        var index = response.data.length ? Math.max.apply(Math, _toConsumableArray(response.data.map(function (question) {
+          return question.index;
+        }))) + 1 : 0;
+        var question = new _question_Question_js__WEBPACK_IMPORTED_MODULE_2__["default"](null, index, _this.selectedDescription.id, answer);
+        var that = _this;
+        question.store(function (response) {
+          that.questions.push(question);
+          var lineRegex = /\n/g;
+          var lineMatch = lineRegex.exec(answer);
+          var lineStartIndex = 0;
+          var inputButtonIndex = 0;
 
-        while (true) {
-          var storeInputButton = function storeInputButton(line) {
-            console.log("*************");
-            console.log(line);
-            console.log("*************");
-            var spaceRegex = / /g;
-            var spaceMatch = spaceRegex.exec(line);
-            var spaceStartIndex = 0;
+          while (true) {
+            var storeInputButton = function storeInputButton(line) {
+              console.log("*************");
+              console.log(line);
+              console.log("*************");
+              var spaceRegex = / /g;
+              var spaceMatch = spaceRegex.exec(line);
+              var spaceStartIndex = 0;
 
-            while (true) {
-              if (!spaceMatch) {
-                var _startIndex = lineStartIndex + spaceStartIndex;
+              while (true) {
+                if (!spaceMatch) {
+                  var _startIndex = that.startIndex + lineStartIndex + spaceStartIndex;
 
-                var _endIndex = lineMatch ? lineMatch.index : answer.length;
+                  var _endIndex = that.startIndex + (lineMatch ? lineMatch.index : answer.length);
 
-                if (_startIndex === _endIndex) {
-                  ++_endIndex;
+                  if (_startIndex === _endIndex) {
+                    ++_endIndex;
+                  }
+
+                  var _inputButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, _startIndex, _endIndex, question.id);
+
+                  ++inputButtonIndex;
+
+                  _inputButton.store();
+
+                  console.log(that.file.text.substring(_inputButton.startIndex, _inputButton.endIndex));
+                  break;
                 }
 
-                var _inputButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, _startIndex, _endIndex, question.id);
+                var startIndex = that.startIndex + lineStartIndex + spaceStartIndex;
+                var endIndex = that.startIndex + lineStartIndex + spaceMatch.index;
+
+                if (startIndex === endIndex) {
+                  ++endIndex;
+                }
+
+                var inputButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, startIndex, endIndex, question.id);
+                ++inputButtonIndex;
+                inputButton.store();
+                console.log(that.file.text.substring(inputButton.startIndex, inputButton.endIndex));
+
+                if (spaceStartIndex !== spaceMatch.index) {
+                  var spaceButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, that.startIndex + lineStartIndex + spaceMatch.index, that.startIndex + lineStartIndex + spaceMatch.index + 1, question.id);
+                  ++inputButtonIndex;
+                  spaceButton.store();
+                  console.log(that.file.text.substring(spaceButton.startIndex, spaceButton.endIndex));
+                }
+
+                spaceStartIndex = spaceMatch.index + 1;
+                spaceMatch = spaceRegex.exec(line);
+              }
+
+              if (line && lineMatch) {
+                var _inputButton2 = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, that.startIndex + lineMatch.index, that.startIndex + lineMatch.index + 1, question.id);
+
+                _inputButton2.store();
 
                 ++inputButtonIndex;
-
-                _inputButton.store();
-
-                console.log(that.file.text.substring(question.startIndex + _inputButton.startIndex, question.startIndex + _inputButton.endIndex));
-                break;
               }
+            };
 
-              var startIndex = lineStartIndex + spaceStartIndex;
-              var endIndex = lineStartIndex + spaceMatch.index;
-
-              if (startIndex === endIndex) {
-                ++endIndex;
-              }
-
-              var inputButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, startIndex, endIndex, question.id);
-              ++inputButtonIndex;
-              inputButton.store();
-              console.log(that.file.text.substring(question.startIndex + inputButton.startIndex, question.startIndex + inputButton.endIndex));
-
-              if (spaceStartIndex !== spaceMatch.index) {
-                var spaceButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, lineStartIndex + spaceMatch.index, lineStartIndex + spaceMatch.index + 1, question.id);
-                ++inputButtonIndex;
-                spaceButton.store();
-                console.log(that.file.text.substring(question.startIndex + spaceButton.startIndex, question.startIndex + spaceButton.endIndex));
-              }
-
-              spaceStartIndex = spaceMatch.index + 1;
-              spaceMatch = spaceRegex.exec(line);
+            if (!lineMatch) {
+              storeInputButton(answer.substring(lineStartIndex));
+              break;
             }
 
-            if (line && lineMatch) {
-              var _inputButton2 = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, lineMatch.index, lineMatch.index + 1, question.id);
-
-              _inputButton2.store();
-
-              ++inputButtonIndex;
-            }
-          };
-
-          if (!lineMatch) {
-            storeInputButton(answer.substring(lineStartIndex));
-            break;
+            storeInputButton(answer.substring(lineStartIndex, lineMatch.index));
+            lineStartIndex = lineMatch.index + 1;
+            lineMatch = lineRegex.exec(answer);
           }
-
-          storeInputButton(answer.substring(lineStartIndex, lineMatch.index));
-          lineStartIndex = lineMatch.index + 1;
-          lineMatch = lineRegex.exec(answer);
-        }
+        });
       });
     },
     onStoreDescriptionTarget: function onStoreDescriptionTarget() {
@@ -7886,15 +7904,14 @@ function (_Model) {
     }
   }]);
 
-  function Question(id, startIndex, endIndex, descriptionId, answer) {
+  function Question(id, index, descriptionId, answer) {
     var _this;
 
     _classCallCheck(this, Question);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Question).call(this, Question.baseRoute()));
     _this.id = id;
-    _this.startIndex = startIndex;
-    _this.endIndex = endIndex;
+    _this.index = index;
     _this.descriptionId = descriptionId;
     _this.answer = answer;
     _this.hasUpdated = false;
@@ -7906,8 +7923,7 @@ function (_Model) {
     key: "parameters",
     value: function parameters() {
       return {
-        start_index: this.startIndex,
-        end_index: this.endIndex,
+        index: this.index,
         description_id: this.descriptionId
       };
     }
@@ -7920,20 +7936,12 @@ function (_Model) {
       this._id = value;
     }
   }, {
-    key: "startIndex",
+    key: "index",
     get: function get() {
-      return this._startIndex;
+      return this._index;
     },
     set: function set(value) {
-      this._startIndex = value;
-    }
-  }, {
-    key: "endIndex",
-    get: function get() {
-      return this._endIndex;
-    },
-    set: function set(value) {
-      this._endIndex = value;
+      this._index = value;
     }
   }, {
     key: "descriptionId",

@@ -38,114 +38,129 @@ export default {
   },
   methods: {
     onStoreQuestion() {
-      const answer = this.file.text.substring(this.startIndex, this.endIndex);
-      const question = new Question(
-        null,
-        this.startIndex,
-        this.endIndex,
-        this.selectedDescription.id,
-        answer
-      );
       const that = this;
-      question.store(response => {
-        that.questions.push(question);
-        const lineRegex = /\n/g;
-        let lineMatch = lineRegex.exec(answer);
-        let lineStartIndex = 0;
-        let inputButtonIndex = 0;
-        while (true) {
-          const storeInputButton = function(line) {
-            console.log("*************");
-            console.log(line);
-            console.log("*************");
-            const spaceRegex = / /g;
-            let spaceMatch = spaceRegex.exec(line);
-            let spaceStartIndex = 0;
+      const answer = this.file.text.substring(this.startIndex, this.endIndex);
+      Question.index(
+        { description_id: this.selectedDescription.id },
+        response => {
+          const index = response.data.length
+            ? Math.max(...response.data.map(question => question.index)) + 1
+            : 0;
+          const question = new Question(
+            null,
+            index,
+            this.selectedDescription.id,
+            answer
+          );
+          const that = this;
+          question.store(response => {
+            that.questions.push(question);
+            const lineRegex = /\n/g;
+            let lineMatch = lineRegex.exec(answer);
+            let lineStartIndex = 0;
+            let inputButtonIndex = 0;
             while (true) {
-              if (!spaceMatch) {
-                const startIndex = lineStartIndex + spaceStartIndex;
-                let endIndex = lineMatch ? lineMatch.index : answer.length;
-                if (startIndex === endIndex) {
-                  ++endIndex;
+              const storeInputButton = function(line) {
+                console.log("*************");
+                console.log(line);
+                console.log("*************");
+                const spaceRegex = / /g;
+                let spaceMatch = spaceRegex.exec(line);
+                let spaceStartIndex = 0;
+                while (true) {
+                  if (!spaceMatch) {
+                    const startIndex =
+                      that.startIndex + lineStartIndex + spaceStartIndex;
+                    let endIndex =
+                      that.startIndex +
+                      (lineMatch ? lineMatch.index : answer.length);
+                    if (startIndex === endIndex) {
+                      ++endIndex;
+                    }
+                    const inputButton = new InputButton(
+                      null,
+                      inputButtonIndex,
+                      startIndex,
+                      endIndex,
+                      question.id
+                    );
+                    ++inputButtonIndex;
+                    inputButton.store();
+                    console.log(
+                      that.file.text.substring(
+                        inputButton.startIndex,
+                        inputButton.endIndex
+                      )
+                    );
+                    break;
+                  }
+                  const startIndex =
+                    that.startIndex + lineStartIndex + spaceStartIndex;
+                  let endIndex =
+                    that.startIndex + lineStartIndex + spaceMatch.index;
+                  if (startIndex === endIndex) {
+                    ++endIndex;
+                  }
+                  const inputButton = new InputButton(
+                    null,
+                    inputButtonIndex,
+                    startIndex,
+                    endIndex,
+                    question.id
+                  );
+                  ++inputButtonIndex;
+                  inputButton.store();
+                  console.log(
+                    that.file.text.substring(
+                      inputButton.startIndex,
+                      inputButton.endIndex
+                    )
+                  );
+                  if (spaceStartIndex !== spaceMatch.index) {
+                    const spaceButton = new InputButton(
+                      null,
+                      inputButtonIndex,
+                      that.startIndex + lineStartIndex + spaceMatch.index,
+                      that.startIndex + lineStartIndex + spaceMatch.index + 1,
+                      question.id
+                    );
+                    ++inputButtonIndex;
+                    spaceButton.store();
+                    console.log(
+                      that.file.text.substring(
+                        spaceButton.startIndex,
+                        spaceButton.endIndex
+                      )
+                    );
+                  }
+                  spaceStartIndex = spaceMatch.index + 1;
+                  spaceMatch = spaceRegex.exec(line);
                 }
-                const inputButton = new InputButton(
-                  null,
-                  inputButtonIndex,
-                  startIndex,
-                  endIndex,
-                  question.id
-                );
-                ++inputButtonIndex;
-                inputButton.store();
-                console.log(
-                  that.file.text.substring(
-                    question.startIndex + inputButton.startIndex,
-                    question.startIndex + inputButton.endIndex
-                  )
-                );
+                if (line && lineMatch) {
+                  const inputButton = new InputButton(
+                    null,
+                    inputButtonIndex,
+                    that.startIndex + lineMatch.index,
+                    that.startIndex + lineMatch.index + 1,
+                    question.id
+                  );
+                  inputButton.store();
+                  ++inputButtonIndex;
+                }
+              };
+              if (!lineMatch) {
+                storeInputButton(answer.substring(lineStartIndex));
                 break;
               }
-              const startIndex = lineStartIndex + spaceStartIndex;
-              let endIndex = lineStartIndex + spaceMatch.index;
-              if (startIndex === endIndex) {
-                ++endIndex;
-              }
-              const inputButton = new InputButton(
-                null,
-                inputButtonIndex,
-                startIndex,
-                endIndex,
-                question.id
+              storeInputButton(
+                answer.substring(lineStartIndex, lineMatch.index)
               );
-              ++inputButtonIndex;
-              inputButton.store();
-              console.log(
-                that.file.text.substring(
-                  question.startIndex + inputButton.startIndex,
-                  question.startIndex + inputButton.endIndex
-                )
-              );
-              if (spaceStartIndex !== spaceMatch.index) {
-                const spaceButton = new InputButton(
-                  null,
-                  inputButtonIndex,
-                  lineStartIndex + spaceMatch.index,
-                  lineStartIndex + spaceMatch.index + 1,
-                  question.id
-                );
-                ++inputButtonIndex;
-                spaceButton.store();
-                console.log(
-                  that.file.text.substring(
-                    question.startIndex + spaceButton.startIndex,
-                    question.startIndex + spaceButton.endIndex
-                  )
-                );
-              }
-              spaceStartIndex = spaceMatch.index + 1;
-              spaceMatch = spaceRegex.exec(line);
+              lineStartIndex = lineMatch.index + 1;
+              lineMatch = lineRegex.exec(answer);
             }
-            if (line && lineMatch) {
-              const inputButton = new InputButton(
-                null,
-                inputButtonIndex,
-                lineMatch.index,
-                lineMatch.index + 1,
-                question.id
-              );
-              inputButton.store();
-              ++inputButtonIndex;
-            }
-          };
-          if (!lineMatch) {
-            storeInputButton(answer.substring(lineStartIndex));
-            break;
-          }
-          storeInputButton(answer.substring(lineStartIndex, lineMatch.index));
-          lineStartIndex = lineMatch.index + 1;
-          lineMatch = lineRegex.exec(answer);
+          });
         }
-      });
+      );
     },
     onStoreDescriptionTarget() {
       const descriptionTarget = new DescriptionTarget(

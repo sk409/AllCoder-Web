@@ -110,8 +110,7 @@ class MaterialsController extends Controller
                             foreach ($description->questions as $question) {
                                 $stdQuestion = new stdClass();
                                 $stdQuestion->id = $question->id;
-                                $stdQuestion->start_index = $question->start_index;
-                                $stdQuestion->end_index = $question->end_index;
+                                $stdQuestion->index = $question->index;
                                 $stdQuestion->created_at = $question->created_at;
                                 $stdQuestion->updated_at = $question->updated_at;
                                 $stdQuestion->input_buttons = [];
@@ -125,10 +124,13 @@ class MaterialsController extends Controller
                                     $stdInputButton->updated_at = $inputButton->updated_at;
                                     $stdQuestion->input_buttons[] = $stdInputButton;
                                 }
+                                usort($stdQuestion->input_buttons, function ($a, $b) {
+                                    return $a->index - $b->index;
+                                });
                                 $stdDescription->questions[] = $stdQuestion;
                             }
                             usort($stdDescription->questions, function ($a, $b) {
-                                return $a->start_index - $b->start_index;
+                                return $a->index - $b->index;
                             });
                             $stdFile->descriptions[] = $stdDescription;
                         }

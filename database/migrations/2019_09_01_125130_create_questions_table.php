@@ -15,12 +15,11 @@ class CreateQuestionsTable extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->smallInteger("start_index")->unsigned();
-            $table->smallInteger("end_index")->unsigned();
+            $table->smallInteger("index")->unsigned();
             $table->bigInteger("description_id")->unsigned();
             $table->timestamps();
             $table->foreign("description_id")->references("id")->on("descriptions")->onUpdate("cascade")->onDelete("cascade");
-            $table->unique(["start_index", "end_index", "description_id"]);
+            $table->unique(["index", "description_id"]);
         });
     }
 

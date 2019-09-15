@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    protected $fillable = ["start_index", "end_index", "description_id"];
+    protected $fillable = ["index", "description_id"];
 
     public function description()
     {
