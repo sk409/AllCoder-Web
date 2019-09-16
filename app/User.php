@@ -70,4 +70,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Material::class, "purchases");
     }
+
+    public function completedLessons()
+    {
+        return $this->belongsToMany(Lesson::class, "completions")->withPivot(["material_id"]);
+    }
 }

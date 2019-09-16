@@ -11,38 +11,7 @@ use stdClass;
 class MaterialsController extends Controller
 {
 
-    public function index(Request $request)
-    {
-
-        if ($request->has("user_id") && $request->has("purchased")) {
-            $materials = User::find($request->user_id)->purchases;
-            if ($materials->count() == 0) {
-                return [];
-            }
-            return MaterialsController::convert($materials);
-        }
-
-        $conditions = [];
-        $columns = ["id", "title", "description", "price", "user_id", "created_at", "updated_at"];
-        foreach ($columns as $column) {
-            if (!$request->has($column)) {
-                continue;
-            }
-            $conditions[$column] = $request[$column];
-        }
-        $materials = Controller::narrowDownFromConditions(
-            $conditions,
-            "\App\Material"
-        );
-        return MaterialsController::convert($materials);
-    }
-
-    public function purchase(Request $request)
-    {
-        Material::find($request->material_id)->purchases()->attach($request->user_id);
-    }
-
-    private function convert($materials)
+    public static function convert($materials)
     {
         $result = [];
         foreach ($materials as $material) {
@@ -57,6 +26,7 @@ class MaterialsController extends Controller
             foreach ($material->lessons as $lesson) {
                 $stdLesson = new stdClass();
                 $stdLesson->id = $lesson->id;
+                $stdLesson->index = $lesson->pivot->index;
                 $stdLesson->title = $lesson->title;
                 $stdLesson->description = $lesson->description;
                 $stdLesson->created_at = $lesson->created_at;
@@ -91,6 +61,7 @@ class MaterialsController extends Controller
                             $stdDescription->id = $description->id;
                             $stdDescription->index = $description->index;
                             $stdDescription->text = $description->text;
+                            $stdDescription->file_id = $description->file_id;
                             $stdDescription->created_at = $description->created_at;
                             $stdDescription->updated_at = $description->updated_at;
                             $stdDescription->targets = [];
@@ -171,6 +142,9 @@ class MaterialsController extends Controller
                 }
                 $stdMaterial->lessons[] = $stdLesson;
             }
+            usort($stdMaterial->lessons, function ($a, $b) {
+                return $a->index - $b->index;
+            });
             $stdMaterial->comments = [];
             foreach ($material->comments()->where("parent_comment_id", null)->limit(5)->get() as $comment) {
                 $stdComment = new stdClass();
@@ -184,5 +158,36 @@ class MaterialsController extends Controller
             $result[] = $stdMaterial;
         }
         return $result;
+    }
+
+    public function index(Request $request)
+    {
+
+        if ($request->has("user_id") && $request->has("purchased")) {
+            $materials = User::find($request->user_id)->purchases;
+            if ($materials->count() == 0) {
+                return [];
+            }
+            return MaterialsController::convert($materials);
+        }
+
+        $conditions = [];
+        $columns = ["id", "title", "description", "price", "user_id", "created_at", "updated_at"];
+        foreach ($columns as $column) {
+            if (!$request->has($column)) {
+                continue;
+            }
+            $conditions[$column] = $request[$column];
+        }
+        $materials = Controller::narrowDownFromConditions(
+            $conditions,
+            "\App\Material"
+        );
+        return MaterialsController::convert($materials);
+    }
+
+    public function purchase(Request $request)
+    {
+        Material::find($request->material_id)->purchases()->attach($request->user_id);
     }
 }
