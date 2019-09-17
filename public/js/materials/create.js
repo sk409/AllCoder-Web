@@ -166,6 +166,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "material-form",
@@ -252,7 +272,13 @@ var render = function() {
           _c("div", { staticClass: "shadow p-3" }, [
             _c(
               "form",
-              { attrs: { method: "post", action: _vm.action } },
+              {
+                attrs: {
+                  method: "post",
+                  enctype: "multipart/form-data",
+                  action: _vm.action
+                }
+              },
               [
                 _c("input", {
                   attrs: { name: "_method", type: "hidden" },
@@ -374,6 +400,8 @@ var render = function() {
                   ])
                 ]),
                 _vm._v(" "),
+                _vm._m(0),
+                _vm._v(" "),
                 _c("div", { attrs: { id: "lesson-selection-text" } }, [
                   _vm._v("レッスン選択")
                 ]),
@@ -422,9 +450,9 @@ var render = function() {
                         }
                       }),
                       _vm._v(
-                        "\n                            " +
+                        "\n              " +
                           _vm._s(lesson.title) +
-                          "\n                        "
+                          "\n            "
                       )
                     ])
                   ])
@@ -466,7 +494,25 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", {}, [
+      _c("label", { staticClass: "material-form-label" }, [
+        _c("span", { staticClass: "material-form-label-text" }, [
+          _vm._v("サムネイル画像:")
+        ]),
+        _vm._v(" "),
+        _c("input", {
+          staticClass: "material-form-control",
+          attrs: { type: "file", name: "thumbnail_image" }
+        })
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 

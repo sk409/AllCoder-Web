@@ -17,8 +17,8 @@ class CreateMaterialsTable extends Migration
             $table->bigIncrements('id');
             $table->string("title", 128);
             $table->string("description", 1024);
+            $table->string("thumbnail_image_path", 256)->nullable();
             $table->integer("price")->unsigned();
-            $table->binary("thumbnail_image")->nullable();
             $table->bigInteger("user_id")->unsigned();
             $table->foreign("user_id")->references("id")->on("users")->onUpdate("cascade")->onDelete("cascade");
             $table->unique(["title", "user_id"]);

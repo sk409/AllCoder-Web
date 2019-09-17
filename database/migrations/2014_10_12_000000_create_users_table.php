@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('name', 64);
             $table->string('password', 64);
             $table->string("bio_text", 1024)->nullable()->default("");
-            $table->binary("profile_image_blob")->nullable();
+            $table->string("profile_image_path", 256)->nullable();
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

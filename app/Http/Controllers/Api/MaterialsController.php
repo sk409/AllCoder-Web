@@ -19,6 +19,7 @@ class MaterialsController extends Controller
             $stdMaterial->id = $material->id;
             $stdMaterial->title = $material->title;
             $stdMaterial->description = $material->description;
+            $stdMaterial->thumbnail_image_path = $material->thumbnail_image_path;
             $stdMaterial->price = $material->price;
             $stdMaterial->created_at = $material->created_at;
             $stdMaterial->updated_at = $material->updated_at;

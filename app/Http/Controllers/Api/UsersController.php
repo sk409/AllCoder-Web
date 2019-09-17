@@ -22,6 +22,7 @@ class UsersController extends Controller
             $stdUser->id = $user->id;
             $stdUser->name = $user->name;
             $stdUser->bio_text = $user->bio_text;
+            $stdUser->profile_image_path = $user->profile_image_path;
             $stdUser->email = $user->email;
             $stdUser->created_at = $user->created_at;
             $stdUser->updated_at = $user->updated_at;
