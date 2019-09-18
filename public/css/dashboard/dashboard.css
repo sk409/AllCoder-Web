@@ -1,0 +1,67 @@
+#container {
+  display: flex;
+  justify-content: center;
+  width: 80%;
+  height: 80%;
+  margin: auto;
+  margin-top: 1.5rem;
+}
+
+#left-container {
+  width: 60%;
+  border: 1px solid lightgray;
+  padding-top: 1.5rem;
+  padding-right: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-left: 1.5rem;
+  box-shadow: 0 0 5 10 lightgray;
+}
+
+#right-container {
+  width: 30%;
+}
+
+#right-container a {
+  display: block;
+  margin-bottom: 1rem;
+  margin-left: 3rem;
+}
+
+#profile {
+  width: 100%;
+  height: 20%;
+  margin: auto;
+  display: flex;
+}
+
+#profile-header {
+  height: 30%;
+}
+
+#profile-image-container {
+  width: 20%;
+}
+
+#profile-buttons-container {
+  margin-left: 1.5rem;
+}
+
+#profile-image {
+  width: 100%;
+  height: 80%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+#items {
+  margin-top: 0.5rem;
+}
+
+#items ul {
+  margin-bottom: 1rem;
+}
+
+.profile-button {
+  margin-left: 3rem;
+}
+
