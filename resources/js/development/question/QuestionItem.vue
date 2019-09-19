@@ -1,6 +1,6 @@
 <template>
-  <div class="border-bottom">
-    <pre @click="onclick">{{question.answer}}</pre>
+  <div id="question-item">
+    <pre class="question-answer" @click="onclick">{{inputButton.answer}}</pre>
   </div>
 </template>
 
@@ -8,11 +8,11 @@
 export default {
   name: "question-item",
   props: {
-    question: Object
+    inputButton: Object
   },
   methods: {
     onclick() {
-      this.$emit("select-description", this.question.descriptionId);
+      //this.$emit("select-description", this.descriptionId);
     }
   }
 };

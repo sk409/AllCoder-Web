@@ -9,13 +9,23 @@ export default class InputButton extends Model {
         Model.index(InputButton.baseRoute(), parameters, completion);
     }
 
-    constructor(id, index, startIndex, endIndex, questionId) {
+    constructor(
+        id,
+        index,
+        startIndex,
+        endIndex,
+        lineNumber,
+        questionId,
+        answer
+    ) {
         super(InputButton.baseRoute());
         this.id = id;
         this.index = index;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
+        this.lineNumber = lineNumber;
         this.questionId = questionId;
+        this.answer = answer;
     }
 
     parameters() {
@@ -23,6 +33,7 @@ export default class InputButton extends Model {
             index: this.index,
             start_index: this.startIndex,
             end_index: this.endIndex,
+            line_number: this.lineNumber,
             question_id: this.questionId
         };
     }
@@ -59,11 +70,27 @@ export default class InputButton extends Model {
         this._endIndex = value;
     }
 
+    get lineNumber() {
+        return this._lineNumber;
+    }
+
+    set lineNumber(value) {
+        this._lineNumber = value;
+    }
+
     get questionId() {
         return this._questionId;
     }
 
     set questionId(value) {
         this._questionId = value;
+    }
+
+    get answer() {
+        return this._answer;
+    }
+
+    set answer(value) {
+        this._answer = value;
     }
 }

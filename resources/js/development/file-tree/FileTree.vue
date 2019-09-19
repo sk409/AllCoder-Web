@@ -13,7 +13,6 @@ import FileTreeItem from "./FileTreeItem.vue";
 export default {
   name: "file-tree",
   props: {
-    items: Array,
     lessonId: Number
   },
   components: {
@@ -36,6 +35,7 @@ export default {
               item.id,
               item.name,
               item.text,
+              item.index,
               current,
               item.lesson_id
             );

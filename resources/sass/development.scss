@@ -11,20 +11,16 @@ $file-creation-view-button-width: (
 $file-creation-view-item-width: $file-creation-view-width * 0.2;
 $file-creation-view-item-height: $file-creation-view-item-width;
 
+#development {
+    overflow: hidden;
+}
+
 #development-header {
     height: 5vh;
 }
 
 #development-body {
     height: 95vh;
-}
-
-#development-body-top {
-    height: 60%;
-}
-
-#development-body-bottom {
-    height: 40%;
 }
 
 #file-tree {
@@ -67,17 +63,6 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     position: absolute;
 }
 
-#questions,
-#descriptions {
-    overflow: scroll;
-    height: 50%;
-}
-
-#description {
-    overflow: hidden;
-    position: relative;
-}
-
 #description-list-header {
     height: 15%;
 }
@@ -95,7 +80,7 @@ $file-creation-view-item-height: $file-creation-view-item-width;
 }
 
 #description-list-body {
-    overflow: scroll;
+    overflow-y: scroll;
     height: 85%;
 }
 
@@ -113,6 +98,11 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     resize: none;
 }
 
+#source-code-editor-context-menu {
+    background: white;
+    border: 1px solid lightgray;
+}
+
 .file-creation-view-button {
     width: $file-creation-view-button-width;
     margin-left: $file-creation-view-component-margin;
@@ -125,6 +115,15 @@ $file-creation-view-item-height: $file-creation-view-item-width;
 
 .file-tree-item {
     padding-left: 16px;
+}
+
+.question-answer {
+    margin: 0;
+}
+
+.source-code-editor-context-menu-button {
+    display: block;
+    width: 100%;
 }
 
 .fade-enter-active,

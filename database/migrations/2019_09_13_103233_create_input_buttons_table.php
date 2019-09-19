@@ -18,6 +18,7 @@ class CreateInputButtonsTable extends Migration
             $table->smallInteger("index")->unsigned();
             $table->smallInteger("start_index")->unsigned();
             $table->smallInteger("end_index")->unsigned();
+            $table->smallInteger("line_number")->unsigned();
             $table->bigInteger("question_id")->unsigned();
             $table->timestamps();
             $table->unique(["question_id", "index"]);

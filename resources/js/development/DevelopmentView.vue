@@ -1,6 +1,5 @@
 <template>
   <div
-    id="development"
     class="container-fluid vh-100"
     v-on:click="onclick"
     v-on:keydown.meta.90.stop.prevent="onundo"
@@ -10,63 +9,36 @@
       <div class="ml-3 d-flex align-items-center"></div>
     </div>
     <div id="development-body" class="row">
-      <div class="col-9 h-100 p-0">
-        <div id="development-body-top" class="d-flex">
-          <div class="w-25 h-100 border-right border-bottom border-dark">
-            <ul class="w-100 h-100">
-              <file-tree
-                id="file-tree"
-                class="w-100 h-100"
-                :items="fileTree.items"
-                :lesson-id="lesson.id"
-                @show-context-menu="onShowFileTreeContextMenu"
-                @set-file="onSetFile"
-              ></file-tree>
-            </ul>
-          </div>
-          <div class="w-75 h-100 border-bottom border-dark">
-            <source-code-editor
-              id="source-code-editor"
+      <div class="col-9 h-100 p-0 d-flex">
+        <div class="w-25 h-100 border-right border-bottom border-dark">
+          <ul class="w-100 h-100">
+            <file-tree
+              id="file-tree"
               class="w-100 h-100"
-              :file="file"
-              :questions="questions"
-              :description-targets="descriptionTargets"
-              @show-context-menu.stop.prevent="onShowSourceCodeEditorContextMenu"
-            ></source-code-editor>
-          </div>
-        </div>
-        <div id="development-body-bottom" class="d-flex">
-          <div class="w-25 border-right border-dark">
-            <div id="questions">
-              <div>問題</div>
-              <question-item
-                v-for="question in questions"
-                :key="question.id"
-                :question="question"
-                @select-description="onSelectDescription"
-              ></question-item>
-            </div>
-            <div id="description-targets">
-              <div>説明対象</div>
-              <description-target-item
-                v-for="descriptionTarget in descriptionTargets"
-                :key="descriptionTarget.id"
-                :description-target="descriptionTarget"
-                @select-description="onSelectDescription"
-              ></description-target-item>
-            </div>
-          </div>
-          <div class="w-75">
-            <description-editor
-              v-show="file"
               :lesson-id="lesson.id"
-              :file="file"
-              :image-urls="imageUrls"
-              :selected-description="selectedDescription"
-              :descriptions="descriptions"
-              @select-description="onSelectDescription"
-            ></description-editor>
-          </div>
+              @show-context-menu="onShowFileTreeContextMenu"
+              @set-file="onSetFile"
+            ></file-tree>
+          </ul>
+        </div>
+        <div class="w-75 h-100">
+          <source-code-editor
+            class="w-100 h-75 border-bottom border-dark"
+            :file="file"
+            :questions="questions"
+            :description-targets="descriptionTargets"
+            @show-context-menu.stop.prevent="onShowSourceCodeEditorContextMenu"
+          ></source-code-editor>
+          <description-editor
+            class="w-100 h-25"
+            v-show="file"
+            :lesson-id="lesson.id"
+            :file="file"
+            :image-urls="imageUrls"
+            :selected-description="selectedDescription"
+            :descriptions="descriptions"
+            @select-description="onSelectDescription"
+          ></description-editor>
         </div>
       </div>
       <div class="col p-0 h-100 bg-dark"></div>
@@ -92,7 +64,6 @@
       :start-index="sourceCodeEditor.contextMenu.selection.startIndex"
       :end-index="sourceCodeEditor.contextMenu.selection.endIndex"
       :file="file"
-      :questions="questions"
       :selected-description="selectedDescription"
     ></source-code-editor-context-menu>
   </div>
@@ -107,6 +78,7 @@ import File from "../models/File.js";
 import FileCreationView from "./file-tree/FileCreationView.vue";
 import FileTree from "./file-tree/FileTree.vue";
 import FileTreeContextMenu from "./file-tree/FileTreeContextMenu.vue";
+import InputButton from "./question/InputButton.js";
 import Question from "./question/Question.js";
 import QuestionItem from "./question/QuestionItem.vue";
 import SourceCodeEditor from "./source-code-editor/SourceCodeEditor.vue";
@@ -136,7 +108,6 @@ export default {
         isShown: false
       },
       fileTree: {
-        items: null,
         contextMenu: {
           isShown: false,
           left: 0,
@@ -154,9 +125,6 @@ export default {
         }
       }
     };
-  },
-  created() {
-    this.fileTree.items = File.index({ lesson_id: this.lesson.id });
   },
   computed: {
     questions() {
@@ -233,20 +201,42 @@ export default {
                 })
               );
               Question.index({ description_id: description.id }, response => {
-                description.questions.push(
-                  ...response.data.map(question => {
-                    return new Question(
-                      question.id,
-                      question.start_index,
-                      question.end_index,
-                      question.description_id,
-                      that.file.text.substring(
-                        question.start_index,
-                        question.end_index
+                response.data.forEach(question => {
+                  InputButton.index({ question_id: question.id }, response => {
+                    const inputButtons = response.data.map(inputButton => {
+                      return new InputButton(
+                        inputButton.id,
+                        inputButton.index,
+                        inputButton.start_index,
+                        inputButton.end_index,
+                        inputButton.line_number,
+                        inputButton.question_id,
+                        file.text.substring(
+                          inputButton.start_index,
+                          inputButton.end_index
+                        )
+                      );
+                    });
+                    description.questions.push(
+                      new Question(
+                        question.id,
+                        question.index,
+                        question.description_id,
+                        inputButtons
                       )
                     );
-                  })
-                );
+                  });
+                });
+                // return new Question(
+                //   question.id,
+                //   question.start_index,
+                //   question.end_index,
+                //   question.description_id,
+                //   that.file.text.substring(
+                //     question.start_index,
+                //     question.end_index
+                //   )
+                // );
               });
             }
           );

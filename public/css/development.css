@@ -1,17 +1,13 @@
+#development {
+  overflow: hidden;
+}
+
 #development-header {
   height: 5vh;
 }
 
 #development-body {
   height: 95vh;
-}
-
-#development-body-top {
-  height: 60%;
-}
-
-#development-body-bottom {
-  height: 40%;
 }
 
 #file-tree {
@@ -54,17 +50,6 @@
   position: absolute;
 }
 
-#questions,
-#descriptions {
-  overflow: scroll;
-  height: 50%;
-}
-
-#description {
-  overflow: hidden;
-  position: relative;
-}
-
 #description-list-header {
   height: 15%;
 }
@@ -82,7 +67,7 @@
 }
 
 #description-list-body {
-  overflow: scroll;
+  overflow-y: scroll;
   height: 85%;
 }
 
@@ -100,6 +85,11 @@
   resize: none;
 }
 
+#source-code-editor-context-menu {
+  background: white;
+  border: 1px solid lightgray;
+}
+
 .file-creation-view-button {
   width: 14.72vh;
   margin-left: 0.8vh;
@@ -112,6 +102,15 @@
 
 .file-tree-item {
   padding-left: 16px;
+}
+
+.question-answer {
+  margin: 0;
+}
+
+.source-code-editor-context-menu-button {
+  display: block;
+  width: 100%;
 }
 
 .fade-enter-active,

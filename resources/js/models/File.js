@@ -9,12 +9,12 @@ export default class File extends Model {
         Model.index(File.baseRoute(), parameters, completion);
     }
 
-    constructor(id, name, text, parent, lessonId) {
+    constructor(id, name, text, index, parent, lessonId) {
         super(File.baseRoute());
         this.id = id;
         this.name = name;
         this.text = text;
-        this.index = null;
+        this.index = index;
         this.parent = parent;
         this.lessonId = lessonId;
     }

@@ -99,10 +99,18 @@ export default {
         }
         fileName = newName();
       }
+      const fileIndex =
+        Math.max(
+          ...this.folder.children.map(child => {
+            return child instanceof File ? child.index : 0;
+          })
+        ) + 1;
+      console.log(fileIndex);
       const file = new File(
         null,
         fileName,
         "",
+        fileIndex,
         this.folder,
         this.folder.lessonId
       );

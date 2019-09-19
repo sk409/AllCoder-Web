@@ -9,12 +9,12 @@ export default class Question extends Model {
         Model.index(Question.baseRoute(), parameters, completion);
     }
 
-    constructor(id, index, descriptionId, answer) {
+    constructor(id, index, descriptionId, inputButtons = []) {
         super(Question.baseRoute());
         this.id = id;
         this.index = index;
         this.descriptionId = descriptionId;
-        this.answer = answer;
+        this.inputButtons = inputButtons;
         this.hasUpdated = false;
         this.hasDeleted = false;
     }
@@ -50,12 +50,12 @@ export default class Question extends Model {
         this._descriptionId = value;
     }
 
-    get answer() {
-        return this._answer;
+    get inputButtons() {
+        return this._inputButtons;
     }
 
-    set answer(value) {
-        this._answer = value;
+    set inputButtons(value) {
+        this._inputButtons = value;
     }
 
     get hasUpdated() {

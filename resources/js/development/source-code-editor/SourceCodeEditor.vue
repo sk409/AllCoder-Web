@@ -1,7 +1,6 @@
 <template>
   <textarea
     id="source-code-editor"
-    class="w-100 h-100"
     :value="file ? file.text : ''"
     :disabled="!file"
     @input="oninput"

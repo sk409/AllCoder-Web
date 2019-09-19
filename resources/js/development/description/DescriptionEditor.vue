@@ -1,5 +1,5 @@
 <template>
-  <div id="description" class="w-100 h-100">
+  <div id="description">
     <transition name="slide-up" @after-leave="onAfterLeaveSlideUpEditingView">
       <div id="description-editing-view" class="w-100 h-100" v-show="editingView.isShown">
         <div

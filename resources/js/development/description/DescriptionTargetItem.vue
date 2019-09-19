@@ -1,5 +1,5 @@
 <template>
-  <div class="border-bottom">
+  <div id="description-target-item">
     <pre @click="onclick">{{descriptionTarget.text}}</pre>
   </div>
 </template>

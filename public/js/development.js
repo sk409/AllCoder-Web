@@ -1846,10 +1846,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _file_tree_FileCreationView_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./file-tree/FileCreationView.vue */ "./resources/js/development/file-tree/FileCreationView.vue");
 /* harmony import */ var _file_tree_FileTree_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./file-tree/FileTree.vue */ "./resources/js/development/file-tree/FileTree.vue");
 /* harmony import */ var _file_tree_FileTreeContextMenu_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./file-tree/FileTreeContextMenu.vue */ "./resources/js/development/file-tree/FileTreeContextMenu.vue");
-/* harmony import */ var _question_Question_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./question/Question.js */ "./resources/js/development/question/Question.js");
-/* harmony import */ var _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./question/QuestionItem.vue */ "./resources/js/development/question/QuestionItem.vue");
-/* harmony import */ var _source_code_editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./source-code-editor/SourceCodeEditor.vue */ "./resources/js/development/source-code-editor/SourceCodeEditor.vue");
-/* harmony import */ var _source_code_editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./source-code-editor/SourceCodeEditorContextMenu.vue */ "./resources/js/development/source-code-editor/SourceCodeEditorContextMenu.vue");
+/* harmony import */ var _question_InputButton_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./question/InputButton.js */ "./resources/js/development/question/InputButton.js");
+/* harmony import */ var _question_Question_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./question/Question.js */ "./resources/js/development/question/Question.js");
+/* harmony import */ var _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./question/QuestionItem.vue */ "./resources/js/development/question/QuestionItem.vue");
+/* harmony import */ var _source_code_editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./source-code-editor/SourceCodeEditor.vue */ "./resources/js/development/source-code-editor/SourceCodeEditor.vue");
+/* harmony import */ var _source_code_editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./source-code-editor/SourceCodeEditorContextMenu.vue */ "./resources/js/development/source-code-editor/SourceCodeEditorContextMenu.vue");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -1929,35 +1930,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 
 
 
@@ -1980,9 +1953,9 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     FileTreeContextMenu: _file_tree_FileTreeContextMenu_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
     FileTree: _file_tree_FileTree_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
     FileCreationView: _file_tree_FileCreationView_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
-    SourceCodeEditorContextMenu: _source_code_editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_11__["default"],
-    QuestionItem: _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_9__["default"],
-    SourceCodeEditor: _source_code_editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_10__["default"],
+    SourceCodeEditorContextMenu: _source_code_editor_SourceCodeEditorContextMenu_vue__WEBPACK_IMPORTED_MODULE_12__["default"],
+    QuestionItem: _question_QuestionItem_vue__WEBPACK_IMPORTED_MODULE_10__["default"],
+    SourceCodeEditor: _source_code_editor_SourceCodeEditor_vue__WEBPACK_IMPORTED_MODULE_11__["default"],
     DescriptionEditor: _description_DescriptionEditor_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
     DescriptionTargetItem: _description_DescriptionTargetItem_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
@@ -1994,7 +1967,6 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         isShown: false
       },
       fileTree: {
-        items: null,
         contextMenu: {
           isShown: false,
           left: 0,
@@ -2012,11 +1984,6 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         }
       }
     };
-  },
-  created: function created() {
-    this.fileTree.items = _models_File_js__WEBPACK_IMPORTED_MODULE_4__["default"].index({
-      lesson_id: this.lesson.id
-    });
   },
   computed: {
     questions: function questions() {
@@ -2086,14 +2053,28 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
               return new _description_DescriptionTarget_js__WEBPACK_IMPORTED_MODULE_2__["default"](descriptionTarget.id, descriptionTarget.start_index, descriptionTarget.end_index, description.id, file.text.substring(descriptionTarget.start_index, descriptionTarget.end_index));
             })));
 
-            _question_Question_js__WEBPACK_IMPORTED_MODULE_8__["default"].index({
+            _question_Question_js__WEBPACK_IMPORTED_MODULE_9__["default"].index({
               description_id: description.id
             }, function (response) {
-              var _description$question;
-
-              (_description$question = description.questions).push.apply(_description$question, _toConsumableArray(response.data.map(function (question) {
-                return new _question_Question_js__WEBPACK_IMPORTED_MODULE_8__["default"](question.id, question.start_index, question.end_index, question.description_id, that.file.text.substring(question.start_index, question.end_index));
-              })));
+              response.data.forEach(function (question) {
+                _question_InputButton_js__WEBPACK_IMPORTED_MODULE_8__["default"].index({
+                  question_id: question.id
+                }, function (response) {
+                  var inputButtons = response.data.map(function (inputButton) {
+                    return new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_8__["default"](inputButton.id, inputButton.index, inputButton.start_index, inputButton.end_index, inputButton.line_number, inputButton.question_id, file.text.substring(inputButton.start_index, inputButton.end_index));
+                  });
+                  description.questions.push(new _question_Question_js__WEBPACK_IMPORTED_MODULE_9__["default"](question.id, question.index, question.description_id, inputButtons));
+                });
+              }); // return new Question(
+              //   question.id,
+              //   question.start_index,
+              //   question.end_index,
+              //   question.description_id,
+              //   that.file.text.substring(
+              //     question.start_index,
+              //     question.end_index
+              //   )
+              // );
             });
           });
           return description;
@@ -2311,6 +2292,14 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_File_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../models/File.js */ "./resources/js/models/File.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 //
 //
 //
@@ -2412,7 +2401,11 @@ __webpack_require__.r(__webpack_exports__);
         fileName = newName();
       }
 
-      var file = new _models_File_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, fileName, "", this.folder, this.folder.lessonId);
+      var fileIndex = Math.max.apply(Math, _toConsumableArray(this.folder.children.map(function (child) {
+        return child instanceof _models_File_js__WEBPACK_IMPORTED_MODULE_0__["default"] ? child.index : 0;
+      }))) + 1;
+      console.log(fileIndex);
+      var file = new _models_File_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, fileName, "", fileIndex, this.folder, this.folder.lessonId);
       file.store();
       this.folder.children.push(file);
       this.onHide();
@@ -2461,7 +2454,6 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "file-tree",
   props: {
-    items: Array,
     lessonId: Number
   },
   components: {
@@ -2482,7 +2474,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
       (_current$children = current.children).push.apply(_current$children, _toConsumableArray(children.map(function (item) {
         if (isFile) {
-          var child = new _models_File_js__WEBPACK_IMPORTED_MODULE_0__["default"](item.id, item.name, item.text, current, item.lesson_id);
+          var child = new _models_File_js__WEBPACK_IMPORTED_MODULE_0__["default"](item.id, item.name, item.text, item.index, current, item.lesson_id);
           return child;
         } else {
           var _child = new _models_Folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](item.id, item.name, current, item.lesson_id);
@@ -2720,11 +2712,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "question-item",
   props: {
-    question: Object
+    inputButton: Object
   },
   methods: {
-    onclick: function onclick() {
-      this.$emit("select-description", this.question.descriptionId);
+    onclick: function onclick() {//this.$emit("select-description", this.descriptionId);
     }
   }
 });
@@ -2743,7 +2734,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var q__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! q */ "./node_modules/q/q.js");
 /* harmony import */ var q__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(q__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _question_Question_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../question/Question.js */ "./resources/js/development/question/Question.js");
-//
 //
 //
 //
@@ -3154,6 +3144,33 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -3166,11 +3183,40 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     endIndex: Number,
     file: Object,
     selectedDescription: Object,
-    questions: Array,
     descriptionTargets: Array
   },
+  data: function data() {
+    return {
+      areStoreQuestionOptionsShown: false,
+      areStoreDescriptionTargetOptionsShown: false,
+      trimingOptions: {
+        forward: "forward",
+        backward: "backward"
+      }
+    };
+  },
+  computed: {
+    menuStyle: function menuStyle() {
+      return {
+        left: this.left + "px",
+        top: this.top + "px"
+      };
+    }
+  },
   methods: {
-    onStoreQuestion: function onStoreQuestion() {
+    onShowStoreQuestionOptions: function onShowStoreQuestionOptions() {
+      this.onHideOptions();
+      this.areStoreQuestionOptionsShown = true;
+    },
+    onShowStoreDescriptionTargetOptions: function onShowStoreDescriptionTargetOptions() {
+      this.onHideOptions();
+      this.areStoreDescriptionTargetOptionsShown = true;
+    },
+    onHideOptions: function onHideOptions() {
+      this.areStoreQuestionOptionsShown = false;
+      this.areStoreDescriptionTargetOptionsShown = false;
+    },
+    onStoreQuestion: function onStoreQuestion(trimingOptions) {
       var _this = this;
 
       var that = this;
@@ -3181,13 +3227,13 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         var index = response.data.length ? Math.max.apply(Math, _toConsumableArray(response.data.map(function (question) {
           return question.index;
         }))) + 1 : 0;
-        var question = new _question_Question_js__WEBPACK_IMPORTED_MODULE_2__["default"](null, index, _this.selectedDescription.id, answer);
+        var question = new _question_Question_js__WEBPACK_IMPORTED_MODULE_2__["default"](null, index, _this.selectedDescription.id);
         var that = _this;
         question.store(function (response) {
-          that.questions.push(question);
           var lineRegex = /\n/g;
           var lineMatch = lineRegex.exec(answer);
           var lineStartIndex = 0;
+          var lineEndIndex = 0;
           var inputButtonIndex = 0;
 
           while (true) {
@@ -3199,23 +3245,39 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
               var spaceMatch = spaceRegex.exec(line);
               var spaceStartIndex = 0;
 
+              var createInputButton = function createInputButton(startIndex, endIndex) {
+                if (lineEndIndex <= lineStartIndex + spaceStartIndex) {
+                  return;
+                }
+
+                var lineNumber = that.file.text.substring(0, endIndex).split("\n").length - 1;
+                var inputButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, startIndex, endIndex, lineNumber, question.id, that.file.text.substring(startIndex, endIndex));
+                ++inputButtonIndex;
+                question.inputButtons.push(inputButton);
+                inputButton.store();
+                var text = that.file.text.substring(inputButton.startIndex, inputButton.endIndex); // if (text == " ") {
+                //   console.log("スペース");
+                // } else if (text == "\n") {
+                //   console.log("開業");
+                // } else {
+                //   console.log(text);
+                // }
+
+                return inputButton;
+              };
+
               while (true) {
                 if (!spaceMatch) {
                   var _startIndex = that.startIndex + lineStartIndex + spaceStartIndex;
 
-                  var _endIndex = that.startIndex + (lineMatch ? lineMatch.index : answer.length);
+                  var _endIndex = that.startIndex + lineEndIndex;
 
                   if (_startIndex === _endIndex) {
                     ++_endIndex;
                   }
 
-                  var _inputButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, _startIndex, _endIndex, question.id);
+                  var _inputButton = createInputButton(_startIndex, _endIndex);
 
-                  ++inputButtonIndex;
-
-                  _inputButton.store();
-
-                  console.log(that.file.text.substring(_inputButton.startIndex, _inputButton.endIndex));
                   break;
                 }
 
@@ -3226,37 +3288,61 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                   ++endIndex;
                 }
 
-                var inputButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, startIndex, endIndex, question.id);
-                ++inputButtonIndex;
-                inputButton.store();
-                console.log(that.file.text.substring(inputButton.startIndex, inputButton.endIndex));
+                var inputButton = createInputButton(startIndex, endIndex);
 
                 if (spaceStartIndex !== spaceMatch.index) {
-                  var spaceButton = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, that.startIndex + lineStartIndex + spaceMatch.index, that.startIndex + lineStartIndex + spaceMatch.index + 1, question.id);
-                  ++inputButtonIndex;
-                  spaceButton.store();
-                  console.log(that.file.text.substring(spaceButton.startIndex, spaceButton.endIndex));
+                  var _startIndex2 = that.startIndex + lineStartIndex + spaceMatch.index;
+
+                  var _endIndex2 = that.startIndex + lineStartIndex + spaceMatch.index + 1;
+
+                  var _inputButton2 = createInputButton(_startIndex2, _endIndex2);
                 }
 
                 spaceStartIndex = spaceMatch.index + 1;
                 spaceMatch = spaceRegex.exec(line);
+              } // if (line && lineMatch) {
+              //   const startIndex = that.startIndex + lineMatch.index;
+              //   const endIndex = that.startIndex + lineMatch.index + 1;
+              //   const inputButton = createInputButton(startIndex, endIndex);
+              // }
+
+            }; //console.log(trimingOptions);
+
+
+            lineEndIndex = lineMatch ? lineMatch.index : answer.length;
+            var line = lineMatch ? answer.substring(lineStartIndex, lineMatch.index) : answer.substring(lineStartIndex);
+
+            if (trimingOptions.includes(_this.trimingOptions.forward)) {
+              var regex = /^( *).*?$/;
+              var match = regex.exec(line);
+
+              if (match && match.length === 2) {
+                lineStartIndex += match[1].length;
               }
+            }
 
-              if (line && lineMatch) {
-                var _inputButton2 = new _question_InputButton_js__WEBPACK_IMPORTED_MODULE_1__["default"](null, inputButtonIndex, that.startIndex + lineMatch.index, that.startIndex + lineMatch.index + 1, question.id);
+            if (trimingOptions.includes(_this.trimingOptions.backward)) {
+              var _regex = /^.*?( *)$/;
 
-                _inputButton2.store();
+              var _match = _regex.exec(line); //console.log(match);
 
-                ++inputButtonIndex;
+
+              if (_match && _match.length === 2) {
+                //console.log(match[1].length);
+                lineEndIndex -= _match[1].length;
               }
-            };
+            }
+
+            var trimmedLine = answer.substring(lineStartIndex, lineEndIndex);
 
             if (!lineMatch) {
-              storeInputButton(answer.substring(lineStartIndex));
+              //console.log("LLLLL");
+              // console.log(trimmedLine.includes(" "));
+              storeInputButton(trimmedLine);
               break;
             }
 
-            storeInputButton(answer.substring(lineStartIndex, lineMatch.index));
+            storeInputButton(trimmedLine);
             lineStartIndex = lineMatch.index + 1;
             lineMatch = lineRegex.exec(answer);
           }
@@ -3270,14 +3356,6 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     },
     isTextSelected: function isTextSelected() {
       return getSelection().toString().length;
-    }
-  },
-  computed: {
-    style: function style() {
-      return {
-        left: this.left + "px",
-        top: this.top + "px"
-      };
     }
   }
 });
@@ -5850,7 +5928,6 @@ var render = function() {
     "div",
     {
       staticClass: "container-fluid vh-100",
-      attrs: { id: "development" },
       on: {
         click: _vm.onclick,
         keydown: function($event) {
@@ -5888,58 +5965,23 @@ var render = function() {
       ),
       _vm._v(" "),
       _c("div", { staticClass: "row", attrs: { id: "development-body" } }, [
-        _c("div", { staticClass: "col-9 h-100 p-0" }, [
+        _c("div", { staticClass: "col-9 h-100 p-0 d-flex" }, [
           _c(
             "div",
-            { staticClass: "d-flex", attrs: { id: "development-body-top" } },
+            {
+              staticClass: "w-25 h-100 border-right border-bottom border-dark"
+            },
             [
               _c(
-                "div",
-                {
-                  staticClass:
-                    "w-25 h-100 border-right border-bottom border-dark"
-                },
+                "ul",
+                { staticClass: "w-100 h-100" },
                 [
-                  _c(
-                    "ul",
-                    { staticClass: "w-100 h-100" },
-                    [
-                      _c("file-tree", {
-                        staticClass: "w-100 h-100",
-                        attrs: {
-                          id: "file-tree",
-                          items: _vm.fileTree.items,
-                          "lesson-id": _vm.lesson.id
-                        },
-                        on: {
-                          "show-context-menu": _vm.onShowFileTreeContextMenu,
-                          "set-file": _vm.onSetFile
-                        }
-                      })
-                    ],
-                    1
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "w-75 h-100 border-bottom border-dark" },
-                [
-                  _c("source-code-editor", {
+                  _c("file-tree", {
                     staticClass: "w-100 h-100",
-                    attrs: {
-                      id: "source-code-editor",
-                      file: _vm.file,
-                      questions: _vm.questions,
-                      "description-targets": _vm.descriptionTargets
-                    },
+                    attrs: { id: "file-tree", "lesson-id": _vm.lesson.id },
                     on: {
-                      "show-context-menu": function($event) {
-                        $event.stopPropagation()
-                        $event.preventDefault()
-                        return _vm.onShowSourceCodeEditorContextMenu($event)
-                      }
+                      "show-context-menu": _vm.onShowFileTreeContextMenu,
+                      "set-file": _vm.onSetFile
                     }
                   })
                 ],
@@ -5950,70 +5992,45 @@ var render = function() {
           _vm._v(" "),
           _c(
             "div",
-            { staticClass: "d-flex", attrs: { id: "development-body-bottom" } },
+            { staticClass: "w-75 h-100" },
             [
-              _c("div", { staticClass: "w-25 border-right border-dark" }, [
-                _c(
-                  "div",
-                  { attrs: { id: "questions" } },
-                  [
-                    _c("div", [_vm._v("問題")]),
-                    _vm._v(" "),
-                    _vm._l(_vm.questions, function(question) {
-                      return _c("question-item", {
-                        key: question.id,
-                        attrs: { question: question },
-                        on: { "select-description": _vm.onSelectDescription }
-                      })
-                    })
-                  ],
-                  2
-                ),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { attrs: { id: "description-targets" } },
-                  [
-                    _c("div", [_vm._v("説明対象")]),
-                    _vm._v(" "),
-                    _vm._l(_vm.descriptionTargets, function(descriptionTarget) {
-                      return _c("description-target-item", {
-                        key: descriptionTarget.id,
-                        attrs: { "description-target": descriptionTarget },
-                        on: { "select-description": _vm.onSelectDescription }
-                      })
-                    })
-                  ],
-                  2
-                )
-              ]),
+              _c("source-code-editor", {
+                staticClass: "w-100 h-75 border-bottom border-dark",
+                attrs: {
+                  file: _vm.file,
+                  questions: _vm.questions,
+                  "description-targets": _vm.descriptionTargets
+                },
+                on: {
+                  "show-context-menu": function($event) {
+                    $event.stopPropagation()
+                    $event.preventDefault()
+                    return _vm.onShowSourceCodeEditorContextMenu($event)
+                  }
+                }
+              }),
               _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "w-75" },
-                [
-                  _c("description-editor", {
-                    directives: [
-                      {
-                        name: "show",
-                        rawName: "v-show",
-                        value: _vm.file,
-                        expression: "file"
-                      }
-                    ],
-                    attrs: {
-                      "lesson-id": _vm.lesson.id,
-                      file: _vm.file,
-                      "image-urls": _vm.imageUrls,
-                      "selected-description": _vm.selectedDescription,
-                      descriptions: _vm.descriptions
-                    },
-                    on: { "select-description": _vm.onSelectDescription }
-                  })
+              _c("description-editor", {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.file,
+                    expression: "file"
+                  }
                 ],
-                1
-              )
-            ]
+                staticClass: "w-100 h-25",
+                attrs: {
+                  "lesson-id": _vm.lesson.id,
+                  file: _vm.file,
+                  "image-urls": _vm.imageUrls,
+                  "selected-description": _vm.selectedDescription,
+                  descriptions: _vm.descriptions
+                },
+                on: { "select-description": _vm.onSelectDescription }
+              })
+            ],
+            1
           )
         ]),
         _vm._v(" "),
@@ -6072,7 +6089,6 @@ var render = function() {
           "start-index": _vm.sourceCodeEditor.contextMenu.selection.startIndex,
           "end-index": _vm.sourceCodeEditor.contextMenu.selection.endIndex,
           file: _vm.file,
-          questions: _vm.questions,
           "selected-description": _vm.selectedDescription
         }
       })
@@ -6104,7 +6120,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "w-100 h-100", attrs: { id: "description" } },
+    { attrs: { id: "description" } },
     [
       _c(
         "transition",
@@ -6291,7 +6307,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "border-bottom" }, [
+  return _c("div", { attrs: { id: "description-target-item" } }, [
     _c("pre", { on: { click: _vm.onclick } }, [
       _vm._v(_vm._s(_vm.descriptionTarget.text))
     ])
@@ -6634,9 +6650,9 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "border-bottom" }, [
-    _c("pre", { on: { click: _vm.onclick } }, [
-      _vm._v(_vm._s(_vm.question.answer))
+  return _c("div", { attrs: { id: "question-item" } }, [
+    _c("pre", { staticClass: "question-answer", on: { click: _vm.onclick } }, [
+      _vm._v(_vm._s(_vm.inputButton.answer))
     ])
   ])
 }
@@ -6663,7 +6679,6 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("textarea", {
-    staticClass: "w-100 h-100",
     attrs: { id: "source-code-editor", disabled: !_vm.file },
     domProps: { value: _vm.file ? _vm.file.text : "" },
     on: {
@@ -6758,52 +6773,165 @@ var render = function() {
   return _c(
     "div",
     {
-      staticClass: "btn-group-vertical border bg-white",
-      style: _vm.style,
-      attrs: { id: "source-code-editor-context-menu" }
+      style: _vm.menuStyle,
+      attrs: { id: "source-code-editor-context-menu" },
+      on: { mouseleave: _vm.onHideOptions }
     },
     [
-      _c(
-        "button",
-        {
-          directives: [
+      _c("div", { staticClass: "d-flex" }, [
+        _c("div", [
+          _c(
+            "button",
             {
-              name: "show",
-              rawName: "v-show",
-              value: _vm.isTextSelected && _vm.selectedDescription,
-              expression: "isTextSelected && selectedDescription"
-            }
-          ],
-          staticClass: "btn btn-light",
-          attrs: { type: "button" },
-          on: { click: _vm.onStoreQuestion }
-        },
-        [_vm._v("問題に追加")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          directives: [
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.isTextSelected && _vm.selectedDescription,
+                  expression: "isTextSelected && selectedDescription"
+                }
+              ],
+              staticClass: "source-code-editor-context-menu-button",
+              attrs: { type: "button" },
+              on: { mouseover: _vm.onShowStoreQuestionOptions }
+            },
+            [_vm._v("問題に追加")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
             {
-              name: "show",
-              rawName: "v-show",
-              value: _vm.isTextSelected && _vm.selectedDescription,
-              expression: "isTextSelected && selectedDescription"
-            }
-          ],
-          staticClass: "btn btn-light",
-          attrs: { type: "button" },
-          on: { click: _vm.onStoreDescriptionTarget }
-        },
-        [_vm._v("説明対象に追加")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        { staticClass: "btn btn-light", attrs: { type: "button" } },
-        [_vm._v("テストボタン")]
-      )
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.isTextSelected && _vm.selectedDescription,
+                  expression: "isTextSelected && selectedDescription"
+                }
+              ],
+              staticClass: "source-code-editor-context-menu-button",
+              attrs: { type: "button" },
+              on: { mouseover: _vm.onShowStoreDescriptionTargetOptions }
+            },
+            [_vm._v("説明対象に追加")]
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.areStoreQuestionOptionsShown,
+                expression: "areStoreQuestionOptionsShown"
+              }
+            ],
+            staticClass: "btn-group-vertical border bg-white"
+          },
+          [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-light",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.onStoreQuestion([
+                      _vm.trimingOptions.forward,
+                      _vm.trimingOptions.backward
+                    ])
+                  }
+                }
+              },
+              [_vm._v("トリミング")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-light",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.onStoreQuestion([_vm.trimingOptions.forward])
+                  }
+                }
+              },
+              [_vm._v("前方トリミング")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-light",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.onStoreQuestion([_vm.trimingOptions.backwawrd])
+                  }
+                }
+              },
+              [_vm._v("後方トリミング")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-light",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.onStoreQuestion([])
+                  }
+                }
+              },
+              [_vm._v("トリミングなし")]
+            )
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.areStoreDescriptionTargetOptionsShown,
+                expression: "areStoreDescriptionTargetOptionsShown"
+              }
+            ],
+            staticClass: "btn-group-vertical border bg-white"
+          },
+          [
+            _c(
+              "button",
+              { staticClass: "btn btn-dark", attrs: { type: "button" } },
+              [_vm._v("トリミング")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              { staticClass: "btn btn-dark", attrs: { type: "button" } },
+              [_vm._v("前方トリミング")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              { staticClass: "btn btn-dark", attrs: { type: "button" } },
+              [_vm._v("後方トリミング")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              { staticClass: "btn btn-dark", attrs: { type: "button" } },
+              [_vm._v("トリミングなし")]
+            )
+          ]
+        )
+      ])
     ]
   )
 }
@@ -7783,7 +7911,7 @@ function (_Model) {
     }
   }]);
 
-  function InputButton(id, index, startIndex, endIndex, questionId) {
+  function InputButton(id, index, startIndex, endIndex, lineNumber, questionId, answer) {
     var _this;
 
     _classCallCheck(this, InputButton);
@@ -7793,7 +7921,9 @@ function (_Model) {
     _this.index = index;
     _this.startIndex = startIndex;
     _this.endIndex = endIndex;
+    _this.lineNumber = lineNumber;
     _this.questionId = questionId;
+    _this.answer = answer;
     return _this;
   }
 
@@ -7804,6 +7934,7 @@ function (_Model) {
         index: this.index,
         start_index: this.startIndex,
         end_index: this.endIndex,
+        line_number: this.lineNumber,
         question_id: this.questionId
       };
     }
@@ -7840,12 +7971,28 @@ function (_Model) {
       this._endIndex = value;
     }
   }, {
+    key: "lineNumber",
+    get: function get() {
+      return this._lineNumber;
+    },
+    set: function set(value) {
+      this._lineNumber = value;
+    }
+  }, {
     key: "questionId",
     get: function get() {
       return this._questionId;
     },
     set: function set(value) {
       this._questionId = value;
+    }
+  }, {
+    key: "answer",
+    get: function get() {
+      return this._answer;
+    },
+    set: function set(value) {
+      this._answer = value;
     }
   }]);
 
@@ -7904,8 +8051,10 @@ function (_Model) {
     }
   }]);
 
-  function Question(id, index, descriptionId, answer) {
+  function Question(id, index, descriptionId) {
     var _this;
+
+    var inputButtons = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
 
     _classCallCheck(this, Question);
 
@@ -7913,7 +8062,7 @@ function (_Model) {
     _this.id = id;
     _this.index = index;
     _this.descriptionId = descriptionId;
-    _this.answer = answer;
+    _this.inputButtons = inputButtons;
     _this.hasUpdated = false;
     _this.hasDeleted = false;
     return _this;
@@ -7952,12 +8101,12 @@ function (_Model) {
       this._descriptionId = value;
     }
   }, {
-    key: "answer",
+    key: "inputButtons",
     get: function get() {
-      return this._answer;
+      return this._inputButtons;
     },
     set: function set(value) {
-      this._answer = value;
+      this._inputButtons = value;
     }
   }, {
     key: "hasUpdated",
@@ -8239,7 +8388,7 @@ function (_Model) {
     }
   }]);
 
-  function File(id, name, text, parent, lessonId) {
+  function File(id, name, text, index, parent, lessonId) {
     var _this;
 
     _classCallCheck(this, File);
@@ -8248,7 +8397,7 @@ function (_Model) {
     _this.id = id;
     _this.name = name;
     _this.text = text;
-    _this.index = null;
+    _this.index = index;
     _this.parent = parent;
     _this.lessonId = lessonId;
     return _this;

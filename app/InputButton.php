@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class InputButton extends Model
 {
 
-    protected $fillable = ["index", "start_index", "end_index", "question_id"];
+    protected $fillable = ["index", "start_index", "end_index", "line_number", "question_id"];
 
     public function question()
     {

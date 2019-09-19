@@ -92,6 +92,7 @@ class MaterialsController extends Controller
                                     $stdInputButton->index = $inputButton->index;
                                     $stdInputButton->start_index = $inputButton->start_index;
                                     $stdInputButton->end_index = $inputButton->end_index;
+                                    $stdInputButton->line_number = $inputButton->line_number;
                                     $stdInputButton->created_at = $inputButton->created_at;
                                     $stdInputButton->updated_at = $inputButton->updated_at;
                                     $stdQuestion->input_buttons[] = $stdInputButton;
