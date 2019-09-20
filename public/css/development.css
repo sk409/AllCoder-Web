@@ -85,11 +85,6 @@
   resize: none;
 }
 
-#source-code-editor-context-menu {
-  background: white;
-  border: 1px solid lightgray;
-}
-
 .file-creation-view-button {
   width: 14.72vh;
   margin-left: 0.8vh;
@@ -108,7 +103,8 @@
   margin: 0;
 }
 
-.source-code-editor-context-menu-button {
+.source-code-editor-context-menu-button,
+.source-code-editor-context-menu-option-button {
   display: block;
   width: 100%;
 }

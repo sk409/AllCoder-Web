@@ -98,11 +98,6 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     resize: none;
 }
 
-#source-code-editor-context-menu {
-    background: white;
-    border: 1px solid lightgray;
-}
-
 .file-creation-view-button {
     width: $file-creation-view-button-width;
     margin-left: $file-creation-view-component-margin;
@@ -121,7 +116,8 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     margin: 0;
 }
 
-.source-code-editor-context-menu-button {
+.source-code-editor-context-menu-button,
+.source-code-editor-context-menu-option-button {
     display: block;
     width: 100%;
 }

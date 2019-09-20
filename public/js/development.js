@@ -3171,6 +3171,23 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -3189,7 +3206,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     return {
       areStoreQuestionOptionsShown: false,
       areStoreDescriptionTargetOptionsShown: false,
-      trimingOptions: {
+      trimmingOptions: {
         forward: "forward",
         backward: "backward"
       }
@@ -3216,7 +3233,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       this.areStoreQuestionOptionsShown = false;
       this.areStoreDescriptionTargetOptionsShown = false;
     },
-    onStoreQuestion: function onStoreQuestion(trimingOptions) {
+    onStoreQuestion: function onStoreQuestion(trimmingOptions) {
       var _this = this;
 
       var that = this;
@@ -3300,44 +3317,19 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
                 spaceStartIndex = spaceMatch.index + 1;
                 spaceMatch = spaceRegex.exec(line);
-              } // if (line && lineMatch) {
-              //   const startIndex = that.startIndex + lineMatch.index;
-              //   const endIndex = that.startIndex + lineMatch.index + 1;
-              //   const inputButton = createInputButton(startIndex, endIndex);
-              // }
-
-            }; //console.log(trimingOptions);
-
+              }
+            };
 
             lineEndIndex = lineMatch ? lineMatch.index : answer.length;
             var line = lineMatch ? answer.substring(lineStartIndex, lineMatch.index) : answer.substring(lineStartIndex);
 
-            if (trimingOptions.includes(_this.trimingOptions.forward)) {
-              var regex = /^( *).*?$/;
-              var match = regex.exec(line);
+            var trimmedLineIndices = _this.trim(lineStartIndex, lineEndIndex, line, trimmingOptions);
 
-              if (match && match.length === 2) {
-                lineStartIndex += match[1].length;
-              }
-            }
-
-            if (trimingOptions.includes(_this.trimingOptions.backward)) {
-              var _regex = /^.*?( *)$/;
-
-              var _match = _regex.exec(line); //console.log(match);
-
-
-              if (_match && _match.length === 2) {
-                //console.log(match[1].length);
-                lineEndIndex -= _match[1].length;
-              }
-            }
-
+            lineStartIndex = trimmedLineIndices.lineStartIndex;
+            lineEndIndex = trimmedLineIndices.lineEndIndex;
             var trimmedLine = answer.substring(lineStartIndex, lineEndIndex);
 
             if (!lineMatch) {
-              //console.log("LLLLL");
-              // console.log(trimmedLine.includes(" "));
               storeInputButton(trimmedLine);
               break;
             }
@@ -3349,13 +3341,68 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         });
       });
     },
-    onStoreDescriptionTarget: function onStoreDescriptionTarget() {
-      var descriptionTarget = new _description_DescriptionTarget__WEBPACK_IMPORTED_MODULE_0__["default"](null, this.startIndex, this.endIndex, this.selectedDescription.id, this.file.text.substring(this.startIndex, this.endIndex));
-      descriptionTarget.store();
-      this.selectedDescription.targets.push(descriptionTarget);
+    onStoreDescriptionTarget: function onStoreDescriptionTarget(trimmingOptions) {
+      var that = this;
+
+      var storeDescriptionTarget = function storeDescriptionTarget(lineStartIndex, lineEndIndex) {
+        if (lineStartIndex === lineEndIndex) {
+          return;
+        }
+
+        var descriptionTarget = new _description_DescriptionTarget__WEBPACK_IMPORTED_MODULE_0__["default"](null, that.startIndex + lineStartIndex, that.startIndex + lineEndIndex, that.selectedDescription.id, that.file.text.substring(that.startIndex + lineStartIndex, that.startIndex + lineEndIndex));
+        descriptionTarget.store();
+        that.selectedDescription.targets.push(descriptionTarget);
+      };
+
+      var describedText = this.file.text.substring(this.startIndex, this.endIndex);
+      var lineRegex = /\n/g;
+      var lineMatch = lineRegex.exec(describedText);
+      var lineStartIndex = 0;
+      var lineEndIndex = 0;
+
+      while (true) {
+        lineEndIndex = lineMatch ? lineMatch.index : describedText.length;
+        var line = describedText.substring(lineStartIndex, lineEndIndex);
+        var trimmedLineIndices = this.trim(lineStartIndex, lineEndIndex, line, trimmingOptions);
+        lineStartIndex = trimmedLineIndices.lineStartIndex;
+        lineEndIndex = trimmedLineIndices.lineEndIndex;
+        storeDescriptionTarget(lineStartIndex, lineEndIndex);
+
+        if (!lineMatch) {
+          break;
+        }
+
+        lineStartIndex = lineMatch.index + 1;
+        lineMatch = lineRegex.exec(describedText);
+      }
     },
     isTextSelected: function isTextSelected() {
       return getSelection().toString().length;
+    },
+    trim: function trim(lineStartIndex, lineEndIndex, line, trimmingOptions) {
+      if (trimmingOptions.includes(this.trimmingOptions.forward)) {
+        var regex = /^( *).*?$/;
+        var match = regex.exec(line);
+
+        if (match && match.length === 2) {
+          lineStartIndex += match[1].length;
+        }
+      }
+
+      if (trimmingOptions.includes(this.trimmingOptions.backward)) {
+        var _regex = /^.*?( *)$/;
+
+        var _match = _regex.exec(line);
+
+        if (_match && _match.length === 2) {
+          lineEndIndex -= _match[1].length;
+        }
+      }
+
+      return {
+        lineStartIndex: lineStartIndex,
+        lineEndIndex: lineEndIndex
+      };
     }
   }
 });
@@ -6827,20 +6874,19 @@ var render = function() {
                 value: _vm.areStoreQuestionOptionsShown,
                 expression: "areStoreQuestionOptionsShown"
               }
-            ],
-            staticClass: "btn-group-vertical border bg-white"
+            ]
           },
           [
             _c(
               "button",
               {
-                staticClass: "btn btn-light",
+                staticClass: "source-code-editor-context-menu-option-button",
                 attrs: { type: "button" },
                 on: {
                   click: function($event) {
                     return _vm.onStoreQuestion([
-                      _vm.trimingOptions.forward,
-                      _vm.trimingOptions.backward
+                      _vm.trimmingOptions.forward,
+                      _vm.trimmingOptions.backward
                     ])
                   }
                 }
@@ -6851,11 +6897,11 @@ var render = function() {
             _c(
               "button",
               {
-                staticClass: "btn btn-light",
+                staticClass: "source-code-editor-context-menu-option-button",
                 attrs: { type: "button" },
                 on: {
                   click: function($event) {
-                    return _vm.onStoreQuestion([_vm.trimingOptions.forward])
+                    return _vm.onStoreQuestion([_vm.trimmingOptions.forward])
                   }
                 }
               },
@@ -6865,11 +6911,11 @@ var render = function() {
             _c(
               "button",
               {
-                staticClass: "btn btn-light",
+                staticClass: "source-code-editor-context-menu-option-button",
                 attrs: { type: "button" },
                 on: {
                   click: function($event) {
-                    return _vm.onStoreQuestion([_vm.trimingOptions.backwawrd])
+                    return _vm.onStoreQuestion([_vm.trimmingOptions.backwawrd])
                   }
                 }
               },
@@ -6879,7 +6925,7 @@ var render = function() {
             _c(
               "button",
               {
-                staticClass: "btn btn-light",
+                staticClass: "source-code-editor-context-menu-option-button",
                 attrs: { type: "button" },
                 on: {
                   click: function($event) {
@@ -6902,31 +6948,69 @@ var render = function() {
                 value: _vm.areStoreDescriptionTargetOptionsShown,
                 expression: "areStoreDescriptionTargetOptionsShown"
               }
-            ],
-            staticClass: "btn-group-vertical border bg-white"
+            ]
           },
           [
             _c(
               "button",
-              { staticClass: "btn btn-dark", attrs: { type: "button" } },
+              {
+                staticClass: "source-code-editor-context-menu-option-button",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.onStoreDescriptionTarget([
+                      _vm.trimmingOptions.forward,
+                      _vm.trimmingOptions.backward
+                    ])
+                  }
+                }
+              },
               [_vm._v("トリミング")]
             ),
             _vm._v(" "),
             _c(
               "button",
-              { staticClass: "btn btn-dark", attrs: { type: "button" } },
+              {
+                staticClass: "source-code-editor-context-menu-option-button",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.onStoreDescriptionTarget([
+                      _vm.trimmingOptions.forward
+                    ])
+                  }
+                }
+              },
               [_vm._v("前方トリミング")]
             ),
             _vm._v(" "),
             _c(
               "button",
-              { staticClass: "btn btn-dark", attrs: { type: "button" } },
+              {
+                staticClass: "source-code-editor-context-menu-option-button",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.onStoreDescriptionTarget([
+                      _vm.trimmingOptions.backward
+                    ])
+                  }
+                }
+              },
               [_vm._v("後方トリミング")]
             ),
             _vm._v(" "),
             _c(
               "button",
-              { staticClass: "btn btn-dark", attrs: { type: "button" } },
+              {
+                staticClass: "source-code-editor-context-menu-option-button",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.onStoreDescriptionTarget([])
+                  }
+                }
+              },
               [_vm._v("トリミングなし")]
             )
           ]

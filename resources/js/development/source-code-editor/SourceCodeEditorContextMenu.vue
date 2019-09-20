@@ -16,32 +16,49 @@
           @mouseover="onShowStoreDescriptionTargetOptions"
         >説明対象に追加</button>
       </div>
-      <div class="btn-group-vertical border bg-white" v-show="areStoreQuestionOptionsShown">
+      <div v-show="areStoreQuestionOptionsShown">
         <button
           type="button"
-          class="btn btn-light"
-          @click="onStoreQuestion([trimingOptions.forward, trimingOptions.backward])"
+          class="source-code-editor-context-menu-option-button"
+          @click="onStoreQuestion([trimmingOptions.forward, trimmingOptions.backward])"
         >トリミング</button>
         <button
           type="button"
-          class="btn btn-light"
-          @click="onStoreQuestion([trimingOptions.forward])"
+          class="source-code-editor-context-menu-option-button"
+          @click="onStoreQuestion([trimmingOptions.forward])"
         >前方トリミング</button>
         <button
           type="button"
-          class="btn btn-light"
-          @click="onStoreQuestion([trimingOptions.backwawrd])"
+          class="source-code-editor-context-menu-option-button"
+          @click="onStoreQuestion([trimmingOptions.backwawrd])"
         >後方トリミング</button>
-        <button type="button" class="btn btn-light" @click="onStoreQuestion([])">トリミングなし</button>
+        <button
+          type="button"
+          class="source-code-editor-context-menu-option-button"
+          @click="onStoreQuestion([])"
+        >トリミングなし</button>
       </div>
-      <div
-        class="btn-group-vertical border bg-white"
-        v-show="areStoreDescriptionTargetOptionsShown"
-      >
-        <button type="button" class="btn btn-dark">トリミング</button>
-        <button type="button" class="btn btn-dark">前方トリミング</button>
-        <button type="button" class="btn btn-dark">後方トリミング</button>
-        <button type="button" class="btn btn-dark">トリミングなし</button>
+      <div v-show="areStoreDescriptionTargetOptionsShown">
+        <button
+          type="button"
+          class="source-code-editor-context-menu-option-button"
+          @click="onStoreDescriptionTarget([trimmingOptions.forward, trimmingOptions.backward])"
+        >トリミング</button>
+        <button
+          type="button"
+          class="source-code-editor-context-menu-option-button"
+          @click="onStoreDescriptionTarget([trimmingOptions.forward])"
+        >前方トリミング</button>
+        <button
+          type="button"
+          class="source-code-editor-context-menu-option-button"
+          @click="onStoreDescriptionTarget([trimmingOptions.backward])"
+        >後方トリミング</button>
+        <button
+          type="button"
+          class="source-code-editor-context-menu-option-button"
+          @click="onStoreDescriptionTarget([])"
+        >トリミングなし</button>
       </div>
     </div>
   </div>
@@ -66,7 +83,7 @@ export default {
     return {
       areStoreQuestionOptionsShown: false,
       areStoreDescriptionTargetOptionsShown: false,
-      trimingOptions: {
+      trimmingOptions: {
         forward: "forward",
         backward: "backward"
       }
@@ -93,7 +110,7 @@ export default {
       this.areStoreQuestionOptionsShown = false;
       this.areStoreDescriptionTargetOptionsShown = false;
     },
-    onStoreQuestion(trimingOptions) {
+    onStoreQuestion(trimmingOptions) {
       const that = this;
       const answer = this.file.text.substring(this.startIndex, this.endIndex);
       Question.index(
@@ -183,40 +200,24 @@ export default {
                   spaceStartIndex = spaceMatch.index + 1;
                   spaceMatch = spaceRegex.exec(line);
                 }
-                // if (line && lineMatch) {
-                //   const startIndex = that.startIndex + lineMatch.index;
-                //   const endIndex = that.startIndex + lineMatch.index + 1;
-                //   const inputButton = createInputButton(startIndex, endIndex);
-                // }
               };
-              //console.log(trimingOptions);
               lineEndIndex = lineMatch ? lineMatch.index : answer.length;
               const line = lineMatch
                 ? answer.substring(lineStartIndex, lineMatch.index)
                 : answer.substring(lineStartIndex);
-              if (trimingOptions.includes(this.trimingOptions.forward)) {
-                const regex = /^( *).*?$/;
-                const match = regex.exec(line);
-                if (match && match.length === 2) {
-                  lineStartIndex += match[1].length;
-                }
-              }
-              if (trimingOptions.includes(this.trimingOptions.backward)) {
-                const regex = /^.*?( *)$/;
-                const match = regex.exec(line);
-                //console.log(match);
-                if (match && match.length === 2) {
-                  //console.log(match[1].length);
-                  lineEndIndex -= match[1].length;
-                }
-              }
+              const trimmedLineIndices = this.trim(
+                lineStartIndex,
+                lineEndIndex,
+                line,
+                trimmingOptions
+              );
+              lineStartIndex = trimmedLineIndices.lineStartIndex;
+              lineEndIndex = trimmedLineIndices.lineEndIndex;
               const trimmedLine = answer.substring(
                 lineStartIndex,
                 lineEndIndex
               );
               if (!lineMatch) {
-                //console.log("LLLLL");
-                // console.log(trimmedLine.includes(" "));
                 storeInputButton(trimmedLine);
                 break;
               }
@@ -228,19 +229,71 @@ export default {
         }
       );
     },
-    onStoreDescriptionTarget() {
-      const descriptionTarget = new DescriptionTarget(
-        null,
+    onStoreDescriptionTarget(trimmingOptions) {
+      const that = this;
+      const storeDescriptionTarget = function(lineStartIndex, lineEndIndex) {
+        if (lineStartIndex === lineEndIndex) {
+          return;
+        }
+        const descriptionTarget = new DescriptionTarget(
+          null,
+          that.startIndex + lineStartIndex,
+          that.startIndex + lineEndIndex,
+          that.selectedDescription.id,
+          that.file.text.substring(
+            that.startIndex + lineStartIndex,
+            that.startIndex + lineEndIndex
+          )
+        );
+        descriptionTarget.store();
+        that.selectedDescription.targets.push(descriptionTarget);
+      };
+      const describedText = this.file.text.substring(
         this.startIndex,
-        this.endIndex,
-        this.selectedDescription.id,
-        this.file.text.substring(this.startIndex, this.endIndex)
+        this.endIndex
       );
-      descriptionTarget.store();
-      this.selectedDescription.targets.push(descriptionTarget);
+      const lineRegex = /\n/g;
+      let lineMatch = lineRegex.exec(describedText);
+      let lineStartIndex = 0;
+      let lineEndIndex = 0;
+      while (true) {
+        lineEndIndex = lineMatch ? lineMatch.index : describedText.length;
+        const line = describedText.substring(lineStartIndex, lineEndIndex);
+        const trimmedLineIndices = this.trim(
+          lineStartIndex,
+          lineEndIndex,
+          line,
+          trimmingOptions
+        );
+        lineStartIndex = trimmedLineIndices.lineStartIndex;
+        lineEndIndex = trimmedLineIndices.lineEndIndex;
+        storeDescriptionTarget(lineStartIndex, lineEndIndex);
+        if (!lineMatch) {
+          break;
+        }
+        lineStartIndex = lineMatch.index + 1;
+        lineMatch = lineRegex.exec(describedText);
+      }
     },
     isTextSelected() {
       return getSelection().toString().length;
+    },
+    trim(lineStartIndex, lineEndIndex, line, trimmingOptions) {
+      if (trimmingOptions.includes(this.trimmingOptions.forward)) {
+        const regex = /^( *).*?$/;
+        const match = regex.exec(line);
+        if (match && match.length === 2) {
+          lineStartIndex += match[1].length;
+        }
+      }
+      if (trimmingOptions.includes(this.trimmingOptions.backward)) {
+        const regex = /^.*?( *)$/;
+        const match = regex.exec(line);
+        if (match && match.length === 2) {
+          lineEndIndex -= match[1].length;
+        }
+      }
+      return { lineStartIndex, lineEndIndex };
     }
   }
 };
