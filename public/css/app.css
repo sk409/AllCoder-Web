@@ -10651,3 +10651,8 @@ a.text-dark:focus {
   box-sizing: border-box;
 }
 
+body {
+  width: 100vw;
+  height: 100vh;
+}
+

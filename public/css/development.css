@@ -1,19 +1,36 @@
 #development {
-  overflow: hidden;
+  height: 100%;
 }
 
 #development-header {
-  height: 5vh;
+  height: 5%;
 }
 
 #development-body {
-  height: 95vh;
+  display: flex;
+  height: 95%;
+}
+
+#file-tree-view {
+  width: 20%;
+  height: 100%;
+}
+
+#editing-view {
+  width: 60%;
+  height: 100%;
+}
+
+#inspector-view {
+  width: 20%;
+  height: 100%;
+  background: lightblue;
 }
 
 #file-tree {
-  overflow: scroll;
   white-space: nowrap;
   padding-bottom: 16px;
+  height: 100%;
 }
 
 #file-creation-view {
@@ -43,11 +60,18 @@
   outline: none;
   resize: none;
   white-space: nowrap;
+  width: 100%;
+  height: 70%;
 }
 
 #file-tree-context-menu,
 #source-code-editor-context-menu {
   position: absolute;
+}
+
+#description {
+  width: 100%;
+  height: 30%;
 }
 
 #description-list-header {
@@ -67,7 +91,6 @@
 }
 
 #description-list-body {
-  overflow-y: scroll;
   height: 85%;
 }
 
