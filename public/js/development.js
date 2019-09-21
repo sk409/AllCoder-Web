@@ -1903,6 +1903,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -1919,8 +1925,32 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       editingView: {
         isShown: false
       },
+      descriptionList: {
+        isShown: true
+      },
       delayedUpdate: _.debounce(this.updateDescription, 500)
     };
+  },
+  computed: {
+    selectedDescriptionIndex: function selectedDescriptionIndex() {
+      if (!this.selectedDescription) {
+        return -1;
+      }
+
+      var that = this;
+      return this.descriptions.findIndex(function (description) {
+        return description.id === that.selectedDescription.id;
+      });
+    },
+    descriptionEditorStyles: function descriptionEditorStyles() {
+      var selectedDescriptionIndex = this.selectedDescriptionIndex;
+      return this.descriptions.map(function (description, index) {
+        var translateX = 100 * (index - selectedDescriptionIndex);
+        return {
+          transform: "translate(" + translateX + "%, 0)"
+        };
+      });
+    }
   },
   methods: {
     onStoreDescription: function onStoreDescription() {
@@ -1943,15 +1973,49 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             var index = Math.max.apply(Math, _toConsumableArray(response.data.map(function (file) {
               return file.index;
             }))) + 1;
-            that.file.index = index; //console.log(that.file.index);
-
+            that.file.index = index;
             that.file.update();
           });
         });
       });
       this.descriptions.push(description);
     },
-    onSelecteDescription: function onSelecteDescription(descriptionId) {
+    onClickPrevButton: function onClickPrevButton() {
+      var selectedDescriptionIndex = this.selectedDescriptionIndex;
+      var notFound = -1;
+
+      if (selectedDescriptionIndex === notFound) {
+        return;
+      }
+
+      var nextSelectedDescriptionIndex = selectedDescriptionIndex - 1;
+
+      if (nextSelectedDescriptionIndex < 0) {
+        return;
+      }
+
+      var nextSelectedDescriptionId = this.descriptions[nextSelectedDescriptionIndex].id;
+      this.$emit("select-description", nextSelectedDescriptionId);
+    },
+    onClickNextButton: function onClickNextButton() {
+      var selectedDescriptionIndex = this.selectedDescriptionIndex;
+      var notFound = -1;
+
+      if (selectedDescriptionIndex === notFound) {
+        return;
+      }
+
+      var nextSelectedDescriptionIndex = selectedDescriptionIndex + 1;
+
+      if (this.descriptions.length <= nextSelectedDescriptionIndex) {
+        return;
+      }
+
+      var nextSelectedDescriptionId = this.descriptions[nextSelectedDescriptionIndex].id;
+      this.$emit("select-description", nextSelectedDescriptionId);
+    },
+    onClickListItem: function onClickListItem(descriptionId) {
+      this.descriptionList.isShown = false;
       this.$emit("select-description", descriptionId);
     },
     onInputDescription: function onInputDescription(e) {
@@ -1959,10 +2023,11 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       this.delayedUpdate();
     },
     onCloseEditingView: function onCloseEditingView() {
-      this.editingView.isShown = false;
+      this.$emit("select-description", null);
     },
     onAfterLeaveSlideUpEditingView: function onAfterLeaveSlideUpEditingView() {
-      this.$emit("select-description", null);
+      this.descriptionList.isShown = true;
+      this.editingView.isShown = false;
     },
     onAfterLeaveSlideDownDescriptionList: function onAfterLeaveSlideDownDescriptionList() {
       this.editingView.isShown = true;
@@ -5752,8 +5817,8 @@ var render = function() {
                 {
                   name: "show",
                   rawName: "v-show",
-                  value: _vm.editingView.isShown,
-                  expression: "editingView.isShown"
+                  value: _vm.editingView.isShown && _vm.selectedDescription,
+                  expression: "editingView.isShown && selectedDescription"
                 }
               ],
               staticClass: "w-100 h-100",
@@ -5780,13 +5845,15 @@ var render = function() {
                   _vm._v(" "),
                   _c("button", { staticClass: "ml-auto" }, [
                     _c("img", {
-                      attrs: { src: _vm.imageUrls.prevButton, alt: "前" }
+                      attrs: { src: _vm.imageUrls.prevButton, alt: "前" },
+                      on: { click: _vm.onClickPrevButton }
                     })
                   ]),
                   _vm._v(" "),
                   _c("button", { staticClass: "ml-3" }, [
                     _c("img", {
-                      attrs: { src: _vm.imageUrls.nextButton, alt: "次" }
+                      attrs: { src: _vm.imageUrls.nextButton, alt: "次" },
+                      on: { click: _vm.onClickNextButton }
                     })
                   ]),
                   _vm._v(" "),
@@ -5805,18 +5872,20 @@ var render = function() {
                 ]
               ),
               _vm._v(" "),
-              _c("div", { attrs: { id: "description-editing-body" } }, [
-                _c("textarea", {
-                  staticClass: "w-100 h-100",
-                  attrs: { id: "description-editor" },
-                  domProps: {
-                    value: _vm.selectedDescription
-                      ? _vm.selectedDescription.text
-                      : ""
-                  },
-                  on: { input: _vm.onInputDescription }
-                })
-              ])
+              _c(
+                "div",
+                { attrs: { id: "description-editing-body" } },
+                _vm._l(_vm.descriptions, function(description, index) {
+                  return _c("textarea", {
+                    key: description.id,
+                    staticClass: "description-editor",
+                    style: _vm.descriptionEditorStyles[index],
+                    domProps: { value: description.text },
+                    on: { input: _vm.onInputDescription }
+                  })
+                }),
+                0
+              )
             ]
           )
         ]
@@ -5836,8 +5905,8 @@ var render = function() {
                 {
                   name: "show",
                   rawName: "v-show",
-                  value: !_vm.selectedDescription,
-                  expression: "!selectedDescription"
+                  value: _vm.descriptionList.isShown,
+                  expression: "descriptionList.isShown"
                 }
               ],
               staticClass: "w-100 h-100"
@@ -5877,7 +5946,7 @@ var render = function() {
                       staticClass: "border-bottom",
                       on: {
                         click: function($event) {
-                          return _vm.onSelecteDescription(description.id)
+                          return _vm.onClickListItem(description.id)
                         }
                       }
                     },
