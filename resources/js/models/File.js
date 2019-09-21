@@ -17,6 +17,7 @@ export default class File extends Model {
         this.index = index;
         this.parent = parent;
         this.lessonId = lessonId;
+        this.isNameEditable = false;
     }
 
     parameters() {
@@ -75,5 +76,13 @@ export default class File extends Model {
 
     set lessonId(value) {
         this._lessonId = value;
+    }
+
+    get isNameEditable() {
+        return this._isNameEditable;
+    }
+
+    set isNameEditable(value) {
+        this._isNameEditable = value;
     }
 }

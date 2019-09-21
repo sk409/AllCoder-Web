@@ -10,7 +10,7 @@
 
 @section("app-content")
 
-<div id="development" v-on:click="onclick" v-on:keydown.meta.90.stop.prevent="onundo">
+<div id="development" v-on:click.capture="onclick" v-on:keydown.meta.90.stop.prevent="onundo">
     <div id="development-header" class="border-bottom border-dark">
         <div>{{$lesson->title}}</div>
     </div>

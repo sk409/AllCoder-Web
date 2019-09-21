@@ -28,6 +28,7 @@
 }
 
 #file-tree {
+  overflow: scroll;
   white-space: nowrap;
   padding-bottom: 16px;
   height: 100%;
@@ -91,6 +92,7 @@
 }
 
 #description-list-body {
+  overflow-y: scroll;
   height: 85%;
 }
 

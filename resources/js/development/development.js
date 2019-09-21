@@ -56,28 +56,30 @@ new Vue({
     },
     computed: {
         questions() {
-            return this.descriptions
-                ? this.descriptions
-                      .map(description => description.questions)
-                      .flat()
-                : [];
+            return this.descriptions ?
+                this.descriptions
+                .map(description => description.questions)
+                .flat() : [];
         },
         descriptionTargets() {
-            return this.descriptions
-                ? this.descriptions
-                      .map(description => description.targets)
-                      .flat()
-                : [];
+            return this.descriptions ?
+                this.descriptions
+                .map(description => description.targets)
+                .flat() : [];
         },
         selectedDescription() {
-            return this.descriptions
-                ? this.descriptions.find(description => description.isSelected)
-                : null;
+            return this.descriptions ?
+                this.descriptions.find(description => description.isSelected) :
+                null;
         }
     },
     methods: {
         onclick() {
             this.fileTree.contextMenu.isShown = false;
+            if (this.fileTree.contextMenu.item && this.fileTree.contextMenu.item.isNameEditable) {
+                this.fileTree.contextMenu.item.isNameEditable = false;
+                this.fileTree.contextMenu.item.input.blur();
+            }
             this.sourceCodeEditor.contextMenu.isShown = false;
             this.sourceCodeEditor.isClicked = true;
         },
@@ -86,7 +88,7 @@ new Vue({
         },
         onSelectDescription(id) {
             const that = this;
-            const unselectDescriptions = function() {
+            const unselectDescriptions = function () {
                 that.descriptions.forEach(description => {
                     description.isSelected = false;
                 });
@@ -107,7 +109,9 @@ new Vue({
         onSetFile(file) {
             this.file = file;
             const that = this;
-            Description.index({ file_id: file.id }, response => {
+            Description.index({
+                file_id: file.id
+            }, response => {
                 that.descriptions = response.data.map(data => {
                     const description = new Description(
                         data.id,
@@ -115,8 +119,9 @@ new Vue({
                         data.text,
                         data.file_id
                     );
-                    DescriptionTarget.index(
-                        { description_id: description.id },
+                    DescriptionTarget.index({
+                            description_id: description.id
+                        },
                         response => {
                             description.targets.push(
                                 ...response.data.map(descriptionTarget => {
@@ -132,12 +137,14 @@ new Vue({
                                     );
                                 })
                             );
-                            Question.index(
-                                { description_id: description.id },
+                            Question.index({
+                                    description_id: description.id
+                                },
                                 response => {
                                     response.data.forEach(question => {
-                                        InputButton.index(
-                                            { question_id: question.id },
+                                        InputButton.index({
+                                                question_id: question.id
+                                            },
                                             response => {
                                                 const inputButtons = response.data.map(
                                                     inputButton => {
@@ -205,7 +212,6 @@ new Vue({
                 e.target.selectionStart;
             this.sourceCodeEditor.contextMenu.selection.endIndex =
                 e.target.selectionEnd;
-            this.sourceCodeEditor.contextMenu.target = e.target;
         }
     }
 });

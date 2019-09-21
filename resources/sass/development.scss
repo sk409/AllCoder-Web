@@ -3,11 +3,7 @@ $file-creation-view-width: $file-creation-view-height;
 $file-creation-view-margin: $file-creation-view-width * 0.01;
 $file-creation-view-component-margin: $file-creation-view-margin;
 $file-creation-view-file-name-width: $file-creation-view-width * 0.5;
-$file-creation-view-button-width: (
-        $file-creation-view-width - $file-creation-view-file-name-width -
-            $file-creation-view-margin * 2 -
-            $file-creation-view-component-margin * 2
-    ) / 2 * 0.8;
+$file-creation-view-button-width: ($file-creation-view-width - $file-creation-view-file-name-width - $file-creation-view-margin * 2 - $file-creation-view-component-margin * 2) / 2 * 0.8;
 $file-creation-view-item-width: $file-creation-view-width * 0.2;
 $file-creation-view-item-height: $file-creation-view-item-width;
 
@@ -42,7 +38,7 @@ $file-creation-view-item-height: $file-creation-view-item-width;
 }
 
 #file-tree {
-    // overflow: scroll;
+    overflow: scroll;
     white-space: nowrap;
     padding-bottom: 16px;
     height: 100%;
@@ -106,7 +102,7 @@ $file-creation-view-item-height: $file-creation-view-item-width;
 }
 
 #description-list-body {
-    // overflow-y: scroll;
+    overflow-y: scroll;
     height: 85%;
 }
 

@@ -2282,6 +2282,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "file-tree-context-menu",
@@ -2316,6 +2321,10 @@ __webpack_require__.r(__webpack_exports__);
     },
     onShowFileCreationView: function onShowFileCreationView() {
       this.$emit("show-file-creation-view");
+    },
+    onEditFileName: function onEditFileName() {
+      this.item.isNameEditable = true;
+      this.item.input.focus();
     },
     onDestoryItems: function onDestoryItems() {
       var _this = this;
@@ -2381,6 +2390,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "file-tree-item",
@@ -2397,6 +2411,13 @@ __webpack_require__.r(__webpack_exports__);
       return this.item instanceof _models_Folder_js__WEBPACK_IMPORTED_MODULE_0__["default"];
     }
   },
+  mounted: function mounted() {
+    if (!this.$refs.name) {
+      return;
+    }
+
+    this.item.input = this.$refs.name;
+  },
   methods: {
     onclick: function onclick() {
       if (this.isFolder) {
@@ -2405,11 +2426,31 @@ __webpack_require__.r(__webpack_exports__);
         this.$emit("set-file", this.item);
       }
     },
+    onInputItemName: function onInputItemName(e) {
+      if (!e.target.value) {
+        return;
+      }
+
+      this.item.name = e.target.value;
+      this.item.update();
+    },
     onShowContextMenu: function onShowContextMenu(e, item) {
       this.$emit("show-context-menu", e, item);
     },
     onSetFile: function onSetFile(file) {
       this.$emit("set-file", file);
+    },
+    onKeyUpEnter: function onKeyUpEnter() {
+      if (this.item.isNameEditable) {
+        this.item.isNameEditable = false;
+        this.item.input.blur();
+      } else {
+        this.item.isNameEditable = true;
+        this.item.input.focus();
+      }
+    },
+    key: function key(item) {
+      return (item instanceof File ? "File" : "Folder") + item.id;
     }
   }
 });
@@ -6111,7 +6152,8 @@ var render = function() {
             }
           ],
           staticClass: "btn btn-light",
-          attrs: { type: "button" }
+          attrs: { type: "button" },
+          on: { click: _vm.onEditFileName }
         },
         [_vm._v("名前を変更")]
       ),
@@ -6160,20 +6202,29 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("li", [
     _vm.item && _vm.item.parent
-      ? _c(
-          "div",
-          {
-            on: {
-              click: _vm.onclick,
-              contextmenu: function($event) {
-                $event.stopPropagation()
-                $event.preventDefault()
-                return _vm.onShowContextMenu($event, _vm.item)
+      ? _c("input", {
+          ref: "name",
+          attrs: { readonly: !_vm.item.isNameEditable },
+          domProps: { value: _vm.item.name },
+          on: {
+            click: _vm.onclick,
+            input: _vm.onInputItemName,
+            keyup: function($event) {
+              if (
+                !$event.type.indexOf("key") &&
+                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+              ) {
+                return null
               }
+              return _vm.onKeyUpEnter($event)
+            },
+            contextmenu: function($event) {
+              $event.stopPropagation()
+              $event.preventDefault()
+              return _vm.onShowContextMenu($event, _vm.item)
             }
-          },
-          [_vm._v(_vm._s(_vm.item.name))]
-        )
+          }
+        })
       : _vm._e(),
     _vm._v(" "),
     _vm.isFolder
@@ -6190,7 +6241,7 @@ var render = function() {
                   expression: "isExpanded"
                 }
               ],
-              key: child.name,
+              key: _vm.key(child),
               attrs: { item: child },
               on: {
                 "show-context-menu": _vm.onShowContextMenu,
@@ -7212,6 +7263,12 @@ new Vue({
   methods: {
     onclick: function onclick() {
       this.fileTree.contextMenu.isShown = false;
+
+      if (this.fileTree.contextMenu.item && this.fileTree.contextMenu.item.isNameEditable) {
+        this.fileTree.contextMenu.item.isNameEditable = false;
+        this.fileTree.contextMenu.item.input.blur();
+      }
+
       this.sourceCodeEditor.contextMenu.isShown = false;
       this.sourceCodeEditor.isClicked = true;
     },
@@ -7307,7 +7364,6 @@ new Vue({
       this.sourceCodeEditor.contextMenu.top = e.pageY;
       this.sourceCodeEditor.contextMenu.selection.startIndex = e.target.selectionStart;
       this.sourceCodeEditor.contextMenu.selection.endIndex = e.target.selectionEnd;
-      this.sourceCodeEditor.contextMenu.target = e.target;
     }
   }
 });
@@ -8127,6 +8183,7 @@ function (_Model) {
     _this.index = index;
     _this.parent = parent;
     _this.lessonId = lessonId;
+    _this.isNameEditable = false;
     return _this;
   }
 
@@ -8188,6 +8245,14 @@ function (_Model) {
     },
     set: function set(value) {
       this._lessonId = value;
+    }
+  }, {
+    key: "isNameEditable",
+    get: function get() {
+      return this._isNameEditable;
+    },
+    set: function set(value) {
+      this._isNameEditable = value;
     }
   }]);
 
@@ -8257,6 +8322,7 @@ function (_Model) {
     _this.parent = parent;
     _this.lessonId = lessonId;
     _this.children = [];
+    _this.isNameEditable = false;
     return _this;
   }
 
@@ -8308,6 +8374,14 @@ function (_Model) {
     },
     set: function set(value) {
       this._children = value;
+    }
+  }, {
+    key: "isNameEditable",
+    get: function get() {
+      return this._isNameEditable;
+    },
+    set: function set(value) {
+      this._isNameEditable = value;
     }
   }]);
 

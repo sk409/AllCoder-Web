@@ -16,6 +16,7 @@ export default class Folder extends Model {
         this.parent = parent;
         this.lessonId = lessonId;
         this.children = [];
+        this.isNameEditable = false;
     }
 
     parameters() {
@@ -64,5 +65,13 @@ export default class Folder extends Model {
 
     set children(value) {
         this._children = value;
+    }
+
+    get isNameEditable() {
+        return this._isNameEditable;
+    }
+
+    set isNameEditable(value) {
+        this._isNameEditable = value;
     }
 }

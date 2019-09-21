@@ -7,7 +7,12 @@
       v-show="isFolder"
       @click="onShowFileCreationView"
     >ファイルを追加</button>
-    <button type="button" class="btn btn-light" v-show="item && item.id">名前を変更</button>
+    <button
+      type="button"
+      class="btn btn-light"
+      v-show="item && item.id"
+      @click="onEditFileName"
+    >名前を変更</button>
     <button type="button" class="btn btn-light" v-show="item && item.id" @click="onDestoryItems">削除</button>
   </div>
 </template>
@@ -40,6 +45,10 @@ export default {
     },
     onShowFileCreationView() {
       this.$emit("show-file-creation-view");
+    },
+    onEditFileName() {
+      this.item.isNameEditable = true;
+      this.item.input.focus();
     },
     onDestoryItems() {
       const destroyer = function(item) {

@@ -30,6 +30,7 @@ Route::group(["middleware" => ["auth"]], function () {
 
     Route::get("/folders", "FoldersController@index")->name("folders.index");
     Route::post("/folders", "FoldersController@store")->name("folders.store");
+    Route::put("/folders/{folder}", "FoldersController@update")->name("folders.update");
     Route::delete("/folders/{folder}", "FoldersController@destroy")->name("folders.destroy");
 
     Route::get("/files", "FilesController@index")->name("files.index");

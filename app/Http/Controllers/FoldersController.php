@@ -28,6 +28,11 @@ class FoldersController extends Controller
         return $folder->id;
     }
 
+    public function update(Request $request, int $id)
+    {
+        Folder::find($id)->fill($request->all())->save();
+    }
+
     public function destroy(Request $request, int $id)
     {
         Folder::destroy($id);
