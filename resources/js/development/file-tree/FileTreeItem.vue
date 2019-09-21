@@ -77,7 +77,7 @@ export default {
       }
     },
     key(item) {
-      return (item instanceof File ? "File" : "Folder") + item.id;
+      return item.baseRoute + item.id;
     }
   }
 };

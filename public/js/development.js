@@ -2515,7 +2515,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     key: function key(item) {
-      return (item instanceof File ? "File" : "Folder") + item.id;
+      return item.baseRoute + item.id;
     }
   }
 });
