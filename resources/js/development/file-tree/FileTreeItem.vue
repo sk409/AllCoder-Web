@@ -79,6 +79,7 @@ export default {
     key(item) {
       return item.baseRoute + item.id;
     }
+    
   }
 };
 </script>
