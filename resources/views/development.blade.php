@@ -12,7 +12,11 @@
 
 <div id="development" v-on:click.capture="onclick" v-on:keydown.meta.90.stop.prevent="onundo">
     <div id="development-header" class="border-bottom border-dark">
-        <div>{{$lesson->title}}</div>
+        <div>
+            {{$lesson->title}}
+            <a type="button" v-on:click="onOpenConsoleTab({{$lesson->gotty_port_number}})">コンソール</a>
+            <a type="button" v-on:click="onOpenPreviewTab({{$lesson->nginx_port_number}})">プレビュー</a>
+        </div>
     </div>
     <div id="development-body">
         <ul id="file-tree-view">

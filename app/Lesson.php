@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class Lesson extends Model
 {
 
-    protected $fillable = ["title", "description", "user_id"];
+    protected $fillable = ["title", "description", "container_name", "user_id", "nginx_port_number", "gotty_port_number"];
 
     public function user()
     {

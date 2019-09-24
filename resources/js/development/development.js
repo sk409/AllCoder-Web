@@ -83,6 +83,15 @@ new Vue({
             this.sourceCodeEditor.contextMenu.isShown = false;
             this.sourceCodeEditor.isClicked = true;
         },
+        onOpenConsoleTab(portNumber) {
+            const window = open("localhost:" + portNumber);
+            //window.focus();
+            //window.location.reload();
+            //open("https://google.com");
+        },
+        onOpenPreviewTab(portNumber) {
+            open("localhost:" + portNumber);
+        },
         onundo() {
             alert("ごめんなさい!UNDO機能はまだ実装していません。");
         },

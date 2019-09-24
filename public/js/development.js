@@ -7341,6 +7341,14 @@ new Vue({
       this.sourceCodeEditor.contextMenu.isShown = false;
       this.sourceCodeEditor.isClicked = true;
     },
+    onOpenConsoleTab: function onOpenConsoleTab(portNumber) {
+      var window = open("localhost:" + portNumber); //window.focus();
+      //window.location.reload();
+      //open("https://google.com");
+    },
+    onOpenPreviewTab: function onOpenPreviewTab(portNumber) {
+      open("localhost:" + portNumber);
+    },
     onundo: function onundo() {
       alert("ごめんなさい!UNDO機能はまだ実装していません。");
     },
