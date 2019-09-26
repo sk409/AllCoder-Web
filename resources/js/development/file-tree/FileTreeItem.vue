@@ -2,7 +2,7 @@
   <li>
     <input
       ref="name"
-      v-if="item && item.parent"
+      v-if="item"
       :value="item.name"
       :readonly="!item.isNameEditable"
       @click="onclick"
@@ -15,7 +15,7 @@
         v-show="isExpanded"
         v-for="child in item.children"
         :item="child"
-        :key="key(child)"
+        :key="child.path"
         @show-context-menu="onShowContextMenu"
         @set-file="onSetFile"
       ></file-tree-item>
@@ -32,12 +32,12 @@ export default {
   },
   data: function() {
     return {
-      isExpanded: true
+      isExpanded: false
     };
   },
   computed: {
     isFolder() {
-      return this.item instanceof Folder;
+      return this.item.baseRoute === Folder.baseRoute();
     }
   },
   mounted() {
@@ -75,9 +75,6 @@ export default {
         this.item.isNameEditable = true;
         this.item.input.focus();
       }
-    },
-    key(item) {
-      return item.baseRoute + item.id;
     }
   }
 };

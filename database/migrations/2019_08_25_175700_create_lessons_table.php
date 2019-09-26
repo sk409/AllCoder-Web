@@ -18,12 +18,12 @@ class CreateLessonsTable extends Migration
             $table->string("title", 128);
             $table->string("description", 1024)->default("");
             $table->string("container_name", 64);
+            $table->smallInteger("preview_port_number")->unsigned()->nullable();
+            $table->smallInteger("console_port_number")->unsigned()->nullable();
+            $table->string("app_directory_path", 256);
+            $table->string("compose_directory_path", 256);
             $table->bigInteger("user_id")->unsigned();
-            $table->bigInteger("nginx_port_number")->unsigned();
-            $table->bigInteger("gotty_port_number")->unsigned();
             $table->foreign("user_id")->references("id")->on("users")->onUpdate("cascade")->onDelete("cascade");
-            $table->foreign("nginx_port_number")->references("id")->on("ports")->onUpdate("cascade");
-            $table->foreign("gotty_port_number")->references("id")->on("ports")->onUpdate("cascade");
             $table->unique(["title", "user_id"]);
             $table->timestamps();
         });

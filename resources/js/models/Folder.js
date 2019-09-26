@@ -9,54 +9,30 @@ export default class Folder extends Model {
         Model.index(Folder.baseRoute(), parameters, completion);
     }
 
-    constructor(id, name, parent, lessonId) {
+    constructor(path) {
         super(Folder.baseRoute());
-        this.id = id;
-        this.name = name;
-        this.parent = parent;
-        this.lessonId = lessonId;
+        this.path = path;
         this.children = [];
         this.isNameEditable = false;
     }
 
     parameters() {
         return {
-            name: this.name,
-            parent_folder_id: this.parent ? this.parent.id : null,
-            lesson_id: this.lessonId
+            path: this.path
         };
-    }
-
-    get id() {
-        return this._id;
-    }
-
-    set id(value) {
-        this._id = value;
     }
 
     get name() {
         return this._name;
     }
 
-    set name(value) {
-        this._name = value;
+    get path() {
+        return this._path;
     }
 
-    get parent() {
-        return this._parent;
-    }
-
-    set parent(value) {
-        this._parent = value;
-    }
-
-    get lessonId() {
-        return this._lessonId;
-    }
-
-    set lessonId(value) {
-        this._lessonId = value;
+    set path(value) {
+        this._path = value;
+        this._name = value.split("/").slice(-1)[0];
     }
 
     get children() {

@@ -27,6 +27,7 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::resource("materials", "MaterialsController");
 
     Route::get("/development/{lessonId}", "DevelopmentController@index")->name("development");
+    Route::post("/development/unload/{lessonId}", "DevelopmentController@unload")->name("development.unload");
 
     Route::get("/folders", "FoldersController@index")->name("folders.index");
     Route::post("/folders", "FoldersController@store")->name("folders.store");
@@ -37,6 +38,7 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::post("/files", "FilesController@store")->name("files.store");
     Route::put("/files/{file}", "FilesController@update")->name("files.update");
     Route::delete("/files/{file}", "FilesController@destroy")->name("files.destroy");
+    //Route::get("/files/fetch_text", "FilesController@fetchText")->name("files.fetchText");
 
     Route::get("/questions", "QuestionsController@index")->name("questions.index");
     Route::post("/questions", "QuestionsController@store")->name("questions.store");

@@ -11,10 +11,8 @@ class FilesController extends Controller
 
     public function index(Request $request)
     {
-        return Controller::narrowDownFromConditions(
-            $request->all(),
-            "\App\File"
-        );
+        $file = new File($request->path, file_get_contents($request->path));
+        return json_encode($file);
     }
 
     public function store(FileCreationRequest $request)

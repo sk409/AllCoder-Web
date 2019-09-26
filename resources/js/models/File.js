@@ -9,41 +9,31 @@ export default class File extends Model {
         Model.index(File.baseRoute(), parameters, completion);
     }
 
-    constructor(id, name, text, index, parent, lessonId) {
+    constructor(path, text) {
         super(File.baseRoute());
-        this.id = id;
-        this.name = name;
+        this.path = path;
         this.text = text;
-        this.index = index;
-        this.parent = parent;
-        this.lessonId = lessonId;
         this.isNameEditable = false;
     }
 
     parameters() {
         return {
-            name: this.name,
-            text: this.text,
-            index: this.index ? this.index : "",
-            parent_folder_id: this.parent ? this.parent.id : "",
-            lesson_id: this.lessonId
+            path: this.path,
+            text: this.text
         };
-    }
-
-    get id() {
-        return this._id;
-    }
-
-    set id(value) {
-        this._id = value;
     }
 
     get name() {
         return this._name;
     }
 
-    set name(value) {
-        this._name = value;
+    get path() {
+        return this._path;
+    }
+
+    set path(value) {
+        this._path = value;
+        this._name = value.split("/").slice(-1)[0];
     }
 
     get text() {
@@ -52,30 +42,6 @@ export default class File extends Model {
 
     set text(value) {
         this._text = value;
-    }
-
-    get index() {
-        return this._index;
-    }
-
-    set index(value) {
-        this._index = value;
-    }
-
-    get parent() {
-        return this._parent;
-    }
-
-    set parent(value) {
-        this._parent = value;
-    }
-
-    get lessonId() {
-        return this._lessonId;
-    }
-
-    set lessonId(value) {
-        this._lessonId = value;
     }
 
     get isNameEditable() {

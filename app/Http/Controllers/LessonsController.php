@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Auth;
+use Illuminate\Support\Facades\File;
 use App\Http\Requests\LessonCreationRequest;
 use App\Lesson;
+use App\Path;
 use App\Port;
 use Illuminate\Contracts\Support\Renderable;
 
@@ -22,17 +24,26 @@ class LessonsController extends Controller
 
     public function store(LessonCreationRequest $request)
     {
-        $containerName = "all_coder_" . uniqid();
-        $nginxPort = Port::create();
-        $gottyPort = Port::create();
-        exec("docker container run -itd --name $containerName -p $nginxPort->id:80 -p $gottyPort->id:8080 all_coder/laravel");
-        exec("docker container exec $containerName /bin/bash /opt/scripts/startup.sh");
-        exec("docker container exec -itd $containerName gotty -w bash");
+        $uniqueName = "all_coder_" . uniqid();
+        $composeDirectoryPath = resource_path("docker/" . $uniqueName);
+        File::makeDirectory($composeDirectoryPath);
+        $composePath = $composeDirectoryPath . "/docker-compose.yml";
+        File::copy(resource_path("docker/docker-compose.yml"), $composePath);
+        File::copy(resource_path("docker/Dockerfile"), $composeDirectoryPath . "/Dockerfile");
+        $appDirectoryPath = Path::lesson("$uniqueName");
+        $originalPath = Path::lesson("originals/laravel/5.8");
+        exec("cp -r $originalPath/ $appDirectoryPath/");
+        $composeProjectName = "all_coder_$uniqueName";
+        File::put($composeDirectoryPath . "/.env", "VOLUME=$appDirectoryPath\nCOMPOSE_PROJECT_NAME=$composeProjectName");
+        $osPath = resource_path("docker/os");
+        exec("cp -r $osPath $composeDirectoryPath");
+        exec("cd $composeDirectoryPath && docker-compose build");
+        $containerName = $composeProjectName . "_develop-lesson_1";
         $parameters = $request->all();
         $parameters["container_name"] = $containerName;
-        $parameters["nginx_port_number"] = $nginxPort->id;
-        $parameters["gotty_port_number"] = $gottyPort->id;
+        $parameters["app_directory_path"] = $appDirectoryPath;
+        $parameters["compose_directory_path"] = $composeDirectoryPath;
         $lesson = Lesson::create($parameters);
-        return redirect("development/" . $lesson->id);
+        return redirect("/development/{$lesson->id}");
     }
 }

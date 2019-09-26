@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\File;
 use App\Folder;
 use App\Http\Requests\FolderCreationRequest;
 use Illuminate\Http\Request;
@@ -9,12 +10,28 @@ use Illuminate\Http\Request;
 class FoldersController extends Controller
 {
 
+    private static function fileTree(string $dir, Folder $current)
+    {
+        $itemPaths = glob($dir . '/*');
+        $folders = [];
+        $files = [];
+        foreach ($itemPaths as $itemPath) {
+            if (is_file($itemPath)) {
+                $files[] = new File($itemPath, "");
+            } else {
+                $childFolder = new Folder($itemPath);
+                FoldersController::fileTree($dir . "/" . basename($itemPath), $childFolder);
+                $folders[] = $childFolder;
+            }
+        }
+        $current->children = array_merge($folders, $files);
+    }
+
     public function index(Request $request)
     {
-        return Controller::narrowDownFromConditions(
-            $request->all(),
-            "\App\Folder"
-        );
+        $rootFolder = new Folder("");
+        FoldersController::fileTree($request->path, $rootFolder);
+        return json_encode($rootFolder);
     }
 
     public function store(FolderCreationRequest $request)
@@ -23,7 +40,6 @@ class FoldersController extends Controller
         if ($parameters["name"] === null) {
             $parameters["name"] = "";
         }
-        //return $parameters;
         $folder = Folder::create($parameters);
         return $folder->id;
     }

@@ -2,22 +2,35 @@
 
 namespace App;
 
-use App\Lesson;
-use App\File;
-use Illuminate\Database\Eloquent\Model;
+// use App\Lesson;
+// use App\File;
+// use Illuminate\Database\Eloquent\Model;
 
-class Folder extends Model
+class Folder /*extends Model*/
 {
 
-    protected $fillable = ["name", "parent_folder_id", "lesson_id"];
+    public $path = "";
+    public $children = [];
 
-    public function lesson()
+    public function __construct(string $path)
     {
-        return $this->belongsTo(Lesson::class);
+        $this->path = $path;
     }
 
-    public function files()
+    public function appenChild($child)
     {
-        return $this->hasMany(File::class, "parent_folder_id");
+        $this->children[] = $child;
     }
+
+    // protected $fillable = ["name", "parent_folder_id", "lesson_id"];
+
+    // public function lesson()
+    // {
+    //     return $this->belongsTo(Lesson::class);
+    // }
+
+    // public function files()
+    // {
+    //     return $this->hasMany(File::class, "parent_folder_id");
+    // }
 }
