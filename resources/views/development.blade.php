@@ -5,6 +5,10 @@
 @endsection
 
 @section("scripts")
+<script src="{{ asset("js/ace/ace.js") }}" defer></script>
+<script src="{{ asset("js/ace/ext-language_tools.js") }}" defer></script>
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script> --}}
 <script src="{{ asset("js/development.js") }}" defer></script>
 @endsection
 

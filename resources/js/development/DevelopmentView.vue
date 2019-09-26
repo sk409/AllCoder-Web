@@ -3,8 +3,10 @@
     <div id="development-header" class="border-bottom border-dark">
       <div>
         {{lesson.title}}
-        <a :href="'localhost:' + lesson.console_port_number" target="_blank">コンソール</a>
-        <a :href="'localhost:' + lesson.preview_port_number" target="_blank">プレビュー</a>
+        <a
+          :href="'http://localhost:' + lesson.preview_port_number"
+          target="_blank"
+        >プレビュー</a>
       </div>
     </div>
     <div id="development-body">
@@ -16,8 +18,9 @@
           @set-file="onSetFile"
         ></file-tree>
       </ul>
-      <div id="editing-view">
-        <textarea class="w-100 h-100" v-model="text"></textarea>
+      <div id="center-view">
+        <div id="source-code-editor" ref="sourceCodeEditor"></div>
+        <iframe id="console" :src="'http://localhost:' + lesson.console_port_number"></iframe>
         <!-- <source-code-editor
           :file="file"
           :questions="questions"
@@ -32,7 +35,7 @@
             }" :selected-description="selectedDescription" :descriptions="descriptions"
         v-on:select-description="onSelectDescription"></description-editor> --}}-->
       </div>
-      <div id="inspector-view"></div>
+      <!-- <div id="inspector-view"></div> -->
     </div>
     <!-- <transition name="fade">
       <file-creation-view
@@ -61,6 +64,8 @@
 </template>
 
 <script>
+// import "../ace/ace.js";
+// import "../ace/ext-language_tools";
 import File from "../models/File.js";
 import FileTree from "./file-tree/FileTree.vue";
 import Folder from "../models/Folder.js";
@@ -75,6 +80,7 @@ export default {
   data: function() {
     return {
       text: "",
+      editor: null,
       rootFolder: new Folder("")
       // file: null,
       // descriptions: null,
@@ -118,21 +124,7 @@ export default {
   //   }
   // },
   mounted() {
-    // const map = function(current, currentProp) {
-    //   currentProp.children.forEach(childProp => {
-    //     if (childProp.hasOwnProperty("children")) {
-    //       const childFolder = new Folder(childProp.path);
-    //       map(childFolder, childProp);
-    //       current.children.push(childFolder);
-    //     } else {
-    //       current.children.push(new File(childProp.path, childProp.text));
-    //     }
-    //   });
-    // };
-    // this.rootFolder = new Folder(this.rootFolderProp.path);
-    // map(this.rootFolder, this.rootFolderProp);
     const that = this;
-    console.log(Folder.baseRoute());
     Folder.index({ path: this.lesson.app_directory_path }, response => {
       const map = function(before, after) {
         after.path = before.path;
@@ -151,6 +143,15 @@ export default {
     window.onbeforeunload = function() {
       axios.post("/development/unload/" + that.lesson.id);
     };
+    this.editor = ace.edit("source-code-editor");
+    this.editor.$blockScrolling = Infinity;
+    this.editor.setOptions({
+      enableBasicAutocompletion: true,
+      enableSnippets: true,
+      enableLiveAutocompletion: true
+    });
+    this.editor.setTheme("ace/theme/monokai");
+    this.editor.getSession().setMode("ace/mode/javascript");
     //console.log(this.rootFolder);
   },
   methods: {
@@ -202,7 +203,13 @@ export default {
       console.log(file.path);
       const that = this;
       File.index({ path: file.path }, response => {
-        that.text = response.data.text;
+        this.editor.setValue(response.data.text);
+        //that.text = response.data.text;
+        //that.$refs.editor.textContent = "";
+        //that.$refs.sourceCodeEditor.textContent = response.data.text;
+        // that.$refs.editor.textContent += response.data.text.substring(0, 10);
+        // document.execCommand("italic", false);
+        // that.$refs.editor.textContent += response.data.text.substring(10);
       });
       // axios.get("/files/fetch_text?path=" + file.path).then(response => {
       //   console.log(response.data);

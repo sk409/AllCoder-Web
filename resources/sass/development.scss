@@ -26,8 +26,8 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     height: 100%;
 }
 
-#editing-view {
-    width: 60%;
+#center-view {
+    width: 80%;
     height: 100%;
 }
 
@@ -67,12 +67,14 @@ $file-creation-view-item-height: $file-creation-view-item-width;
 }
 
 #source-code-editor {
-    border: none;
-    outline: none;
-    resize: none;
-    white-space: nowrap;
     width: 100%;
-    height: 70%;
+    height: 60%;
+}
+
+#console {
+    border: none;
+    width: 100%;
+    height: 40%;
 }
 
 #file-tree-context-menu,

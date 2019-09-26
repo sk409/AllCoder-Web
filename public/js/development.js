@@ -1903,6 +1903,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+// import "../ace/ace.js";
+// import "../ace/ext-language_tools";
 
 
 
@@ -1917,6 +1922,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       text: "",
+      editor: null,
       rootFolder: new _models_Folder_js__WEBPACK_IMPORTED_MODULE_2__["default"]("") // file: null,
       // descriptions: null,
       // fileCreationView: {
@@ -1960,21 +1966,7 @@ __webpack_require__.r(__webpack_exports__);
   //   }
   // },
   mounted: function mounted() {
-    // const map = function(current, currentProp) {
-    //   currentProp.children.forEach(childProp => {
-    //     if (childProp.hasOwnProperty("children")) {
-    //       const childFolder = new Folder(childProp.path);
-    //       map(childFolder, childProp);
-    //       current.children.push(childFolder);
-    //     } else {
-    //       current.children.push(new File(childProp.path, childProp.text));
-    //     }
-    //   });
-    // };
-    // this.rootFolder = new Folder(this.rootFolderProp.path);
-    // map(this.rootFolder, this.rootFolderProp);
     var that = this;
-    console.log(_models_Folder_js__WEBPACK_IMPORTED_MODULE_2__["default"].baseRoute());
     _models_Folder_js__WEBPACK_IMPORTED_MODULE_2__["default"].index({
       path: this.lesson.app_directory_path
     }, function (response) {
@@ -1996,8 +1988,17 @@ __webpack_require__.r(__webpack_exports__);
 
     window.onbeforeunload = function () {
       axios.post("/development/unload/" + that.lesson.id);
-    }; //console.log(this.rootFolder);
+    };
 
+    this.editor = ace.edit("source-code-editor");
+    this.editor.$blockScrolling = Infinity;
+    this.editor.setOptions({
+      enableBasicAutocompletion: true,
+      enableSnippets: true,
+      enableLiveAutocompletion: true
+    });
+    this.editor.setTheme("ace/theme/monokai");
+    this.editor.getSession().setMode("ace/mode/javascript"); //console.log(this.rootFolder);
   },
   methods: {
     onclick: function onclick() {// this.fileTree.contextMenu.isShown = false;
@@ -2042,12 +2043,20 @@ __webpack_require__.r(__webpack_exports__);
       // description.isSelected = true;
     },
     onSetFile: function onSetFile(file) {
+      var _this = this;
+
       console.log(file.path);
       var that = this;
       _models_File_js__WEBPACK_IMPORTED_MODULE_0__["default"].index({
         path: file.path
       }, function (response) {
-        that.text = response.data.text;
+        _this.editor.setValue(response.data.text); //that.text = response.data.text;
+        //that.$refs.editor.textContent = "";
+        //that.$refs.sourceCodeEditor.textContent = response.data.text;
+        // that.$refs.editor.textContent += response.data.text.substring(0, 10);
+        // document.execCommand("italic", false);
+        // that.$refs.editor.textContent += response.data.text.substring(10);
+
       }); // axios.get("/files/fetch_text?path=" + file.path).then(response => {
       //   console.log(response.data);
       //   that.text = response.data;
@@ -2643,18 +2652,7 @@ var render = function() {
               "a",
               {
                 attrs: {
-                  href: "localhost:" + _vm.lesson.console_port_number,
-                  target: "_blank"
-                }
-              },
-              [_vm._v("コンソール")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                attrs: {
-                  href: "localhost:" + _vm.lesson.preview_port_number,
+                  href: "http://localhost:" + _vm.lesson.preview_port_number,
                   target: "_blank"
                 }
               },
@@ -2680,30 +2678,19 @@ var render = function() {
           1
         ),
         _vm._v(" "),
-        _c("div", { attrs: { id: "editing-view" } }, [
-          _c("textarea", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.text,
-                expression: "text"
-              }
-            ],
-            staticClass: "w-100 h-100",
-            domProps: { value: _vm.text },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.text = $event.target.value
-              }
+        _c("div", { attrs: { id: "center-view" } }, [
+          _c("div", {
+            ref: "sourceCodeEditor",
+            attrs: { id: "source-code-editor" }
+          }),
+          _vm._v(" "),
+          _c("iframe", {
+            attrs: {
+              id: "console",
+              src: "http://localhost:" + _vm.lesson.console_port_number
             }
           })
-        ]),
-        _vm._v(" "),
-        _c("div", { attrs: { id: "inspector-view" } })
+        ])
       ])
     ]
   )
