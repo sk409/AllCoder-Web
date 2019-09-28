@@ -1,5 +1,5 @@
 <template>
-  <div id="development" v-on:click.capture="onclick" v-on:keydown.meta.90.stop.prevent="onundo">
+  <div id="development" v-on:click.capture="onclick">
     <div id="development-header" class="border-bottom border-dark">
       <div>
         {{lesson.title}}
@@ -64,11 +64,11 @@
 </template>
 
 <script>
-// import "../ace/ace.js";
-// import "../ace/ext-language_tools";
+import { basename } from "path";
 import File from "../models/File.js";
 import FileTree from "./file-tree/FileTree.vue";
 import Folder from "../models/Folder.js";
+import Routes from "../Routes.js";
 export default {
   name: "development-view",
   props: {
@@ -79,9 +79,9 @@ export default {
   },
   data: function() {
     return {
-      text: "",
       editor: null,
-      rootFolder: new Folder("")
+      rootFolder: null,
+      fileDictionary: {}
       // file: null,
       // descriptions: null,
       // fileCreationView: {
@@ -124,15 +124,18 @@ export default {
   //   }
   // },
   mounted() {
+    this.rootFolder = new Folder(this.lesson.host_app_directory_path);
+    this.fileDictionary[this.rootFolder.path] = this.rootFolder;
     const that = this;
-    Folder.index({ path: this.lesson.app_directory_path }, response => {
+    Folder.index({ path: this.lesson.host_app_directory_path }, response => {
       const map = function(before, after) {
-        after.path = before.path;
         before.children.forEach(beforeChild => {
           if (beforeChild.hasOwnProperty("text")) {
             after.children.push(new File(beforeChild.path, ""));
           } else {
             const afterChild = new Folder(beforeChild.path);
+            afterChild.path = beforeChild.path;
+            that.fileDictionary[afterChild.path] = afterChild;
             map(beforeChild, afterChild);
             after.children.push(afterChild);
           }
@@ -151,7 +154,92 @@ export default {
       enableLiveAutocompletion: true
     });
     this.editor.setTheme("ace/theme/monokai");
-    this.editor.getSession().setMode("ace/mode/javascript");
+    this.editor.session.on("change", delta => {
+      if (
+        delta.action === "insert" &&
+        that.editor.file.txt !== that.editor.getValue()
+      ) {
+        that.editor.file.text = that.editor.getValue();
+        //that.editor.file.update();
+      }
+    });
+    this.editor.setReadOnly(true);
+    setInterval(function() {
+      axios.get(Routes.lessonDelta(that.lesson.id)).then(response => {
+        let deltas = Array(response.data[0].length);
+        deltas.fill({});
+        response.data[1].forEach((path, index) => {
+          //console.log(deltas[index]);
+          path = path.slice(0, -1);
+          deltas[index].path = path.replace(
+            that.lesson.container_app_directory_path,
+            that.lesson.host_app_directory_path
+          );
+        });
+        response.data[2].forEach((type, index) => {
+          deltas[index].type = type;
+        });
+        response.data[3].forEach((isDir, index) => {
+          deltas[index].isDir = isDir;
+        });
+        response.data[4].forEach((target, index) => {
+          deltas[index].target = target;
+        });
+        deltas.forEach(delta => {
+          const fileTreeItem = that.fileDictionary[delta.path];
+          const targetPath = delta.path + "/" + delta.target;
+          if (delta.type === "CREATE") {
+            if (
+              !fileTreeItem.children.find(child => child.path === delta.target)
+            ) {
+              if (delta.isDir === "") {
+                fileTreeItem.children.push(new File(targetPath, ""));
+              } else {
+                fileTreeItem.children.push(new Folder(targetPath));
+              }
+              fileTreeItem.children.sort((a, b) => {
+                if (
+                  a.baseRoute === Folder.baseRoute() &&
+                  b.baseRoute === File.baseRoute()
+                ) {
+                  return -1;
+                }
+                if (
+                  a.baseRoute === File.baseRoute() &&
+                  b.baseRoute === Folder.baseRoute()
+                ) {
+                  return 1;
+                }
+                if (a.path < b.path) {
+                  return -1;
+                } else if (b.path < a.path) {
+                  return 1;
+                }
+                return 0;
+              });
+            }
+          } else if (delta.type === "DELETE") {
+            const targetIndex = fileTreeItem.children.findIndex(
+              child => child.path === targetPath
+            );
+            const notFound = -1;
+            if (targetIndex !== notFound) {
+              fileTreeItem.children.splice(targetIndex, 1);
+            }
+          } else if (delta.type === "MODIFY") {
+            console.log("MODIFY");
+            if (that.editor.file.path === targetPath) {
+              File.index({ path: targetPath }, response => {
+                if (response.data.text !== that.editor.getValue()) {
+                  that.editor.setValue(response.data.text);
+                }
+              });
+            }
+          }
+        });
+      });
+    }, 1000);
+    //this.editor.getSession().setMode("ace/mode/javascript");
     //console.log(this.rootFolder);
   },
   methods: {
@@ -166,18 +254,6 @@ export default {
       // }
       // this.sourceCodeEditor.contextMenu.isShown = false;
       // this.sourceCodeEditor.isClicked = true;
-    },
-    onOpenConsoleTab(portNumber) {
-      open("localhost:" + portNumber);
-      //window.focus();
-      //window.location.reload();
-      //open("https://google.com");
-    },
-    onOpenPreviewTab(portNumber) {
-      open("localhost:" + portNumber);
-    },
-    onundo() {
-      alert("ごめんなさい!UNDO機能はまだ実装していません。");
     },
     onSelectDescription(id) {
       // const that = this;
@@ -200,10 +276,35 @@ export default {
       // description.isSelected = true;
     },
     onSetFile(file) {
-      console.log(file.path);
       const that = this;
       File.index({ path: file.path }, response => {
+        file.text = response.data.text;
+        this.editor.file = file;
         this.editor.setValue(response.data.text);
+        const modes = {
+          js: "javascript",
+          php: "php",
+          html: "html",
+          css: "css",
+          scss: "scss",
+          vue: "vue",
+          json: "json",
+          xml: "xml"
+        };
+        const pathComponents = file.path.split(".");
+        const extension = pathComponents.slice(-1)[0];
+        this.editor.setReadOnly(false);
+        this.editor.getSession().setMode("ace/mode/" + modes[extension]);
+        // if (
+        //   extension === "php" &&
+        //   2 <= pathComponents.length &&
+        //   pathComponents.slice(-2)[0] === "blade"
+        // ) {
+        //   this.editor.getSession().setMode("ace/mode/php_laravel_blade");
+        // } else {
+        //   this.editor.getSession().setMode("ace/mode/" + modes[extension]);
+        // }
+        //this.editor.getSession().setMode("ace/mode/javascript");
         //that.text = response.data.text;
         //that.$refs.editor.textContent = "";
         //that.$refs.sourceCodeEditor.textContent = response.data.text;

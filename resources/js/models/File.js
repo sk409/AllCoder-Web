@@ -23,6 +23,10 @@ export default class File extends Model {
         };
     }
 
+    findBySuffix(suffix) {
+        return this.path.endsWith(suffix);
+    }
+
     get name() {
         return this._name;
     }

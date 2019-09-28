@@ -1,6 +1,7 @@
 import Axios from "axios";
 
 class URI {
+
     constructor(baseRoute) {
         this.baseRoute = baseRoute;
     }
@@ -28,7 +29,8 @@ class URI {
     }
 
     update(id) {
-        return "/" + this.baseRoute + "/" + id;
+        const base = "/" + this.baseRoute + "/";
+        return id ? base + id : base;
     }
 
     show(id) {

@@ -24,6 +24,7 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::get("/dashboard/lessons", "DashboardController@lessons")->name("dashboard.lessons");
 
     Route::resource("lessons", "LessonsController");
+    Route::get("lessons/delta/{lesson}", "LessonsController@delta")->name("lesson.delta");
     Route::resource("materials", "MaterialsController");
 
     Route::get("/development/{lessonId}", "DevelopmentController@index")->name("development");
@@ -36,7 +37,7 @@ Route::group(["middleware" => ["auth"]], function () {
 
     Route::get("/files", "FilesController@index")->name("files.index");
     Route::post("/files", "FilesController@store")->name("files.store");
-    Route::put("/files/{file}", "FilesController@update")->name("files.update");
+    Route::put("/files", "FilesController@update")->name("files.update");
     Route::delete("/files/{file}", "FilesController@destroy")->name("files.destroy");
     //Route::get("/files/fetch_text", "FilesController@fetchText")->name("files.fetchText");
 

@@ -25,13 +25,18 @@ class FilesController extends Controller
         return $file->id;
     }
 
-    public function update(Request $request, int $id)
+    // public function update(Request $request, int $id)
+    // {
+    //     $parameters = $request->all();
+    //     if ($request->has("text") && is_null($request->text)) {
+    //         $parameters["text"] = "";
+    //     }
+    //     File::find($id)->fill($parameters)->save();
+    // }
+
+    public function update(Request $request)
     {
-        $parameters = $request->all();
-        if ($request->has("text") && is_null($request->text)) {
-            $parameters["text"] = "";
-        }
-        File::find($id)->fill($parameters)->save();
+        \Illuminate\Support\Facades\File::put($request->path, $request->text, true);
     }
 
     public function destroy(Request $request, int $id)

@@ -22,6 +22,21 @@ export default class Folder extends Model {
         };
     }
 
+    findBySuffix(suffix) {
+        console.log("PATH: " + this.path);
+        console.log("SUFFIX: " + suffix);
+        // if (this.path.endsWith(suffix)) {
+        //     return this;
+        // }
+        // for (let index = 0; index < this.children.length; ++index) {
+        //     const result = this.children[index].findBySuffix(suffix);
+        //     if (result) {
+        //         return result;
+        //     }
+        // }
+        // return null;
+    }
+
     get name() {
         return this._name;
     }

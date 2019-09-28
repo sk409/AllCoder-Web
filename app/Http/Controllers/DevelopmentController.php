@@ -23,6 +23,7 @@ namespace App\Http\Controllers;
 //use App\File;
 use App\Lesson;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Support\Facades\File;
 
 // class File
 // {
@@ -61,6 +62,7 @@ class DevelopmentController extends Controller
         exec("cd $lesson->compose_directory_path && docker-compose up -d");
         exec("docker container exec $lesson->container_name /bin/bash /opt/scripts/startup.sh");
         exec("docker container exec -itd $lesson->container_name gotty -w bash");
+        exec("docker container exec -itd $lesson->container_name /opt/scripts/observe_app_changes.sh $lesson->container_app_directory_path $lesson->container_logs_directory_path/app_changes.txt");
         exec("docker container port $lesson->container_name", $ports);
         $portString = join("\n", $ports);
         preg_match("/80\\/tcp.+:([0-9]+)/u", $portString, $previewPortMatches);

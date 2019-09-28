@@ -20,7 +20,10 @@ class CreateLessonsTable extends Migration
             $table->string("container_name", 64);
             $table->smallInteger("preview_port_number")->unsigned()->nullable();
             $table->smallInteger("console_port_number")->unsigned()->nullable();
-            $table->string("app_directory_path", 256);
+            $table->string("host_app_directory_path", 256);
+            $table->string("host_logs_directory_path", 256);
+            $table->string("container_app_directory_path", 256);
+            $table->string("container_logs_directory_path", 256);
             $table->string("compose_directory_path", 256);
             $table->bigInteger("user_id")->unsigned();
             $table->foreign("user_id")->references("id")->on("users")->onUpdate("cascade")->onDelete("cascade");
