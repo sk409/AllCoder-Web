@@ -1926,6 +1926,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       editor: null,
       rootFolder: null,
+      fileDeltas: [],
       fileDictionary: {} // file: null,
       // descriptions: null,
       // fileCreationView: {
@@ -2004,44 +2005,53 @@ __webpack_require__.r(__webpack_exports__);
       enableLiveAutocompletion: true
     });
     this.editor.setTheme("ace/theme/monokai");
-    this.editor.session.on("change", function (delta) {
-      if (delta.action === "insert" && that.editor.file.txt !== that.editor.getValue()) {
-        that.editor.file.text = that.editor.getValue(); //that.editor.file.update();
+    this.editor.session.on("change", function (fileDelta) {
+      if (fileDelta.action === "insert" && that.editor.file.txt !== that.editor.getValue()) {
+        that.editor.file.text = that.editor.getValue();
+        that.editor.file.update();
       }
     });
     this.editor.setReadOnly(true);
     setInterval(function () {
       axios.get(_Routes_js__WEBPACK_IMPORTED_MODULE_4__["default"].lessonDelta(that.lesson.id)).then(function (response) {
-        var deltas = Array(response.data[0].length);
-        deltas.fill({});
+        var fileDeltas = [];
         response.data[1].forEach(function (path, index) {
-          //console.log(deltas[index]);
           path = path.slice(0, -1);
-          deltas[index].path = path.replace(that.lesson.container_app_directory_path, that.lesson.host_app_directory_path);
+          fileDeltas.push({});
+          fileDeltas[index].path = path.replace(that.lesson.container_app_directory_path, that.lesson.host_app_directory_path);
         });
         response.data[2].forEach(function (type, index) {
-          deltas[index].type = type;
+          //console.log(type);
+          fileDeltas[index].type = type;
         });
         response.data[3].forEach(function (isDir, index) {
-          deltas[index].isDir = isDir;
+          fileDeltas[index].isDir = isDir;
         });
         response.data[4].forEach(function (target, index) {
-          deltas[index].target = target;
-        });
-        deltas.forEach(function (delta) {
-          var fileTreeItem = that.fileDictionary[delta.path];
-          var targetPath = delta.path + "/" + delta.target;
+          fileDeltas[index].target = target;
+        }); //console.log(fileDeltas);
 
-          if (delta.type === "CREATE") {
+        fileDeltas.concat(that.fileDeltas);
+        that.fileDeltas = [];
+        fileDeltas.forEach(function (fileDelta) {
+          // console.log(fileDelta.type);
+          var fileTreeItem = that.fileDictionary[fileDelta.path];
+
+          if (!fileTreeItem) {
+            that.fileDeltas.push(fileDelta);
+            return;
+          }
+
+          var targetPath = fileDelta.path + "/" + fileDelta.target;
+
+          if (fileDelta.type === "CREATE" && !that.fileDictionary[targetPath]) {
+            //console.log("CREATE");
             if (!fileTreeItem.children.find(function (child) {
-              return child.path === delta.target;
+              return child.path === fileDelta.target;
             })) {
-              if (delta.isDir === "") {
-                fileTreeItem.children.push(new _models_File_js__WEBPACK_IMPORTED_MODULE_1__["default"](targetPath, ""));
-              } else {
-                fileTreeItem.children.push(new _models_Folder_js__WEBPACK_IMPORTED_MODULE_3__["default"](targetPath));
-              }
-
+              var newChild = fileDelta.isDir === "" ? new _models_File_js__WEBPACK_IMPORTED_MODULE_1__["default"](targetPath, "") : new _models_Folder_js__WEBPACK_IMPORTED_MODULE_3__["default"](targetPath);
+              that.fileDictionary[targetPath] = newChild;
+              fileTreeItem.children.push(newChild);
               fileTreeItem.children.sort(function (a, b) {
                 if (a.baseRoute === _models_Folder_js__WEBPACK_IMPORTED_MODULE_3__["default"].baseRoute() && b.baseRoute === _models_File_js__WEBPACK_IMPORTED_MODULE_1__["default"].baseRoute()) {
                   return -1;
@@ -2060,7 +2070,8 @@ __webpack_require__.r(__webpack_exports__);
                 return 0;
               });
             }
-          } else if (delta.type === "DELETE") {
+          } else if (fileDelta.type === "DELETE") {
+            //console.log("DELETE");
             var targetIndex = fileTreeItem.children.findIndex(function (child) {
               return child.path === targetPath;
             });
@@ -2068,19 +2079,16 @@ __webpack_require__.r(__webpack_exports__);
 
             if (targetIndex !== notFound) {
               fileTreeItem.children.splice(targetIndex, 1);
+              delete that.fileDictionary[targetPath];
             }
-          } else if (delta.type === "MODIFY") {
-            console.log("MODIFY");
-
-            if (that.editor.file.path === targetPath) {
-              _models_File_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
-                path: targetPath
-              }, function (response) {
-                if (response.data.text !== that.editor.getValue()) {
-                  that.editor.setValue(response.data.text);
-                }
-              });
-            }
+          } else if (fileDelta.type === "MODIFY") {//console.log("MODIFY");
+            // if (that.editor.file && that.editor.file.path === targetPath) {
+            //   File.index({ path: targetPath }, response => {
+            //     if (response.data.text !== that.editor.getValue()) {
+            //       that.editor.setValue(response.data.text);
+            //     }
+            //   });
+            // }
           }
         });
       });

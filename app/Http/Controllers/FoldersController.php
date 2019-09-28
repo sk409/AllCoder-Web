@@ -12,7 +12,7 @@ class FoldersController extends Controller
 
     private static function fileTree(string $dir, Folder $current)
     {
-        $itemPaths = glob($dir . '/*');
+        $itemPaths = glob($dir . '/{*,.[!.]*,..?*}', GLOB_BRACE);
         $folders = [];
         $files = [];
         foreach ($itemPaths as $itemPath) {

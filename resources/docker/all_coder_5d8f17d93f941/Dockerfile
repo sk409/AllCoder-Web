@@ -5,7 +5,6 @@ FROM mysql:8
 # nginx, php-fpm
 RUN apt update
 RUN apt install -y vim
-RUN apt install -y git
 RUN apt install -y wget
 RUN apt install -y inotify-tools
 RUN wget http://nginx.org/keys/nginx_signing.key

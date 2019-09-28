@@ -81,6 +81,7 @@ export default {
     return {
       editor: null,
       rootFolder: null,
+      fileDeltas: [],
       fileDictionary: {}
       // file: null,
       // descriptions: null,
@@ -154,49 +155,61 @@ export default {
       enableLiveAutocompletion: true
     });
     this.editor.setTheme("ace/theme/monokai");
-    this.editor.session.on("change", delta => {
+    this.editor.session.on("change", fileDelta => {
       if (
-        delta.action === "insert" &&
+        fileDelta.action === "insert" &&
         that.editor.file.txt !== that.editor.getValue()
       ) {
         that.editor.file.text = that.editor.getValue();
-        //that.editor.file.update();
+        that.editor.file.update();
       }
     });
     this.editor.setReadOnly(true);
     setInterval(function() {
       axios.get(Routes.lessonDelta(that.lesson.id)).then(response => {
-        let deltas = Array(response.data[0].length);
-        deltas.fill({});
+        let fileDeltas = [];
         response.data[1].forEach((path, index) => {
-          //console.log(deltas[index]);
           path = path.slice(0, -1);
-          deltas[index].path = path.replace(
+          fileDeltas.push({});
+          fileDeltas[index].path = path.replace(
             that.lesson.container_app_directory_path,
             that.lesson.host_app_directory_path
           );
         });
         response.data[2].forEach((type, index) => {
-          deltas[index].type = type;
+          //console.log(type);
+          fileDeltas[index].type = type;
         });
         response.data[3].forEach((isDir, index) => {
-          deltas[index].isDir = isDir;
+          fileDeltas[index].isDir = isDir;
         });
         response.data[4].forEach((target, index) => {
-          deltas[index].target = target;
+          fileDeltas[index].target = target;
         });
-        deltas.forEach(delta => {
-          const fileTreeItem = that.fileDictionary[delta.path];
-          const targetPath = delta.path + "/" + delta.target;
-          if (delta.type === "CREATE") {
+        //console.log(fileDeltas);
+        fileDeltas.concat(that.fileDeltas);
+        that.fileDeltas = [];
+        fileDeltas.forEach(fileDelta => {
+          // console.log(fileDelta.type);
+          const fileTreeItem = that.fileDictionary[fileDelta.path];
+          if (!fileTreeItem) {
+            that.fileDeltas.push(fileDelta);
+            return;
+          }
+          const targetPath = fileDelta.path + "/" + fileDelta.target;
+          if (fileDelta.type === "CREATE" && !that.fileDictionary[targetPath]) {
+            //console.log("CREATE");
             if (
-              !fileTreeItem.children.find(child => child.path === delta.target)
+              !fileTreeItem.children.find(
+                child => child.path === fileDelta.target
+              )
             ) {
-              if (delta.isDir === "") {
-                fileTreeItem.children.push(new File(targetPath, ""));
-              } else {
-                fileTreeItem.children.push(new Folder(targetPath));
-              }
+              const newChild =
+                fileDelta.isDir === ""
+                  ? new File(targetPath, "")
+                  : new Folder(targetPath);
+              that.fileDictionary[targetPath] = newChild;
+              fileTreeItem.children.push(newChild);
               fileTreeItem.children.sort((a, b) => {
                 if (
                   a.baseRoute === Folder.baseRoute() &&
@@ -218,23 +231,25 @@ export default {
                 return 0;
               });
             }
-          } else if (delta.type === "DELETE") {
+          } else if (fileDelta.type === "DELETE") {
+            //console.log("DELETE");
             const targetIndex = fileTreeItem.children.findIndex(
               child => child.path === targetPath
             );
             const notFound = -1;
             if (targetIndex !== notFound) {
               fileTreeItem.children.splice(targetIndex, 1);
+              delete that.fileDictionary[targetPath];
             }
-          } else if (delta.type === "MODIFY") {
-            console.log("MODIFY");
-            if (that.editor.file.path === targetPath) {
-              File.index({ path: targetPath }, response => {
-                if (response.data.text !== that.editor.getValue()) {
-                  that.editor.setValue(response.data.text);
-                }
-              });
-            }
+          } else if (fileDelta.type === "MODIFY") {
+            //console.log("MODIFY");
+            // if (that.editor.file && that.editor.file.path === targetPath) {
+            //   File.index({ path: targetPath }, response => {
+            //     if (response.data.text !== that.editor.getValue()) {
+            //       that.editor.setValue(response.data.text);
+            //     }
+            //   });
+            // }
           }
         });
       });
