@@ -48,9 +48,12 @@ export default class Model {
     }
 
     static index(baseRoute, parameters, completion) {
-        Axios.get(Model.uri(baseRoute).index(parameters)).then(response => {
-            Model.handleResponse(response, completion);
-        });
+        return new Promise(resolve => {
+            Axios.get(Model.uri(baseRoute).index(parameters)).then(response => {
+                Model.handleResponse(response, completion);
+                resolve(response);
+            });
+        })
     }
 
     static handleResponse(response, completion) {

@@ -6,7 +6,7 @@ export default class Folder extends Model {
     }
 
     static index(parameters, completion) {
-        Model.index(Folder.baseRoute(), parameters, completion);
+        return Model.index(Folder.baseRoute(), parameters, completion);
     }
 
     constructor(path) {

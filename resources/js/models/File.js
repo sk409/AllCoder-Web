@@ -6,7 +6,7 @@ export default class File extends Model {
     }
 
     static index(parameters, completion) {
-        Model.index(File.baseRoute(), parameters, completion);
+        return Model.index(File.baseRoute(), parameters, completion);
     }
 
     constructor(path, text) {

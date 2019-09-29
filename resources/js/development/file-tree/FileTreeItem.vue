@@ -25,6 +25,7 @@
 
 <script>
 import Folder from "../../models/Folder.js";
+import { mapActions } from "vuex";
 export default {
   name: "file-tree-item",
   props: {
@@ -47,11 +48,12 @@ export default {
     this.item.input = this.$refs.name;
   },
   methods: {
+    ...mapActions(["setEditedFile"]),
     onclick() {
       if (this.isFolder) {
         this.isExpanded = !this.isExpanded;
       } else {
-        this.$emit("set-file", this.item);
+        this.setEditedFile(this.item.path);
       }
     },
     onInputItemName(e) {

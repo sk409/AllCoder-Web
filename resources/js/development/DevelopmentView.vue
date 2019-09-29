@@ -11,15 +11,10 @@
     </div>
     <div id="development-body">
       <ul id="file-tree-view">
-        <file-tree
-          id="file-tree"
-          :root-folder="rootFolder"
-          @show-context-menu="onShowFileTreeContextMenu"
-          @set-file="onSetFile"
-        ></file-tree>
+        <file-tree id="file-tree" :lesson="lesson" @show-context-menu="onShowFileTreeContextMenu"></file-tree>
       </ul>
       <div id="center-view">
-        <div id="source-code-editor" ref="sourceCodeEditor"></div>
+        <source-code-editor></source-code-editor>
         <iframe id="console" :src="'http://localhost:' + lesson.console_port_number"></iframe>
         <!-- <source-code-editor
           :file="file"
@@ -64,25 +59,21 @@
 </template>
 
 <script>
-import { basename } from "path";
-import File from "../models/File.js";
 import FileTree from "./file-tree/FileTree.vue";
-import Folder from "../models/Folder.js";
-import Routes from "../Routes.js";
+import SourceCodeEditor from "./source-code-editor/SourceCodeEditor.vue";
+import { basename } from "path";
+import { mapMutations, mapState } from "vuex";
 export default {
   name: "development-view",
   props: {
     lesson: Object
   },
   components: {
-    FileTree
+    FileTree,
+    SourceCodeEditor
   },
   data: function() {
     return {
-      editor: null,
-      rootFolder: null,
-      fileDeltas: [],
-      fileDictionary: {}
       // file: null,
       // descriptions: null,
       // fileCreationView: {
@@ -125,139 +116,15 @@ export default {
   //   }
   // },
   mounted() {
-    this.rootFolder = new Folder(this.lesson.host_app_directory_path);
-    this.fileDictionary[this.rootFolder.path] = this.rootFolder;
     const that = this;
-    Folder.index({ path: this.lesson.host_app_directory_path }, response => {
-      const map = function(before, after) {
-        before.children.forEach(beforeChild => {
-          if (beforeChild.hasOwnProperty("text")) {
-            after.children.push(new File(beforeChild.path, ""));
-          } else {
-            const afterChild = new Folder(beforeChild.path);
-            afterChild.path = beforeChild.path;
-            that.fileDictionary[afterChild.path] = afterChild;
-            map(beforeChild, afterChild);
-            after.children.push(afterChild);
-          }
-        });
-      };
-      map(response.data, that.rootFolder);
-    });
     window.onbeforeunload = function() {
       axios.post("/development/unload/" + that.lesson.id);
     };
-    this.editor = ace.edit("source-code-editor");
-    this.editor.$blockScrolling = Infinity;
-    this.editor.setOptions({
-      enableBasicAutocompletion: true,
-      enableSnippets: true,
-      enableLiveAutocompletion: true
-    });
-    this.editor.setTheme("ace/theme/monokai");
-    this.editor.session.on("change", fileDelta => {
-      if (
-        fileDelta.action === "insert" &&
-        that.editor.file.txt !== that.editor.getValue()
-      ) {
-        that.editor.file.text = that.editor.getValue();
-        that.editor.file.update();
-      }
-    });
-    this.editor.setReadOnly(true);
-    setInterval(function() {
-      axios.get(Routes.lessonDelta(that.lesson.id)).then(response => {
-        let fileDeltas = [];
-        response.data[1].forEach((path, index) => {
-          path = path.slice(0, -1);
-          fileDeltas.push({});
-          fileDeltas[index].path = path.replace(
-            that.lesson.container_app_directory_path,
-            that.lesson.host_app_directory_path
-          );
-        });
-        response.data[2].forEach((type, index) => {
-          //console.log(type);
-          fileDeltas[index].type = type;
-        });
-        response.data[3].forEach((isDir, index) => {
-          fileDeltas[index].isDir = isDir;
-        });
-        response.data[4].forEach((target, index) => {
-          fileDeltas[index].target = target;
-        });
-        //console.log(fileDeltas);
-        fileDeltas.concat(that.fileDeltas);
-        that.fileDeltas = [];
-        fileDeltas.forEach(fileDelta => {
-          // console.log(fileDelta.type);
-          const fileTreeItem = that.fileDictionary[fileDelta.path];
-          if (!fileTreeItem) {
-            that.fileDeltas.push(fileDelta);
-            return;
-          }
-          const targetPath = fileDelta.path + "/" + fileDelta.target;
-          if (fileDelta.type === "CREATE" && !that.fileDictionary[targetPath]) {
-            //console.log("CREATE");
-            if (
-              !fileTreeItem.children.find(
-                child => child.path === fileDelta.target
-              )
-            ) {
-              const newChild =
-                fileDelta.isDir === ""
-                  ? new File(targetPath, "")
-                  : new Folder(targetPath);
-              that.fileDictionary[targetPath] = newChild;
-              fileTreeItem.children.push(newChild);
-              fileTreeItem.children.sort((a, b) => {
-                if (
-                  a.baseRoute === Folder.baseRoute() &&
-                  b.baseRoute === File.baseRoute()
-                ) {
-                  return -1;
-                }
-                if (
-                  a.baseRoute === File.baseRoute() &&
-                  b.baseRoute === Folder.baseRoute()
-                ) {
-                  return 1;
-                }
-                if (a.path < b.path) {
-                  return -1;
-                } else if (b.path < a.path) {
-                  return 1;
-                }
-                return 0;
-              });
-            }
-          } else if (fileDelta.type === "DELETE") {
-            //console.log("DELETE");
-            const targetIndex = fileTreeItem.children.findIndex(
-              child => child.path === targetPath
-            );
-            const notFound = -1;
-            if (targetIndex !== notFound) {
-              fileTreeItem.children.splice(targetIndex, 1);
-              delete that.fileDictionary[targetPath];
-            }
-          } else if (fileDelta.type === "MODIFY") {
-            //console.log("MODIFY");
-            // if (that.editor.file && that.editor.file.path === targetPath) {
-            //   File.index({ path: targetPath }, response => {
-            //     if (response.data.text !== that.editor.getValue()) {
-            //       that.editor.setValue(response.data.text);
-            //     }
-            //   });
-            // }
-          }
-        });
-      });
-    }, 1000);
     //this.editor.getSession().setMode("ace/mode/javascript");
     //console.log(this.rootFolder);
   },
   methods: {
+    ...mapMutations(["setSourceCodeEditor"]),
     onclick() {
       // this.fileTree.contextMenu.isShown = false;
       // if (
@@ -290,139 +157,29 @@ export default {
       // unselectDescriptions();
       // description.isSelected = true;
     },
-    onSetFile(file) {
-      const that = this;
-      File.index({ path: file.path }, response => {
-        file.text = response.data.text;
-        this.editor.file = file;
-        this.editor.setValue(response.data.text);
-        const modes = {
-          js: "javascript",
-          php: "php",
-          html: "html",
-          css: "css",
-          scss: "scss",
-          vue: "vue",
-          json: "json",
-          xml: "xml"
-        };
-        const pathComponents = file.path.split(".");
-        const extension = pathComponents.slice(-1)[0];
-        this.editor.setReadOnly(false);
-        this.editor.getSession().setMode("ace/mode/" + modes[extension]);
-        // if (
-        //   extension === "php" &&
-        //   2 <= pathComponents.length &&
-        //   pathComponents.slice(-2)[0] === "blade"
-        // ) {
-        //   this.editor.getSession().setMode("ace/mode/php_laravel_blade");
-        // } else {
-        //   this.editor.getSession().setMode("ace/mode/" + modes[extension]);
-        // }
-        //this.editor.getSession().setMode("ace/mode/javascript");
-        //that.text = response.data.text;
-        //that.$refs.editor.textContent = "";
-        //that.$refs.sourceCodeEditor.textContent = response.data.text;
-        // that.$refs.editor.textContent += response.data.text.substring(0, 10);
-        // document.execCommand("italic", false);
-        // that.$refs.editor.textContent += response.data.text.substring(10);
-      });
-      // axios.get("/files/fetch_text?path=" + file.path).then(response => {
-      //   console.log(response.data);
-      //   that.text = response.data;
-      // });
-
-      // this.file = file;
-      // const that = this;
-      // Description.index(
-      //   {
-      //     file_id: file.id
-      //   },
-      //   response => {
-      //     that.descriptions = response.data.map(data => {
-      //       const description = new Description(
-      //         data.id,
-      //         data.index,
-      //         data.text,
-      //         data.file_id
-      //       );
-      //       DescriptionTarget.index(
-      //         {
-      //           description_id: description.id
-      //         },
-      //         response => {
-      //           description.targets.push(
-      //             ...response.data.map(descriptionTarget => {
-      //               return new DescriptionTarget(
-      //                 descriptionTarget.id,
-      //                 descriptionTarget.start_index,
-      //                 descriptionTarget.end_index,
-      //                 description.id,
-      //                 file.text.substring(
-      //                   descriptionTarget.start_index,
-      //                   descriptionTarget.end_index
-      //                 )
-      //               );
-      //             })
-      //           );
-      //           Question.index(
-      //             {
-      //               description_id: description.id
-      //             },
-      //             response => {
-      //               response.data.forEach(question => {
-      //                 InputButton.index(
-      //                   {
-      //                     question_id: question.id
-      //                   },
-      //                   response => {
-      //                     const inputButtons = response.data.map(
-      //                       inputButton => {
-      //                         return new InputButton(
-      //                           inputButton.id,
-      //                           inputButton.index,
-      //                           inputButton.start_index,
-      //                           inputButton.end_index,
-      //                           inputButton.line_number,
-      //                           inputButton.question_id,
-      //                           file.text.substring(
-      //                             inputButton.start_index,
-      //                             inputButton.end_index
-      //                           )
-      //                         );
-      //                       }
-      //                     );
-      //                     description.questions.push(
-      //                       new Question(
-      //                         question.id,
-      //                         question.index,
-      //                         question.description_id,
-      //                         inputButtons
-      //                       )
-      //                     );
-      //                   }
-      //                 );
-      //               });
-      //               // return new Question(
-      //               //   question.id,
-      //               //   question.start_index,
-      //               //   question.end_index,
-      //               //   question.description_id,
-      //               //   that.file.text.substring(
-      //               //     question.start_index,
-      //               //     question.end_index
-      //               //   )
-      //               // );
-      //             }
-      //           );
-      //         }
-      //       );
-      //       return description;
-      //     });
-      //   }
-      // );
-      // this.sourceCodeEditor.disabled = false;
-    },
+    // onSetFile(file) {
+    //   this.setEditedFile(file.path);
+    //   // const that = this;
+    //   // File.index({ path: file.path }, response => {
+    //   //   file.text = response.data.text;
+    //   //   this.editor.file = file;
+    //   //   this.editor.setValue(response.data.text);
+    //   //   const modes = {
+    //   //     js: "javascript",
+    //   //     php: "php",
+    //   //     html: "html",
+    //   //     css: "css",
+    //   //     scss: "scss",
+    //   //     vue: "vue",
+    //   //     json: "json",
+    //   //     xml: "xml"
+    //   //   };
+    //   //   const pathComponents = file.path.split(".");
+    //   //   const extension = pathComponents.slice(-1)[0];
+    //   //   this.editor.setReadOnly(false);
+    //   //   this.editor.getSession().setMode("ace/mode/" + modes[extension]);
+    //   // });
+    // },
     onShowFileTreeContextMenu(e, item) {
       // this.fileTree.contextMenu.isShown = true;
       // this.fileTree.contextMenu.left = e.pageX;

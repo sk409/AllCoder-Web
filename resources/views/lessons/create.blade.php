@@ -18,7 +18,10 @@
             </div>
             <div class="form-group">
                 <label class="col-form-label" for="environment">環境設定:</label>
-                {!! Form::select("environment", ["laravel5.8" => "laravel5.8"]) !!}
+                {!! Form::select("environment", [
+                "Debian9.11+Laravel5.8" => "Debian9.11+Laravel5.8",
+                ])
+                !!}
             </div>
             <div class="text-center">
                 {!! Form::submit("作成", ["class" => "btn btn-primary"]) !!}
