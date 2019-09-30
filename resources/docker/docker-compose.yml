@@ -6,5 +6,6 @@ services:
       - 80
       - 8080
     volumes:
+      - ${HOST_DATA_DIRECTORY_PATH}:/var/lib/mysql
       - ${HOST_APP_DIRECTORY_PATH}:${CONTAINER_APP_DIRECTORY_PATH}
       - ${HOST_LOGS_DIRECTORY_PATH}:${CONTAINER_LOGS_DIRECTORY_PATH}

@@ -5941,7 +5941,7 @@ Vue.use(Vuex);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Documents/Web/AllCoder/resources/js/development/development.js */"./resources/js/development/development.js");
+module.exports = __webpack_require__(/*! /Documents/Web/ProMarc/resources/js/development/development.js */"./resources/js/development/development.js");
 
 
 /***/ })

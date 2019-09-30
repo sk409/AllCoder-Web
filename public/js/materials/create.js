@@ -836,7 +836,7 @@ new Vue({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Documents/Web/AllCoder/resources/js/materials/create.js */"./resources/js/materials/create.js");
+module.exports = __webpack_require__(/*! /Documents/Web/ProMarc/resources/js/materials/create.js */"./resources/js/materials/create.js");
 
 
 /***/ })

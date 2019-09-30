@@ -33,8 +33,8 @@ ENV PATH $PATH:/composer/vendor/bin
 
 RUN mkdir /opt/app
 WORKDIR /opt/app
-RUN mkdir /etc/AllCoder
-RUN mkdir /etc/AllCoder/logs
+RUN mkdir /etc/ProMarc
+RUN mkdir /etc/ProMarc/logs
 # WORKDIR /opt
 # RUN composer create-project --prefer-dist laravel/laravel app
 # WORKDIR /opt/app
