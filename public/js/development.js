@@ -2402,8 +2402,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.setSourceCodeEditor({
       sourceCodeEditor: ace.edit("source-code-editor")
     });
+    var that = this;
+    this.sourceCodeEditor.session.on("change", function (delta) {
+      if (delta.action === "insert" && that.editedFile.text !== that.sourceCodeEditor.getValue()) {
+        that.setEditedFileText(that.sourceCodeEditor.getValue());
+        that.editedFile.update();
+      }
+    });
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])(["setSourceCodeEditor"]))
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(["editedFile", "sourceCodeEditor"])),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])(["setEditedFileText", "setSourceCodeEditor"]))
 });
 
 /***/ }),
@@ -5871,7 +5879,7 @@ Vue.use(Vuex);
 
               case 3:
                 response = _context.sent;
-                commit("setEditedFile", response.data);
+                commit("setEditedFile", new _models_File_js__WEBPACK_IMPORTED_MODULE_1__["default"](response.data.path, response.data.text));
 
               case 5:
               case "end":
@@ -5897,16 +5905,7 @@ Vue.use(Vuex);
         enableSnippets: true,
         enableLiveAutocompletion: true
       });
-      state.sourceCodeEditor.setTheme(payload.theme ? payload.theme : "ace/theme/monokai"); // state.sourceCodeEditor.session.on("change", delta => {
-      //     if (
-      //         delta.action === "insert" &&
-      //         that.sourceCodeEditor.file.txt !== that.sourceCodeEditor.getValue()
-      //     ) {
-      //         that.sourceCodeEditor.file.text = that.sourceCodeEditor.getValue();
-      //         that.sourceCodeEditor.file.update();
-      //     }
-      // });
-
+      state.sourceCodeEditor.setTheme(payload.theme ? payload.theme : "ace/theme/monokai");
       state.sourceCodeEditor.setReadOnly(true);
     },
     setEditedFile: function setEditedFile(state, file) {
@@ -5926,6 +5925,9 @@ Vue.use(Vuex);
       var pathComponents = file.path.split(".");
       var extension = pathComponents.slice(-1)[0];
       state.sourceCodeEditor.getSession().setMode("ace/mode/" + modes[extension]);
+    },
+    setEditedFileText: function setEditedFileText(state, text) {
+      state.editedFile.text = text;
     }
   }
 }));

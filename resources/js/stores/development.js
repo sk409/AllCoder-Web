@@ -15,7 +15,7 @@ export default new Vuex.Store({
             const response = await File.index({
                 path
             });
-            commit("setEditedFile", response.data);
+            commit("setEditedFile", new File(response.data.path, response.data.text));
         },
     },
     mutations: {
@@ -28,15 +28,6 @@ export default new Vuex.Store({
                 enableLiveAutocompletion: true
             });
             state.sourceCodeEditor.setTheme(payload.theme ? payload.theme : "ace/theme/monokai");
-            // state.sourceCodeEditor.session.on("change", delta => {
-            //     if (
-            //         delta.action === "insert" &&
-            //         that.sourceCodeEditor.file.txt !== that.sourceCodeEditor.getValue()
-            //     ) {
-            //         that.sourceCodeEditor.file.text = that.sourceCodeEditor.getValue();
-            //         that.sourceCodeEditor.file.update();
-            //     }
-            // });
             state.sourceCodeEditor.setReadOnly(true);
         },
         setEditedFile(state, file) {
@@ -57,5 +48,8 @@ export default new Vuex.Store({
             const extension = pathComponents.slice(-1)[0];
             state.sourceCodeEditor.getSession().setMode("ace/mode/" + modes[extension]);
         },
+        setEditedFileText(state, text) {
+            state.editedFile.text = text;
+        }
     },
 })

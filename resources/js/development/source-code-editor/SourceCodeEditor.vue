@@ -20,7 +20,7 @@
 <script>
 //import { Promise } from "q";
 //import Question from "../question/Question.js";
-import { mapActions, mapMutations } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 export default {
   name: "source-code-editor",
   // props: {
@@ -43,9 +43,22 @@ export default {
     this.setSourceCodeEditor({
       sourceCodeEditor: ace.edit("source-code-editor")
     });
+    const that = this;
+    this.sourceCodeEditor.session.on("change", delta => {
+      if (
+        delta.action === "insert" &&
+        that.editedFile.text !== that.sourceCodeEditor.getValue()
+      ) {
+        that.setEditedFileText(that.sourceCodeEditor.getValue());
+        that.editedFile.update();
+      }
+    });
+  },
+  computed: {
+    ...mapState(["editedFile", "sourceCodeEditor"])
   },
   methods: {
-    ...mapMutations(["setSourceCodeEditor"])
+    ...mapMutations(["setEditedFileText", "setSourceCodeEditor"])
     // oninput(e) {
     //   const that = this;
     //   const selectionStart = e.target.selectionStart;
