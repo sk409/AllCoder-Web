@@ -199,7 +199,7 @@ export default {
       // this.sourceCodeEditor.contextMenu.selection.startIndex =
       //   e.target.selectionStart;
       // this.sourceCodeEditor.contextMenu.selection.endIndex =
-      //   e.target.selectionEnd;
+      //   e.target.selectionEnd;//
     }
   }
 };

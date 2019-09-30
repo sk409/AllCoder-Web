@@ -2054,7 +2054,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // this.sourceCodeEditor.contextMenu.selection.startIndex =
       //   e.target.selectionStart;
       // this.sourceCodeEditor.contextMenu.selection.endIndex =
-      //   e.target.selectionEnd;
+      //   e.target.selectionEnd;//
     }
   })
 });
