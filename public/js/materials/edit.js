@@ -836,7 +836,7 @@ new Vue({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Documents/Web/ProMarc/resources/js/materials/edit.js */"./resources/js/materials/edit.js");
+module.exports = __webpack_require__(/*! /Documents/Web/ProMark/resources/js/materials/edit.js */"./resources/js/materials/edit.js");
 
 
 /***/ })
