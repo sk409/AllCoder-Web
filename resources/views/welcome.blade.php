@@ -70,12 +70,6 @@
 </head>
 
 <body>
-    {{-- ******************************************************************************* --}}
-    {{-- app.jsのMavonEditorを読み込み済み(ちゃんと必要なところで読み込むように変更する) --}}
-    {{-- <div id="app">
-        <mavon-editor></mavon-editor>
-    </div> --}}
-    {{-- ******************************************************************************* --}}
     <div class="flex-center position-ref full-height">
         @if (Route::has('login'))
         <div class="top-right links">

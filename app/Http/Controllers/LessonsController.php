@@ -15,7 +15,7 @@ class LessonsController extends Controller
     public function create(): Renderable
     {
         $lesson = new Lesson();
-        return view("lessons.create", [
+        return view("lesson_create", [
             "lesson" => $lesson,
             "user" => Auth::user(),
         ]);

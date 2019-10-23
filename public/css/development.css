@@ -16,17 +16,6 @@
   height: 100%;
 }
 
-#center-view {
-  width: 80%;
-  height: 100%;
-}
-
-#inspector-view {
-  width: 20%;
-  height: 100%;
-  background: lightblue;
-}
-
 #file-tree {
   overflow: scroll;
   white-space: nowrap;
@@ -34,26 +23,13 @@
   height: 100%;
 }
 
-#file-creation-view {
-  width: 80vh;
-  height: 80vh;
-  padding: 0 0.8vh;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+.file-tree-item {
+  padding-left: 16px;
 }
 
-#file-creation-view-header {
-  height: 8vh;
-}
-
-#file-creation-view-body {
-  height: 92vh;
-}
-
-#file-creation-view-file-name {
-  width: 40vh;
+#center-view {
+  width: 80%;
+  height: 100%;
 }
 
 #source-code-editor {
@@ -65,116 +41,5 @@
   border: none;
   width: 100%;
   height: 40%;
-}
-
-#file-tree-context-menu,
-#source-code-editor-context-menu {
-  position: absolute;
-}
-
-#description {
-  width: 100%;
-  height: 30%;
-}
-
-#description-list-header {
-  height: 15%;
-}
-
-#description-list-header button,
-#description-editing-header button {
-  background: transparent;
-  border: none;
-}
-
-#description-list-header img,
-#description-editing-header img {
-  width: 20px;
-  height: 20px;
-}
-
-#description-list-body {
-  overflow-y: scroll;
-  height: 85%;
-}
-
-#description-editing-header {
-  height: 15%;
-}
-
-#description-editing-body {
-  height: 85%;
-  position: relative;
-  overflow: hidden;
-}
-
-.description-editor {
-  resize: none;
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.5s;
-}
-
-#description-editor {
-  border: none;
-  outline: none;
-  resize: none;
-}
-
-.file-creation-view-button {
-  width: 14.72vh;
-  margin-left: 0.8vh;
-}
-
-.file-creation-view-file-item {
-  width: 16vh;
-  height: 16vh;
-}
-
-.file-tree-item {
-  padding-left: 16px;
-}
-
-.question-answer {
-  margin: 0;
-}
-
-.source-code-editor-context-menu-button,
-.source-code-editor-context-menu-option-button {
-  display: block;
-  width: 100%;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: transform 0.5s;
-}
-
-.slide-up-enter,
-.slide-up-leave-to {
-  transform: translate(0, 100%);
-}
-
-.slide-down-enter-active,
-.slide-down-leave-active {
-  transition: transform 0.5s;
-}
-
-.slide-down-enter,
-.slide-down-leave-to {
-  transform: translate(0, 100%);
 }
 

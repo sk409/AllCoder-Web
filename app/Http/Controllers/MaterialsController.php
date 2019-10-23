@@ -29,7 +29,7 @@ class MaterialsController extends Controller
     public function create(): Renderable
     {
         $user = Auth::user();
-        return view("materials/create", [
+        return view("material_create", [
             "user" => $user,
         ]);
     }
@@ -46,9 +46,8 @@ class MaterialsController extends Controller
     public function edit(int $id)
     {
         $material = Material::find($id);
-        return view("materials/edit", [
+        return view("material_edit", [
             "material" => $material,
-            "lessons" => $material->user->lessons,
             "user" => $material->user,
         ]);
     }

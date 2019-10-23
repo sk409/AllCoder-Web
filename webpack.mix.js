@@ -12,10 +12,10 @@ const mix = require("laravel-mix");
  */
 
 mix.js("resources/js/app.js", "public/js")
-    .js("resources/js/development/development.js", "public/js")
+    .js("resources/js/development.js", "public/js")
     .js("resources/js/lodash.full.min.js", "public/js")
-    .js("resources/js/materials/create.js", "public/js/materials")
-    .js("resources/js/materials/edit.js", "public/js/materials")
+    .js("resources/js/material_create.js", "public/js")
+    .js("resources/js/material_edit.js", "public/js")
     .sass("resources/sass/app.scss", "public/css")
     .sass("resources/sass/development.scss", "public/css")
     .sass("resources/sass/dashboard/dashboard.scss", "public/css/dashboard")

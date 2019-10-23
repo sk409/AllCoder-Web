@@ -1,15 +1,18 @@
-$file-creation-view-height: 80vh;
-$file-creation-view-width: $file-creation-view-height;
-$file-creation-view-margin: $file-creation-view-width * 0.01;
-$file-creation-view-component-margin: $file-creation-view-margin;
-$file-creation-view-file-name-width: $file-creation-view-width * 0.5;
-$file-creation-view-button-width: ($file-creation-view-width - $file-creation-view-file-name-width - $file-creation-view-margin * 2 - $file-creation-view-component-margin * 2) / 2 * 0.8;
-$file-creation-view-item-width: $file-creation-view-width * 0.2;
-$file-creation-view-item-height: $file-creation-view-item-width;
+// $file-creation-view-height: 80vh;
+// $file-creation-view-width: $file-creation-view-height;
+// $file-creation-view-margin: $file-creation-view-width * 0.01;
+// $file-creation-view-component-margin: $file-creation-view-margin;
+// $file-creation-view-file-name-width: $file-creation-view-width * 0.5;
+// $file-creation-view-button-width: (
+//     $file-creation-view-width - $file-creation-view-file-name-width -
+//       $file-creation-view-margin * 2 - $file-creation-view-component-margin * 2
+//   ) / 2 * 0.8;
+// $file-creation-view-item-width: $file-creation-view-width * 0.2;
+// $file-creation-view-item-height: $file-creation-view-item-width;
 
 #development {
-    // overflow: hidden;
     height: 100%;
+    // overflow: hidden;
 }
 
 #development-header {
@@ -26,17 +29,6 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     height: 100%;
 }
 
-#center-view {
-    width: 80%;
-    height: 100%;
-}
-
-#inspector-view {
-    width: 20%;
-    height: 100%;
-    background: lightblue;
-}
-
 #file-tree {
     overflow: scroll;
     white-space: nowrap;
@@ -44,26 +36,13 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     height: 100%;
 }
 
-#file-creation-view {
-    width: $file-creation-view-width;
-    height: $file-creation-view-height;
-    padding: 0 $file-creation-view-margin;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+.file-tree-item {
+    padding-left: 16px;
 }
 
-#file-creation-view-header {
-    height: 8vh;
-}
-
-#file-creation-view-body {
-    height: 92vh;
-}
-
-#file-creation-view-file-name {
-    width: $file-creation-view-file-name-width;
+#center-view {
+    width: 80%;
+    height: 100%;
 }
 
 #source-code-editor {
@@ -77,113 +56,45 @@ $file-creation-view-item-height: $file-creation-view-item-width;
     height: 40%;
 }
 
-#file-tree-context-menu,
-#source-code-editor-context-menu {
-    position: absolute;
-}
+// #file-tree-context-menu,
+// #source-code-editor-context-menu {
+//   position: absolute;
+// }
 
-#description {
-    width: 100%;
-    height: 30%;
-}
+// .file-creation-view-button {
+//   width: $file-creation-view-button-width;
+//   margin-left: $file-creation-view-component-margin;
+// }
 
-#description-list-header {
-    height: 15%;
-}
+// .file-creation-view-file-item {
+//   width: $file-creation-view-item-width;
+//   height: $file-creation-view-item-height;
+// }
 
-#description-list-header button,
-#description-editing-header button {
-    background: transparent;
-    border: none;
-}
+// #file-creation-view-header {
+//   height: 8vh;
+// }
 
-#description-list-header img,
-#description-editing-header img {
-    width: 20px;
-    height: 20px;
-}
+// #file-creation-view-body {
+//   height: 92vh;
+// }
 
-#description-list-body {
-    overflow-y: scroll;
-    height: 85%;
-}
+// #file-creation-view-file-name {
+//   width: $file-creation-view-file-name-width;
+// }
 
-#description-editing-header {
-    height: 15%;
-}
+// #file-creation-view {
+//   width: $file-creation-view-width;
+//   height: $file-creation-view-height;
+//   padding: 0 $file-creation-view-margin;
+//   position: absolute;
+//   left: 50%;
+//   top: 50%;
+//   transform: translate(-50%, -50%);
+// }
 
-#description-editing-body {
-    height: 85%;
-    position: relative;
-    overflow: hidden;
-}
-
-.description-editor {
-    resize: none;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.5s;
-}
-
-#description-editor {
-    border: none;
-    outline: none;
-    resize: none;
-}
-
-.file-creation-view-button {
-    width: $file-creation-view-button-width;
-    margin-left: $file-creation-view-component-margin;
-}
-
-.file-creation-view-file-item {
-    width: $file-creation-view-item-width;
-    height: $file-creation-view-item-height;
-}
-
-.file-tree-item {
-    padding-left: 16px;
-}
-
-.question-answer {
-    margin: 0;
-}
-
-.source-code-editor-context-menu-button,
-.source-code-editor-context-menu-option-button {
-    display: block;
-    width: 100%;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s;
-}
-
-.fade-enter,
-.fade-leave-to {
-    opacity: 0;
-}
-
-.slide-up-enter-active,
-.slide-up-leave-active {
-    transition: transform 0.5s;
-}
-
-.slide-up-enter,
-.slide-up-leave-to {
-    transform: translate(0, 100%);
-}
-
-.slide-down-enter-active,
-.slide-down-leave-active {
-    transition: transform 0.5s;
-}
-
-.slide-down-enter,
-.slide-down-leave-to {
-    transform: translate(0, 100%);
-}
+// .source-code-editor-context-menu-button,
+// .source-code-editor-context-menu-option-button {
+//   display: block;
+//   width: 100%;
+// }

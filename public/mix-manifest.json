@@ -7,6 +7,6 @@
     "/css/materials/edit.css": "/css/materials/edit.css",
     "/js/development.js": "/js/development.js",
     "/js/lodash.full.min.js": "/js/lodash.full.min.js",
-    "/js/materials/create.js": "/js/materials/create.js",
-    "/js/materials/edit.js": "/js/materials/edit.js"
+    "/js/material_create.js": "/js/material_create.js",
+    "/js/material_edit.js": "/js/material_edit.js"
 }

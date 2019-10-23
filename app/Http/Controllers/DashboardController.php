@@ -20,13 +20,13 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $materials = $user->materials;
-        return view('dashboard/materials', ["user" => $user, "materials" => $materials]);
+        return view('dashboard_materials', ["user" => $user, "materials" => $materials]);
     }
 
     public function lessons(): Renderable
     {
         $user = Auth::user();
         $lessons = Lesson::where("user_id", $user->id)->get()->all();
-        return view('dashboard/lessons', ["user" => $user, "lessons" => $lessons]);
+        return view('dashboard_lessons', ["user" => $user, "lessons" => $lessons]);
     }
 }

@@ -14,7 +14,20 @@
 
 @section("app-content")
 <div id="development">
-    <development-view :lesson="{{$lesson}}">
-    </development-view>
+    <div id="development-header" class="border-bottom border-dark">
+        <div>
+            {{$lesson->title}}
+            <a class="btn btn-light" href="http://localhost:{{$lesson->preview_port_number}}" target="_blank">プレビュー</a>
+        </div>
+    </div>
+    <div id="development-body">
+        <ul id="file-tree-view">
+            <file-tree id="file-tree" :lesson="{{$lesson}}"></file-tree>
+        </ul>
+        <div id="center-view">
+            <source-code-editor id="source-code-editor"></source-code-editor>
+            <iframe id="console" src="http://localhost:{{$lesson->console_port_number}}"></iframe>
+        </div>
+    </div>
 </div>
 @endsection
