@@ -1,5 +1,5 @@
-import File from "../models/File.js";
-import Folder from "../models/Folder.js";
+import File from "../models/file.js";
+import Folder from "../models/folder.js";
 
 Vue.use(Vuex);
 

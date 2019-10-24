@@ -28,6 +28,7 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::resource("materials", "MaterialsController");
 
     Route::get("/development/{lessonId}", "DevelopmentController@index")->name("development");
+    Route::get("/development_writing/{lesson}", "DevelopmentController@writing")->name("development.writing");
     Route::post("/development/unload/{lessonId}", "DevelopmentController@unload")->name("development.unload");
 
     Route::get("/folders", "FoldersController@index")->name("folders.index");
@@ -57,4 +58,8 @@ Route::group(["middleware" => ["auth"]], function () {
 
     Route::get("/input_buttons", "InputButtonsController@index")->name("input_buttons.index");
     Route::post("/input_buttons", "InputButtonsController@store")->name("input_buttons.store");
+
+    Route::get("/books", "BooksController@index")->name("books.index");
+    Route::post("/books", "BooksController@store")->name("books.store");
+    Route::put("/books/{book}", "BooksController@update")->name("books.update");
 });

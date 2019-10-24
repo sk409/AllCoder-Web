@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import Folder from "../../models/Folder.js";
+import Folder from "../../models/folder.js";
 export default {
   name: "file-tree-context-menu",
   props: {

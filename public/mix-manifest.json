@@ -1,11 +1,12 @@
 {
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
-    "/css/development.css": "/css/development.css",
+    "/css/development_ide.css": "/css/development_ide.css",
     "/css/dashboard/dashboard.css": "/css/dashboard/dashboard.css",
     "/css/materials/create.css": "/css/materials/create.css",
     "/css/materials/edit.css": "/css/materials/edit.css",
-    "/js/development.js": "/js/development.js",
+    "/js/development_ide.js": "/js/development_ide.js",
+    "/js/development_writing.js": "/js/development_writing.js",
     "/js/lodash.full.min.js": "/js/lodash.full.min.js",
     "/js/material_create.js": "/js/material_create.js",
     "/js/material_edit.js": "/js/material_edit.js"

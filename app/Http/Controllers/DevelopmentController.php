@@ -70,7 +70,13 @@ class DevelopmentController extends Controller
         // $lesson->preview_port_number = $previewPortMatches[1];
         // $lesson->console_port_number = $consolePortMatches[1];
         // $lesson->save();
-        return view("development", ["lesson" => $lesson]);
+        return view("development_ide", ["lesson" => $lesson]);
+    }
+
+    public function writing($lessonId): Renderable
+    {
+        $lesson = Lesson::find($lessonId);
+        return view("development_writing", ["lesson" => $lesson]);
     }
 
     public function unload($lessonId)

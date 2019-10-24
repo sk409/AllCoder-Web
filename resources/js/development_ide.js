@@ -6,7 +6,7 @@ import {
 } from "vuex";
 
 new Vue({
-    el: "#development",
+    el: "#development-ide",
     store,
     components: {
         FileTree,

@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import Folder from "../../models/Folder.js";
+import Folder from "../../models/folder.js";
 import { mapActions } from "vuex";
 export default {
   name: "file-tree-item",

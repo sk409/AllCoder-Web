@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import File from "../../models/File.js";
+import File from "../../models/file.js";
 export default {
   name: "file-creation-view",
   props: {

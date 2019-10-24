@@ -1,7 +1,7 @@
 @extends("layouts.app")
 
 @section("links")
-<link rel="stylesheet" href="{{ asset("css/development.css") }}">
+<link rel="stylesheet" href="{{ asset("css/development_ide.css") }}">
 @endsection
 
 @section("scripts")
@@ -9,15 +9,16 @@
 <script src="{{ asset("js/ace/ext-language_tools.js") }}" defer></script>
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ext-language_tools.js"></script> --}}
-<script src="{{ asset("js/development.js") }}" defer></script>
+<script src="{{ asset("js/development_ide.js") }}" defer></script>
 @endsection
 
 @section("app-content")
-<div id="development">
+<div id="development-ide">
     <div id="development-header" class="border-bottom border-dark">
         <div>
             {{$lesson->title}}
             <a class="btn btn-light" href="http://localhost:{{$lesson->preview_port_number}}" target="_blank">プレビュー</a>
+            <a class="btn btn-light" href="{{route("development.writing", ["lesson" => $lesson->id])}}">執筆</a>
         </div>
     </div>
     <div id="development-body">
