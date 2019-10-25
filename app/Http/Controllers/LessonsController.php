@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
-use Illuminate\Support\Facades\File;
 use App\Http\Requests\LessonCreationRequest;
 use App\Lesson;
 use App\Path;
+use Auth;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class LessonsController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        return Controller::narrowDownFromConditions(
+            $request->all(),
+            "\App\Lesson"
+        );
+    }
 
     public function create(): Renderable
     {
@@ -43,6 +52,7 @@ class LessonsController extends Controller
         exec("cd $composeDirectoryPath && docker-compose build");
         $containerName = $uniqueName . "_develop-lesson_1";
         $parameters = $request->all();
+        $parameters["book"] = "";
         $parameters["container_name"] = $containerName;
         $parameters["host_app_directory_path"] = $hostAppDirectoryPath;
         $parameters["host_logs_directory_path"] = $hostLogsDirectoryPath;
@@ -51,6 +61,15 @@ class LessonsController extends Controller
         $parameters["compose_directory_path"] = $composeDirectoryPath;
         $lesson = Lesson::create($parameters);
         return redirect("/development/{$lesson->id}");
+    }
+
+    public function update(Request $request, int $id)
+    {
+        $parameters = $request->all();
+        if ($request->has("book") && is_null($request->book)) {
+            $parameters["book"] = "";
+        }
+        Lesson::find($id)->fill($parameters)->save();
     }
 
     public function delta(int $id)

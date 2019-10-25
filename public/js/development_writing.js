@@ -1838,7 +1838,7 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _models_book_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../models/book.js */ "./resources/js/models/book.js");
+/* harmony import */ var _models_lesson_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../models/lesson.js */ "./resources/js/models/lesson.js");
 //
 //
 //
@@ -1862,37 +1862,29 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      book: null,
+      lesson: null,
       delayedUpdate: _.debounce(this.update, 1000),
       updateQueue: Promise.resolve()
     };
   },
   mounted: function mounted() {
-    var _this = this;
-
-    _models_book_js__WEBPACK_IMPORTED_MODULE_0__["default"].index({
-      lesson_id: this.lessonId
+    var that = this;
+    _models_lesson_js__WEBPACK_IMPORTED_MODULE_0__["default"].index({
+      id: this.lessonId
     }, function (response) {
-      if (response.data.length == 0) {
-        _this.book = new _models_book_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, "", _this.lessonId);
-
-        _this.book.store();
-      } else {
-        _this.book = new _models_book_js__WEBPACK_IMPORTED_MODULE_0__["default"](response.data[0].id, response.data[0].text, response.data[0].lesson_id);
-      }
+      that.lesson = new _models_lesson_js__WEBPACK_IMPORTED_MODULE_0__["default"](response.data[0].id, response.data[0].title, response.data[0].description, response.data[0].book);
     });
   },
   methods: {
     change: function change(value, render) {
       var that = this;
-      this.book.text = value;
-      console.log(this.book);
+      this.lesson.book = value;
       this.updateQueue.then(function () {
         that.delayedUpdate();
       });
     },
     update: function update() {
-      this.book.update();
+      this.lesson.update();
     }
   }
 });
@@ -2140,7 +2132,7 @@ var render = function() {
         attrs: {
           language: "ja",
           placeholder: "執筆を始めよう!",
-          value: _vm.book ? _vm.book.text : ""
+          value: _vm.lesson ? _vm.lesson.book : ""
         },
         on: { change: _vm.change }
       })
@@ -2351,16 +2343,16 @@ new Vue({
 
 /***/ }),
 
-/***/ "./resources/js/models/book.js":
-/*!*************************************!*\
-  !*** ./resources/js/models/book.js ***!
-  \*************************************/
+/***/ "./resources/js/models/lesson.js":
+/*!***************************************!*\
+  !*** ./resources/js/models/lesson.js ***!
+  \***************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Book; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Lesson; });
 /* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model.js */ "./resources/js/models/model.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -2382,62 +2374,73 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
-var Book =
+var Lesson =
 /*#__PURE__*/
 function (_Model) {
-  _inherits(Book, _Model);
+  _inherits(Lesson, _Model);
 
-  _createClass(Book, null, [{
+  _createClass(Lesson, null, [{
     key: "baseRoute",
     value: function baseRoute() {
-      return "books";
+      return "lessons";
     }
   }, {
     key: "index",
     value: function index(parameters, completion) {
-      return _model_js__WEBPACK_IMPORTED_MODULE_0__["default"].index(Book.baseRoute(), parameters, completion);
+      return _model_js__WEBPACK_IMPORTED_MODULE_0__["default"].index(Lesson.baseRoute(), parameters, completion);
     }
   }]);
 
-  function Book(id, text, lessonId) {
+  function Lesson(id, title, descriptions, book) {
     var _this;
 
-    _classCallCheck(this, Book);
+    _classCallCheck(this, Lesson);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Book).call(this, Book.baseRoute()));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Lesson).call(this, Lesson.baseRoute()));
     _this.id = id;
-    _this.text = text;
-    _this.lessonId = lessonId;
+    _this.title = title;
+    _this.descriptions = descriptions;
+    _this.book = book;
     return _this;
   }
 
-  _createClass(Book, [{
+  _createClass(Lesson, [{
     key: "parameters",
     value: function parameters() {
       return {
-        text: this.text,
-        lesson_id: this.lessonId
+        id: this.id,
+        title: this.title,
+        descriptions: this.descriptions,
+        book: this.book
       };
     }
   }, {
-    key: "text",
+    key: "title",
     get: function get() {
-      return this._text;
+      return this._title;
     },
     set: function set(value) {
-      this._text = value;
+      this._title = value;
     }
   }, {
-    key: "lessonId",
+    key: "description",
     get: function get() {
-      return this._lessonId;
+      return this._description;
     },
     set: function set(value) {
-      this._lessonId = value;
+      this._description = value;
+    }
+  }, {
+    key: "book",
+    get: function get() {
+      return this._book;
+    },
+    set: function set(value) {
+      this._book = value;
     }
   }]);
 
-  return Book;
+  return Lesson;
 }(_model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 

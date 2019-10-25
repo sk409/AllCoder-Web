@@ -23,8 +23,13 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::get('/dashboard/materials', 'DashboardController@materials')->name('dashboard.materials');
     Route::get("/dashboard/lessons", "DashboardController@lessons")->name("dashboard.lessons");
 
-    Route::resource("lessons", "LessonsController");
+    //Route::resource("lessons", "LessonsController");
+    Route::get("lessons", "LessonsController@index")->name("lessons.index");
+    Route::get("lessons/create", "LessonsController@create")->name("lessons.create");
+    Route::post("lessons", "LessonsController@store")->name("lessons.store");
     Route::get("lessons/delta/{lesson}", "LessonsController@delta")->name("lesson.delta");
+    Route::put("lessons/{lesson}", "LessonsController@update")->name("lessons.update");
+
     Route::resource("materials", "MaterialsController");
 
     Route::get("/development/{lessonId}", "DevelopmentController@index")->name("development");
@@ -58,8 +63,4 @@ Route::group(["middleware" => ["auth"]], function () {
 
     Route::get("/input_buttons", "InputButtonsController@index")->name("input_buttons.index");
     Route::post("/input_buttons", "InputButtonsController@store")->name("input_buttons.store");
-
-    Route::get("/books", "BooksController@index")->name("books.index");
-    Route::post("/books", "BooksController@store")->name("books.store");
-    Route::put("/books/{book}", "BooksController@update")->name("books.update");
 });

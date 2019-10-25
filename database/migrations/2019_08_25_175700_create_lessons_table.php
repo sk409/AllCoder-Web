@@ -17,6 +17,7 @@ class CreateLessonsTable extends Migration
             $table->bigIncrements('id');
             $table->string("title", 128);
             $table->string("description", 1024)->default("");
+            $table->text("book");
             $table->string("container_name", 64);
             $table->smallInteger("preview_port_number")->unsigned()->nullable();
             $table->smallInteger("console_port_number")->unsigned()->nullable();

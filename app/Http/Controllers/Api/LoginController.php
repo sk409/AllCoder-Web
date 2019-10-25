@@ -13,7 +13,7 @@ class LoginController extends Controller
     {
         $credentials = $request->only(["email", "password"]);
         if (Auth::attempt($credentials)) {
-            return Auth::user();
+            return Auth::user()->id;
         }
         return "ERROR";
     }
