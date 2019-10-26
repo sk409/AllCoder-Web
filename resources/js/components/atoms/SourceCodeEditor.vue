@@ -14,31 +14,18 @@
     @keydown.down="onArrowKeyDown"
     @contextmenu.stop.prevent="oncontextmenu"
   ></textarea>-->
-  <div id="source-code-editor"></div>
+  <div @contextmenu.stop.prevent="showContextMenu">
+    <div id="source-code-editor"></div>
+  </div>
 </template>
 
 <script>
 //import { Promise } from "q";
 //import Question from "../question/Question.js";
+import SourceCodeEditorContextMenu from "./SourceCodeEditorContextMenu.vue";
 import { mapActions, mapMutations, mapState } from "vuex";
 export default {
   name: "source-code-editor",
-  // props: {
-  //   file: Object,
-  //   questions: Array,
-  //   descriptionTargets: Array
-  // },
-  // data: function() {
-  //   return {
-  //     textarea: null,
-  //     textBeforeInput: null,
-  //     selectedRangeBeforeInput: null,
-  //     pastedText: null,
-  //     lastTextLength: null,
-  //     inputQueue: Promise.resolve(),
-  //     delayedUpdate: _.debounce(this.update, 500)
-  //   };
-  // },
   mounted() {
     this.setSourceCodeEditor({
       sourceCodeEditor: ace.edit("source-code-editor")
@@ -58,7 +45,36 @@ export default {
     ...mapState(["editedFile", "sourceCodeEditor"])
   },
   methods: {
-    ...mapMutations(["setEditedFileText", "setSourceCodeEditor"])
+    ...mapMutations(["setEditedFileText", "setSourceCodeEditor"]),
+    showContextMenu(e) {
+      const text = this.sourceCodeEditor.getValue();
+      let newLineCount = 0;
+      let characterIndex = 0;
+      const f = function(row) {
+        for (; characterIndex < text.length; ++characterIndex) {
+          if (row === newLineCount) {
+            break;
+          }
+          if (text.charAt(characterIndex) === "\n") {
+            ++newLineCount;
+          }
+        }
+      };
+      f(this.sourceCodeEditor.selection.getRange().start.row);
+      const startIndex =
+        characterIndex +
+        this.sourceCodeEditor.selection.getRange().start.column;
+      f(this.sourceCodeEditor.selection.getRange().end.row);
+      const endIndex =
+        characterIndex + this.sourceCodeEditor.selection.getRange().end.column;
+      this.$emit(
+        "show-source-code-editor-context-menu",
+        e.pageX,
+        e.pageY,
+        startIndex,
+        endIndex
+      );
+    }
     // oninput(e) {
     //   const that = this;
     //   const selectionStart = e.target.selectionStart;

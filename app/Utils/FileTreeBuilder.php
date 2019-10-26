@@ -8,20 +8,26 @@ use App\File;
 class FileTreeBuilder
 {
 
-    public static function build(string $dir, Folder $current)
+    public static function build(string $dir, Folder $current, bool $withText = false, array $options = [])
     {
         $itemPaths = glob($dir . '/{*,.[!.]*,..?*}', GLOB_BRACE);
-        $folders = [];
-        $files = [];
         foreach ($itemPaths as $itemPath) {
             if (is_file($itemPath)) {
-                $files[] = new File($itemPath, "");
+                $text = $withText ? file_get_contents($itemPath) : "";
+                $converted = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
+                $option = null;
+                foreach ($options as $o) {
+                    if ($itemPath === $o->path) {
+                        $option = $o;
+                        break;
+                    }
+                }
+                $current->childFiles[] = new File($itemPath, $converted, $option);
             } else {
                 $childFolder = new Folder($itemPath);
-                FileTreeBuilder::build($dir . "/" . basename($itemPath), $childFolder);
-                $folders[] = $childFolder;
+                FileTreeBuilder::build($dir . "/" . basename($itemPath), $childFolder, $withText, $options);
+                $current->childFolders[] = $childFolder;
             }
         }
-        $current->children = array_merge($folders, $files);
     }
 }

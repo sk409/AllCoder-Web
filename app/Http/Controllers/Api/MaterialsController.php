@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Folder;
 use App\Http\Controllers\Controller;
 use App\Material;
 use App\User;
 use App\Utils\FileTreeBuilder;
+use FilesystemIterator;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -39,7 +41,17 @@ class MaterialsController extends Controller
                     $stdLesson->evaluations[] = $evaluatsion->value;
                 }
                 $stdLesson->evaluations = array_filter($stdLesson->evaluations); //なぜ?
-                $stdLesson->root_folder = null;
+                $stdLesson->root_folder = new Folder("");
+                $options = [];
+                foreach (glob($lesson->host_options_directory_path . "/*.json") as $fileName) {
+                    $options[] = json_decode(file_get_contents($fileName));
+                }
+                FileTreeBuilder::build(
+                    $lesson->host_app_directory_path,
+                    $stdLesson->root_folder,
+                    true,
+                    $options
+                );
                 // $stdLesson->root_folder = null;
                 // $folders = [];
                 // foreach ($lesson->folders as $folder) {

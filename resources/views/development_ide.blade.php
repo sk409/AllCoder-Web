@@ -18,7 +18,8 @@
         <div>
             {{$lesson->title}}
             <a class="btn btn-light" href="http://localhost:{{$lesson->preview_port_number}}" target="_blank">プレビュー</a>
-            <a class="btn btn-light" href="{{route("development.writing", ["lesson" => $lesson->id])}}">執筆</a>
+            <a class="btn btn-light" href="{{route("development.writing", ["lesson" => $lesson->id])}}"
+                target="_blank">執筆</a>
         </div>
     </div>
     <div id="development-body">
@@ -26,9 +27,14 @@
             <file-tree id="file-tree" :lesson="{{$lesson}}"></file-tree>
         </ul>
         <div id="center-view">
-            <source-code-editor id="source-code-editor"></source-code-editor>
+            <source-code-editor id="source-code-editor"
+                v-on:show-source-code-editor-context-menu="showSourceCodeEditorContextMenu"></source-code-editor>
             <iframe id="console" src="http://localhost:{{$lesson->console_port_number}}"></iframe>
         </div>
     </div>
+    <source-code-editor-context-menu id="source-code-editor-context-menu" :style="sourceCodeEditorContextMenu.style"
+        :start-index="sourceCodeEditorContextMenu.startIndex" :end-index="sourceCodeEditorContextMenu.endIndex"
+        :lesson-id="{{$lesson->id}}">abc
+    </source-code-editor-context-menu>
 </div>
 @endsection

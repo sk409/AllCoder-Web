@@ -5,6 +5,7 @@
       language="ja"
       placeholder="執筆を始めよう!"
       :value="lesson ? lesson.book : ''"
+      :toolbars="toolbars"
       @change="change"
     ></mavon-editor>
   </div>
@@ -24,6 +25,25 @@ export default {
   data() {
     return {
       lesson: null,
+      toolbars: {
+        bold: true,
+        italic: true,
+        header: true,
+        strikethrough: true,
+        quote: true,
+        ol: true,
+        ul: true,
+        link: true,
+        code: true,
+        table: true,
+        readmodel: true,
+        htmlcode: true,
+        undo: true,
+        redo: true,
+        trash: true,
+        subfield: true,
+        preview: true
+      },
       delayedUpdate: _.debounce(this.update, 1000),
       updateQueue: Promise.resolve()
     };

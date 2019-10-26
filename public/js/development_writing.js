@@ -1851,6 +1851,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "development-writing",
@@ -1863,6 +1864,25 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       lesson: null,
+      toolbars: {
+        bold: true,
+        italic: true,
+        header: true,
+        strikethrough: true,
+        quote: true,
+        ol: true,
+        ul: true,
+        link: true,
+        code: true,
+        table: true,
+        readmodel: true,
+        htmlcode: true,
+        undo: true,
+        redo: true,
+        trash: true,
+        subfield: true,
+        preview: true
+      },
       delayedUpdate: _.debounce(this.update, 1000),
       updateQueue: Promise.resolve()
     };
@@ -2132,7 +2152,8 @@ var render = function() {
         attrs: {
           language: "ja",
           placeholder: "執筆を始めよう!",
-          value: _vm.lesson ? _vm.lesson.book : ""
+          value: _vm.lesson ? _vm.lesson.book : "",
+          toolbars: _vm.toolbars
         },
         on: { change: _vm.change }
       })

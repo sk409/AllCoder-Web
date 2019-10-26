@@ -43,6 +43,8 @@ class LessonsController extends Controller
         File::makeDirectory($hostAppDirectoryPath, 0755, true);
         exec("cp -r $originalPath/ $hostAppDirectoryPath/");
         $hostLogsDirectoryPath = Path::app("$uniqueName/logs");
+        $hostOptionsDirectoryPath = Path::app("$uniqueName/options");
+        File::makeDirectory($hostOptionsDirectoryPath, 0755, true);
         $hostDataDirectoryPath = Path::app("$uniqueName/data");
         $containerAppDirectoryPath = "/opt/app";
         $containerLogsDirectoryPath = "/etc/ProMarc/logs";
@@ -56,6 +58,7 @@ class LessonsController extends Controller
         $parameters["container_name"] = $containerName;
         $parameters["host_app_directory_path"] = $hostAppDirectoryPath;
         $parameters["host_logs_directory_path"] = $hostLogsDirectoryPath;
+        $parameters["host_options_directory_path"] = $hostOptionsDirectoryPath;
         $parameters["container_app_directory_path"] = $containerAppDirectoryPath;
         $parameters["container_logs_directory_path"] = $containerLogsDirectoryPath;
         $parameters["compose_directory_path"] = $composeDirectoryPath;

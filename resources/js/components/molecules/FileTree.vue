@@ -51,17 +51,16 @@ export default {
           that.fileDictionary = {};
           that.fileDictionary[that.rootFolder.path] = that.rootFolder;
           const map = function(before, after) {
-            before.children.forEach(beforeChild => {
-              if (beforeChild.hasOwnProperty("text")) {
-                const afterChild = new File(beforeChild.path, "");
-                that.fileDictionary[afterChild.path] = afterChild;
-                after.children.push(afterChild);
-              } else {
-                const afterChild = new Folder(beforeChild.path);
-                that.fileDictionary[afterChild.path] = afterChild;
-                map(beforeChild, afterChild);
-                after.children.push(afterChild);
-              }
+            before.childFolders.forEach(beforeChildFolder => {
+              const afterChild = new Folder(beforeChildFolder.path);
+              that.fileDictionary[afterChild.path] = afterChild;
+              map(beforeChildFolder, afterChild);
+              after.children.push(afterChild);
+            });
+            before.childFiles.forEach(beforeChildFile => {
+              const afterChild = new File(beforeChildFile.path, "");
+              that.fileDictionary[afterChild.path] = afterChild;
+              after.children.push(afterChild);
             });
           };
           map(response.data, that.rootFolder);

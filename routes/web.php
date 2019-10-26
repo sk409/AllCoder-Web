@@ -47,10 +47,10 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::delete("/files/{file}", "FilesController@destroy")->name("files.destroy");
     //Route::get("/files/fetch_text", "FilesController@fetchText")->name("files.fetchText");
 
-    Route::get("/questions", "QuestionsController@index")->name("questions.index");
+    //Route::get("/questions", "QuestionsController@index")->name("questions.index");
     Route::post("/questions", "QuestionsController@store")->name("questions.store");
-    Route::put("/questions/{question}", "QuestionsController@update")->name("questions.update");
-    Route::delete("/questions/{question}", "QuestionsController@destroy")->name("questions.destroy");
+    //Route::put("/questions/{question}", "QuestionsController@update")->name("questions.update");
+    //Route::delete("/questions/{question}", "QuestionsController@destroy")->name("questions.destroy");
 
     Route::get("/descriptions", "DescriptionsController@index")->name("descriptions.index");
     Route::post("/descriptions", "DescriptionsController@store")->name("descriptions.store");

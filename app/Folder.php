@@ -10,16 +10,22 @@ class Folder /*extends Model*/
 {
 
     public $path = "";
-    public $children = [];
+    public $childFiles = [];
+    public $childFolders = [];
 
     public function __construct(string $path)
     {
         $this->path = $path;
     }
 
-    public function appenChild($child)
+    public function appenChildFile($childFile)
     {
-        $this->children[] = $child;
+        $this->childFiles[] = $childFile;
+    }
+
+    public function appendChildFolder($childFolder)
+    {
+        $this->childFolders[] = $childFolder;
     }
 
     // protected $fillable = ["name", "parent_folder_id", "lesson_id"];

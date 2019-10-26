@@ -23,6 +23,7 @@ class CreateLessonsTable extends Migration
             $table->smallInteger("console_port_number")->unsigned()->nullable();
             $table->string("host_app_directory_path", 256);
             $table->string("host_logs_directory_path", 256);
+            $table->string("host_options_directory_path", 256);
             $table->string("container_app_directory_path", 256);
             $table->string("container_logs_directory_path", 256);
             $table->string("compose_directory_path", 256);

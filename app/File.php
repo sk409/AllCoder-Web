@@ -23,10 +23,12 @@ class File /*extends Model*/
 
     public $path = "";
     public $text = "";
+    public $option = null;
 
-    public function __construct(string $path, string $text)
+    public function __construct(string $path, string $text, $option)
     {
         $this->path = $path;
         $this->text = $text;
+        $this->option = $option;
     }
 }
