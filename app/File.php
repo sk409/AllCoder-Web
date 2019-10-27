@@ -25,7 +25,7 @@ class File /*extends Model*/
     public $text = "";
     public $option = null;
 
-    public function __construct(string $path, string $text, $option)
+    public function __construct(string $path, string $text = "", $option = null)
     {
         $this->path = $path;
         $this->text = $text;

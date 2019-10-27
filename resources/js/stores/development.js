@@ -12,6 +12,7 @@ export default new Vuex.Store({
         async setEditedFile({
             commit
         }, path) {
+            //console.log(path)
             const response = await File.index({
                 path
             });
