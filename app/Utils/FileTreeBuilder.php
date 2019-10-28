@@ -10,6 +10,7 @@ class FileTreeBuilder
 
     public static function build(string $dir, Folder $current, bool $withText = false, array $options = [])
     {
+        $dir = rtrim($dir, "/");
         $itemPaths = glob($dir . '/{*,.[!.]*,..?*}', GLOB_BRACE);
         foreach ($itemPaths as $itemPath) {
             if (is_file($itemPath)) {
