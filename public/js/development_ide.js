@@ -2501,6 +2501,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])({
     filePath: function filePath(state) {
       return state.editedFile.path;
+    },
+    fileText: function fileText(state) {
+      return state.editedFile.text;
     }
   })),
   methods: {
@@ -2513,8 +2516,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.areStoreDescriptionTargetOptionsShown = false;
     },
     onStoreQuestion: function onStoreQuestion(trimmingOptions) {
-      console.log(this.filePath);
-      var question = new _models_question_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, this.filePath, this.startIndex, this.endIndex, this.lessonId);
+      //console.log(this.filePath);
+      var question = new _models_question_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, this.filePath, this.startIndex, this.endIndex, this.fileText.substring(this.startIndex, this.endIndex), this.lessonId);
       question.store(function (response) {
         console.log(response);
       }); // const that = this;
@@ -6072,7 +6075,7 @@ function (_Model) {
     }
   }]);
 
-  function Question(id, path, startIndex, endIndex, lessonId) {
+  function Question(id, path, startIndex, endIndex, answer, lessonId) {
     var _this;
 
     _classCallCheck(this, Question);
@@ -6082,6 +6085,8 @@ function (_Model) {
     _this.path = path;
     _this.startIndex = startIndex;
     _this.endIndex = endIndex;
+    _this.answer = answer;
+    _this.input = "";
     _this.lessonId = lessonId;
     return _this;
   }
@@ -6093,6 +6098,8 @@ function (_Model) {
         path: this.path,
         start_index: this.startIndex,
         end_index: this.endIndex,
+        answer: this.answer,
+        input: this.input,
         lesson_id: this.lessonId
       };
     }
@@ -6119,6 +6126,22 @@ function (_Model) {
     },
     set: function set(value) {
       this._endIndex = value;
+    }
+  }, {
+    key: "answer",
+    get: function get() {
+      return this._answer;
+    },
+    set: function set(value) {
+      this._answer = value;
+    }
+  }, {
+    key: "input",
+    get: function get() {
+      return this._input;
+    },
+    set: function set(value) {
+      this._input = value;
     }
   }, {
     key: "lessonId",

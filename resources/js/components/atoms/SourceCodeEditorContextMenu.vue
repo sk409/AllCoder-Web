@@ -64,7 +64,8 @@ export default {
   },
   computed: {
     ...mapState({
-      filePath: state => state.editedFile.path
+      filePath: state => state.editedFile.path,
+      fileText: state => state.editedFile.text
     })
   },
   methods: {
@@ -77,12 +78,13 @@ export default {
       this.areStoreDescriptionTargetOptionsShown = false;
     },
     onStoreQuestion(trimmingOptions) {
-      console.log(this.filePath);
+      //console.log(this.filePath);
       const question = new Question(
         null,
         this.filePath,
         this.startIndex,
         this.endIndex,
+        this.fileText.substring(this.startIndex, this.endIndex),
         this.lessonId
       );
       question.store(response => {

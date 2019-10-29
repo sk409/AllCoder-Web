@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\File;
 use App\Folder;
 use App\Http\Controllers\Controller;
 use App\Material;
 use App\Path;
 use App\Utils\FileTreeBuilder;
+use App\Utils\FileTreeIterator;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -45,14 +47,11 @@ class LessonsController extends Controller
         if (!is_null($lessonId)) {
             $stdLesson->root_folder = new Folder("");
             $options = [];
-            foreach (glob($lesson->host_options_directory_path . "/*.json") as $fileName) {
-                $option = json_decode(file_get_contents($fileName));
-                $option->path = Path::purchasedLessonOriginal(
-                    $userId,
-                    $materialId,
-                    $lessonId,
-                    ltrim(substr($option->path, strlen($lesson->host_app_directory_path)), "/")
-                );
+            $optionFileNames = glob(
+                Path::purchasedLessonOptions($userId, $materialId, $lesson->id, "*.json")
+            );
+            foreach ($optionFileNames as $optionFileName) {
+                $option = json_decode(file_get_contents($optionFileName));
                 $options[] = $option;
             }
             FileTreeBuilder::build(
@@ -61,6 +60,12 @@ class LessonsController extends Controller
                 true,
                 $options
             );
+            $fileHandler = function (File $file) use ($userId, $materialId, $lesson) {
+                $originalPath = Path::purchasedLessonOriginal($userId, $materialId, $lesson->id, "");
+                $workPath = Path::purchasedLessonWork($userId, $materialId, $lesson->id, "");
+                $file->path = $workPath . substr($file->path, strlen($originalPath));
+            };
+            FileTreeIterator::iterateFolder($stdLesson->root_folder, $fileHandler);
         }
         $stdLesson->comments = [];
         foreach ($lesson->comments()->where("parent_comment_id", null)->limit(5)->get() as $comment) {

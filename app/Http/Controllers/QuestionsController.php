@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Lesson;
+use App\Question;
 use FilesystemIterator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
@@ -17,19 +18,27 @@ class QuestionsController extends Controller
             "path" => "required",
             "start_index" => "required",
             "end_index" => "required",
+            "answer" => "required",
             "lesson_id" => "required",
         ]);
+        $parameters = $request->all();
+        if ($request->has("input") && is_null($request->input)) {
+            $parameters["input"] = "";
+        }
         $found = false;
-        $lesson = Lesson::find($request->lesson_id);
+        $lesson = Lesson::find($parameters["lesson_id"]);
         foreach (glob($lesson->host_options_directory_path . "/*.json") as $fileName) {
             $option = json_decode(file_get_contents($fileName));
-            if ($option->path !== $request->path) {
+            if ($option->path !== $parameters["path"]) {
                 continue;
             }
-            $question = new stdClass();
-            $question->id = count($option->questions);
-            $question->start_index = $request->start_index;
-            $question->end_index = $request->end_index;
+            $question = new Question(
+                count($option->questions),
+                $parameters["start_index"],
+                $parameters["end_index"],
+                $parameters["answer"],
+                $parameters["input"]
+            );
             $option->questions[] = $question;
             $text = json_encode($option);
             File::put($fileName, $text);
@@ -37,18 +46,22 @@ class QuestionsController extends Controller
             break;
         }
         if (!$found) {
-            $lesson = Lesson::find($request->lesson_id);
-            iterator_count(new FilesystemIterator($lesson->host_options_directory_path, FilesystemIterator::SKIP_DOTS));
-            $fileName = $lesson->host_options_directory_path . "/" . iterator_count(new FilesystemIterator($lesson->host_options_directory_path, FilesystemIterator::SKIP_DOTS)) . ".json";
-            $content = new stdClass();
-            $content->path = $request->path;
-            $content->questions = [];
-            $question = new stdClass();
-            $question->id = 0;
-            $question->start_index = $request->start_index;
-            $question->end_index = $request->end_index;
-            $content->questions[] = $question;
-            $text = json_encode($content);
+            $lesson = Lesson::find($parameters["lesson_id"]);
+            $optionCount = iterator_count(new FilesystemIterator($lesson->host_options_directory_path, FilesystemIterator::SKIP_DOTS));
+            $fileName = $lesson->host_options_directory_path . "/" . $optionCount . ".json";
+            $option = new stdClass();
+            $option->id = $optionCount;
+            $option->path = $parameters["path"];
+            $option->questions = [];
+            $question = new Question(
+                0,
+                $parameters["start_index"],
+                $parameters["end_index"],
+                $parameters["answer"],
+                $parameters["input"]
+            );
+            $option->questions[] = $question;
+            $text = json_encode($option);
             File::put($fileName, $text);
         }
     }

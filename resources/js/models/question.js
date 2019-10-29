@@ -10,12 +10,14 @@ export default class Question extends Model {
         return Model.index(Question.baseRoute(), parameters, completion);
     }
 
-    constructor(id, path, startIndex, endIndex, lessonId) {
+    constructor(id, path, startIndex, endIndex, answer, lessonId) {
         super(Question.baseRoute());
         this.id = id;
         this.path = path;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
+        this.answer = answer;
+        this.input = "";
         this.lessonId = lessonId;
     }
 
@@ -24,6 +26,8 @@ export default class Question extends Model {
             path: this.path,
             start_index: this.startIndex,
             end_index: this.endIndex,
+            answer: this.answer,
+            input: this.input,
             lesson_id: this.lessonId
         };
     }
@@ -50,6 +54,22 @@ export default class Question extends Model {
 
     set endIndex(value) {
         this._endIndex = value;
+    }
+
+    get answer() {
+        return this._answer;
+    }
+
+    set answer(value) {
+        this._answer = value;
+    }
+
+    get input() {
+        return this._input;
+    }
+
+    set input(value) {
+        this._input = value;
     }
 
     get lessonId() {

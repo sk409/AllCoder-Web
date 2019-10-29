@@ -89,16 +89,28 @@ class MaterialsController extends Controller
                 $p = ltrim(substr($path, strlen($lesson->host_app_directory_path)), "/");
                 if ($switch === "original") {
                     return Path::purchasedLessonOriginal($userId, $materialId, $lesson->id, $p);
-                } else {
+                } else if ($switch === "work") {
                     return Path::purchasedLessonWork($userId, $materialId, $lesson->id, $p);
+                } else {
+                    return Path::purchasedLessonOptions($userId, $materialId, $lesson->id, $p);
                 }
             };
             File::makeDirectory($makePath("", "original"), 0755, true);
-            File::makeDirectory($makePath("", "work"), 0755, true);
+            File::makeDirectory($makePath("", "work"));
+            File::makeDirectory($makePath("", "options"));
             $options = [];
             $optionFileNames = glob($lesson->host_options_directory_path . "/*.json");
             foreach ($optionFileNames as $optionFileName) {
                 $options[] = json_decode(file_get_contents($optionFileName));
+                $option = json_decode(file_get_contents($optionFileName));
+                $option->path = Path::append(
+                    Path::purchasedLessonOriginal($userId, $materialId, $lesson->id, ""),
+                    substr($option->path, strlen($lesson->host_app_directory_path))
+                );
+                file_put_contents(
+                    Path::purchasedLessonOptions($userId, $materialId, $lesson->id, "$option->id.json"),
+                    json_encode($option)
+                );
             }
             $fileHandler = function ($path) use ($makePath, $options) {
                 $option = null;
@@ -114,9 +126,9 @@ class MaterialsController extends Controller
                     $offset = 0;
                     foreach ($option->questions as $question) {
                         $workText =
-                            substr($workText, 0, $question->start_index - $offset) .
-                            substr($workText, $question->end_index - $offset);
-                        $offset += ($question->end_index - $question->start_index);
+                            substr($workText, 0, $question->startIndex - $offset) .
+                            substr($workText, $question->endIndex - $offset);
+                        $offset += ($question->endIndex - $question->startIndex);
                     }
                 }
                 File::put(
