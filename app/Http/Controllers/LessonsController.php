@@ -32,22 +32,22 @@ class LessonsController extends Controller
 
     public function store(LessonCreationRequest $request)
     {
-        $uniqueName = "pro_marc" . uniqid();
+        $uniqueName = "pro_mark" . uniqid();
         $composeDirectoryPath = resource_path("docker/" . $uniqueName);
         File::makeDirectory($composeDirectoryPath);
         $composePath = $composeDirectoryPath . "/docker-compose.yml";
         File::copy(resource_path("docker/docker-compose.yml"), $composePath);
         File::copy(resource_path("docker/Dockerfile"), $composeDirectoryPath . "/Dockerfile");
-        $originalPath = Path::app("originals/Laravel/5.8");
-        $hostAppDirectoryPath = Path::app("$uniqueName/app");
+        $originalPath = Path::lesson("originals/Laravel/5.8");
+        $hostAppDirectoryPath = Path::lesson("$uniqueName/app");
         File::makeDirectory($hostAppDirectoryPath, 0755, true);
         exec("cp -r $originalPath/ $hostAppDirectoryPath/");
-        $hostLogsDirectoryPath = Path::app("$uniqueName/logs");
-        $hostOptionsDirectoryPath = Path::app("$uniqueName/options");
+        $hostLogsDirectoryPath = Path::lesson("$uniqueName/logs");
+        $hostOptionsDirectoryPath = Path::lesson("$uniqueName/options");
         File::makeDirectory($hostOptionsDirectoryPath, 0755, true);
-        $hostDataDirectoryPath = Path::app("$uniqueName/data");
+        $hostDataDirectoryPath = Path::lesson("$uniqueName/data");
         $containerAppDirectoryPath = "/opt/app";
-        $containerLogsDirectoryPath = "/etc/ProMarc/logs";
+        $containerLogsDirectoryPath = "/etc/ProMark/logs";
         File::put($composeDirectoryPath . "/.env", "HOST_DATA_DIRECTORY_PATH=$hostDataDirectoryPath\nHOST_APP_DIRECTORY_PATH=$hostAppDirectoryPath\nHOST_LOGS_DIRECTORY_PATH=$hostLogsDirectoryPath\nCONTAINER_APP_DIRECTORY_PATH=$containerAppDirectoryPath\nCONTAINER_LOGS_DIRECTORY_PATH=$containerLogsDirectoryPath\nCOMPOSE_PROJECT_NAME=$uniqueName");
         $osPath = resource_path("docker/os");
         exec("cp -r $osPath $composeDirectoryPath");
@@ -57,6 +57,7 @@ class LessonsController extends Controller
         $parameters["book"] = "";
         $parameters["container_name"] = $containerName;
         $parameters["host_app_directory_path"] = $hostAppDirectoryPath;
+        $parameters["host_data_directory_path"] = $hostDataDirectoryPath;
         $parameters["host_logs_directory_path"] = $hostLogsDirectoryPath;
         $parameters["host_options_directory_path"] = $hostOptionsDirectoryPath;
         $parameters["container_app_directory_path"] = $containerAppDirectoryPath;

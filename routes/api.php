@@ -27,5 +27,5 @@ Route::group(['middleware' => ["api"]], function () {
     Route::post("upload", "Api\UploadController@store");
     Route::post("files", "Api\FilesController@store");
     Route::post("questions", "Api\QuestionsController@store");
-    //Route::get("lessons", "Api\LessonsController@index");
+    Route::get("preview", "Api\PreviewController@preview");
 });

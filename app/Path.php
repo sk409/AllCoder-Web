@@ -40,9 +40,9 @@ class Path
         return "$homeDirectory/$path";
     }
 
-    public static function app(string $path): string
+    public static function lesson(string $path): string
     {
-        return Path::user("ProMarc/$path");
+        return storage_path("app/lessons/$path");
     }
 
     public static function purchasedLesson($userId, $materialId, $lessonId, $path): string
@@ -63,5 +63,15 @@ class Path
     public static function purchasedLessonOptions($userId, $materialId, $lessonId, $path): string
     {
         return Path::purchasedLesson($userId, $materialId, $lessonId, "options/" . $path);
+    }
+
+    public static function docker($path): string
+    {
+        return Path::append(resource_path("docker"), $path);
+    }
+
+    public static function preview($path): string
+    {
+        return Path::docker("preview/$path");
     }
 }

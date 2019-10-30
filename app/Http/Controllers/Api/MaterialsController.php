@@ -98,6 +98,10 @@ class MaterialsController extends Controller
             File::makeDirectory($makePath("", "original"), 0755, true);
             File::makeDirectory($makePath("", "work"));
             File::makeDirectory($makePath("", "options"));
+            $dataDumpedFilePath = Path::purchasedLesson($userId, $materialId, $lesson->id, "data.sql");
+            exec("docker container exec $lesson->container_id /bin/bash /opt/scripts/mysql_dump.sh");
+            exec("docker container cp $lesson->container_id:/opt/data.sql $dataDumpedFilePath");
+            $lesson->host_dumped_data_file_path = $dataDumpedFilePath;
             $options = [];
             $optionFileNames = glob($lesson->host_options_directory_path . "/*.json");
             foreach ($optionFileNames as $optionFileName) {
@@ -153,6 +157,7 @@ class MaterialsController extends Controller
                 $fileHandler,
                 $folderHandler
             );
+            $lesson->save();
         }
     }
 }

@@ -53,6 +53,8 @@ use Illuminate\Support\Facades\File;
 //     }
 // }
 
+// TODO: containerをずっと起動させておく
+
 class DevelopmentController extends Controller
 {
 
@@ -63,6 +65,8 @@ class DevelopmentController extends Controller
         exec("docker container exec $lesson->container_name /bin/bash /opt/scripts/startup.sh");
         exec("docker container exec -itd $lesson->container_name gotty -w bash");
         exec("docker container exec -itd $lesson->container_name /opt/scripts/observe_app_changes.sh $lesson->container_app_directory_path $lesson->container_logs_directory_path/app_changes.txt");
+        exec("docker container ps -f name=$lesson->container_name -q", $containerId);
+        $lesson->container_id = $containerId[0];
         exec("docker container port $lesson->container_name", $ports);
         $portString = join("\n", $ports);
         preg_match("/80\\/tcp.+:([0-9]+)/u", $portString, $previewPortMatches);

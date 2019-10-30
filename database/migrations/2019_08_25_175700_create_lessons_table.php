@@ -18,10 +18,12 @@ class CreateLessonsTable extends Migration
             $table->string("title", 128);
             $table->string("description", 1024)->default("");
             $table->text("book");
+            $table->string("container_id", 16)->nullable();
             $table->string("container_name", 64);
             $table->smallInteger("preview_port_number")->unsigned()->nullable();
             $table->smallInteger("console_port_number")->unsigned()->nullable();
             $table->string("host_app_directory_path", 256);
+            $table->string("host_dumped_data_file_path", 256)->nullable();
             $table->string("host_logs_directory_path", 256);
             $table->string("host_options_directory_path", 256);
             $table->string("container_app_directory_path", 256);
