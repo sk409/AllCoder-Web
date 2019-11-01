@@ -28,7 +28,7 @@ class Path
         return rtrim($path, $delimiter);
     }
 
-    public static function append(string $l, string $r): string
+    public static function append($l, $r): string
     {
         $delimiter = Path::delimiter();
         return Path::rtrim($l) . $delimiter . Path::ltrim($r);
@@ -40,14 +40,19 @@ class Path
         return "$homeDirectory/$path";
     }
 
-    public static function lesson(string $path): string
+    public static function lesson(string $path = ""): string
     {
         return storage_path("app/lessons/$path");
     }
 
+    public static function lessonOriginals($path): string
+    {
+        return Path::lesson(Path::append("originals", $path));
+    }
+
     public static function purchasedLesson($userId, $materialId, $lessonId, $path): string
     {
-        return storage_path("app/public/purchased_materials/$userId/$materialId/$lessonId/$path");
+        return storage_path("app/purchased_materials/$userId/$materialId/$lessonId/$path");
     }
 
     public static function purchasedLessonOriginal($userId, $materialId, $lessonId, $path): string
@@ -70,6 +75,12 @@ class Path
         return Path::append(resource_path("docker"), $path);
     }
 
+    public static function dockerDevelopment($path = ""): string
+    {
+        return Path::docker(Path::append("development", $path));
+    }
+
+    // TODO: 修正
     public static function preview($path): string
     {
         return Path::docker("preview/$path");

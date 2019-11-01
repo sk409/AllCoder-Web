@@ -8,6 +8,7 @@ use App\Material;
 use App\Path;
 use App\User;
 use App\Utils\FileTreeIterator;
+use App\Utils\FileUtils;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use stdClass;
@@ -86,6 +87,7 @@ class MaterialsController extends Controller
         $materialId = $request->material_id;
         foreach ($material->lessons as $lesson) {
             $makePath = function ($path, $switch) use ($lesson, $userId, $materialId) {
+                // TODO: Pathクラスを使った書き方に直す
                 $p = ltrim(substr($path, strlen($lesson->host_app_directory_path)), "/");
                 if ($switch === "original") {
                     return Path::purchasedLessonOriginal($userId, $materialId, $lesson->id, $p);
@@ -95,15 +97,31 @@ class MaterialsController extends Controller
                     return Path::purchasedLessonOptions($userId, $materialId, $lesson->id, $p);
                 }
             };
-            File::makeDirectory($makePath("", "original"), 0755, true);
-            File::makeDirectory($makePath("", "work"));
-            File::makeDirectory($makePath("", "options"));
-            $dataDumpedFilePath = Path::purchasedLesson($userId, $materialId, $lesson->id, "data.sql");
-            exec("docker container exec $lesson->container_id /bin/bash /opt/scripts/mysql_dump.sh");
-            exec("docker container cp $lesson->container_id:/opt/data.sql $dataDumpedFilePath");
-            $lesson->host_dumped_data_file_path = $dataDumpedFilePath;
+            // File::makeDirectory($makePath("", "original"), 0755, true);
+            // File::makeDirectory($makePath("", "work"));
+            File::makeDirectory($makePath("", "options"), 0755, true);
+            FileUtils::copy(
+                Path::preview("originals"),
+                Path::rtrim(Path::purchasedLesson($userId, $materialId, $lesson->id, ""))
+            );
+            $dumpedDataFilePath = Path::purchasedLesson($userId, $materialId, $lesson->id, "data.sql");
+            /*********************/
+            // TODO: 排他制御
+            // exec("docker container start $lesson->container_id");
+            // exec("docker container exec $lesson->container_id /bin/bash /opt/scripts/mysql_dump.sh");
+            // exec("docker container cp $lesson->container_id:/opt/data.sql $dataDumpedFilePath");
+            // exec("docker container stop $lesson->container_id");
+            $lessonDirectoryPath = $lesson->lesson_directory_path;
+            exec("cd $lessonDirectoryPath && docker-compose up -d");
+            // TODO: コンテナが立ち上がるのを待つ
+            exec("cd $lessonDirectoryPath && docker-compose exec -d develop /bin/bash /opt/scripts/mysql_dump.sh");
+            $outputs = [];
+            exec("cd $lessonDirectoryPath && docker-compose ps -q develop", $outputs);
+            $containerId = $outputs[0];
+            exec("docker container cp $containerId:/opt/data.sql $dumpedDataFilePath");
+            /*********************/
             $options = [];
-            $optionFileNames = glob($lesson->host_options_directory_path . "/*.json");
+            $optionFileNames = glob(Path::append($lesson->options_directory_path, "*.json"));
             foreach ($optionFileNames as $optionFileName) {
                 $options[] = json_decode(file_get_contents($optionFileName));
                 $option = json_decode(file_get_contents($optionFileName));

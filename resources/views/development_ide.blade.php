@@ -17,7 +17,7 @@
     <div id="development-header" class="border-bottom border-dark">
         <div>
             {{$lesson->title}}
-            <a class="btn btn-light" href="http://localhost:{{$lesson->preview_port_number}}" target="_blank">プレビュー</a>
+            <a class="btn btn-light" href="http://localhost:{{$previewPortNumber}}" target="_blank">プレビュー</a>
             <a class="btn btn-light" href="{{route("development.writing", ["lesson" => $lesson->id])}}"
                 target="_blank">執筆</a>
         </div>
@@ -29,7 +29,7 @@
         <div id="center-view">
             <source-code-editor id="source-code-editor"
                 v-on:show-source-code-editor-context-menu="showSourceCodeEditorContextMenu"></source-code-editor>
-            <iframe id="console" src="http://localhost:{{$lesson->console_port_number}}"></iframe>
+            <iframe id="console" src="http://localhost:{{$consolePortNumber}}"></iframe>
         </div>
     </div>
     <source-code-editor-context-menu id="source-code-editor-context-menu" :style="sourceCodeEditorContextMenu.style"

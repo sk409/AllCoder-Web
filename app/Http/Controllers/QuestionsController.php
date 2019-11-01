@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Lesson;
+use App\Path;
 use App\Question;
 use FilesystemIterator;
 use Illuminate\Support\Facades\File;
@@ -27,7 +28,8 @@ class QuestionsController extends Controller
         }
         $found = false;
         $lesson = Lesson::find($parameters["lesson_id"]);
-        foreach (glob($lesson->host_options_directory_path . "/*.json") as $fileName) {
+        $optionsFileName = glob(Path::append($lesson->options_directory_path, "*.json"));
+        foreach ($optionsFileName as $fileName) {
             $option = json_decode(file_get_contents($fileName));
             if ($option->path !== $parameters["path"]) {
                 continue;
@@ -47,8 +49,14 @@ class QuestionsController extends Controller
         }
         if (!$found) {
             $lesson = Lesson::find($parameters["lesson_id"]);
-            $optionCount = iterator_count(new FilesystemIterator($lesson->host_options_directory_path, FilesystemIterator::SKIP_DOTS));
-            $fileName = $lesson->host_options_directory_path . "/" . $optionCount . ".json";
+            $optionCount = iterator_count(
+                new FilesystemIterator(
+                    $lesson->options_directory_path,
+                    FilesystemIterator::SKIP_DOTS
+                )
+            );
+            $fileName = Path::append($lesson->options_directory_path, "$optionCount.json");
+            //$fileName = $lesson->host_options_directory_path . "/" . $optionCount . ".json";
             $option = new stdClass();
             $option->id = $optionCount;
             $option->path = $parameters["path"];

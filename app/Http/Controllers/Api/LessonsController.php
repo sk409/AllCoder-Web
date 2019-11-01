@@ -65,7 +65,10 @@ class LessonsController extends Controller
                 $workPath = Path::purchasedLessonWork($userId, $materialId, $lesson->id, "");
                 $file->path = $workPath . substr($file->path, strlen($originalPath));
             };
-            FileTreeIterator::iterateFolder($stdLesson->root_folder, $fileHandler);
+            FileTreeIterator::iterateFileTreeItem(
+                $stdLesson->root_folder,
+                $fileHandler
+            );
         }
         $stdLesson->comments = [];
         foreach ($lesson->comments()->where("parent_comment_id", null)->limit(5)->get() as $comment) {

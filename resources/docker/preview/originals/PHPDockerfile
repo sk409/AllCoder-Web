@@ -1,0 +1,6 @@
+FROM php:7.3-fpm
+
+WORKDIR /opt
+RUN mkdir app
+
+RUN docker-php-ext-install pdo_mysql

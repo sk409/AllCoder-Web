@@ -7,36 +7,59 @@ use App\Folder;
 class FileTreeIterator
 {
 
-    public static function iterate(string $dir, $fileHandler, $folderHandler)
+    public static function iterate(string $path, $fileHandler, $folderHandler, string $order = "preorder")
     {
-        $itemPaths = glob($dir . '/{*,.[!.]*,..?*}', GLOB_BRACE);
-        foreach ($itemPaths as $itemPath) {
-            if (is_file($itemPath)) {
-                $fileHandler($itemPath);
+        $handle = function () use ($path, $fileHandler, $folderHandler) {
+            if (is_file($path)) {
+                $fileHandler($path);
             } else {
-                $folderHandler($itemPath);
-                FileTreeIterator::iterate($dir . "/" . basename($itemPath), $fileHandler, $folderHandler);
+                $folderHandler($path);
             }
+        };
+        if ($order === "preorder") {
+            $handle();
+        }
+        if (is_dir($path)) {
+            $itemPaths = glob($path . '/{*,.[!.]*,..?*}', GLOB_BRACE);
+            foreach ($itemPaths as $itemPath) {
+                FileTreeIterator::iterate($itemPath, $fileHandler, $folderHandler);
+            }
+        }
+        if ($order === "postorder") {
+            $handle();
         }
     }
 
-    public static function iterateFolder(Folder $folder, $fileHandler = null, $folderHandler = null)
-    {
-        if (!is_null($folderHandler)) {
-            $folderHandler($folder);
+    public static function iterateFileTreeItem(
+        $fileTreeItem,
+        $fileHandler = null,
+        $folderHandler = null,
+        string $order = "preorder"
+    ) {
+        $handle = function () use ($fileTreeItem, $fileHandler, $folderHandler) {
+            if ($fileTreeItem instanceof Folder) {
+                if (!is_null($folderHandler)) {
+                    $folderHandler($fileTreeItem);
+                }
+            } else {
+                if (!is_null($fileHandler)) {
+                    $fileHandler($fileTreeItem);
+                }
+            }
+        };
+        if ($order === "preorder") {
+            $handle();
         }
-        if (!is_null($fileHandler)) {
-            foreach ($folder->childFiles as $childFile) {
-                $fileHandler($childFile);
+        if ($fileTreeItem instanceof Folder) {
+            foreach ($fileTreeItem->childFiles as $childFile) {
+                FileTreeIterator::iterateFileTreeItem($childFile, $fileHandler, $folderHandler);
+            }
+            foreach ($fileTreeItem->childFolders as $childFolder) {
+                FileTreeIterator::iterateFileTreeItem($childFolder, $fileHandler, $folderHandler);
             }
         }
-        if (!is_null($folderHandler)) {
-            foreach ($folder->childFolders as $childFolder) {
-                $folderHandler($childFolder);
-            }
-        }
-        foreach ($folder->childFolders as $childFolder) {
-            FileTreeIterator::iterateFolder($childFolder, $fileHandler, $folderHandler);
+        if ($order === "postorder") {
+            $handle();
         }
     }
 }
