@@ -20,20 +20,22 @@ Auth::routes();
 
 Route::group(["middleware" => ["auth"]], function () {
 
-    Route::get('/dashboard/materials', 'DashboardController@materials')->name('dashboard.materials');
+    Route::get("/dashboard/created_materials", "DashboardController@createdMaterials")->name("dashboard.created_materials");
+    Route::get('/dashboard/purchased_materials', 'DashboardController@purchasedMaterials')->name('dashboard.purchased_materials');
     Route::get("/dashboard/lessons", "DashboardController@lessons")->name("dashboard.lessons");
 
     //Route::resource("lessons", "LessonsController");
     Route::get("lessons", "LessonsController@index")->name("lessons.index");
     Route::get("lessons/create", "LessonsController@create")->name("lessons.create");
     Route::post("lessons", "LessonsController@store")->name("lessons.store");
-    Route::get("lessons/delta/{lesson}", "LessonsController@delta")->name("lesson.delta");
     Route::put("lessons/{lesson}", "LessonsController@update")->name("lessons.update");
 
     Route::resource("materials", "MaterialsController");
 
-    Route::get("/development/{lessonId}", "DevelopmentController@index")->name("development");
+    Route::get("/development/creating", "DevelopmentController@creating")->name("development.creating");
+    Route::get("/development/learning", "DevelopmentController@learning")->name("development.learning");
     Route::get("/development_writing/{lesson}", "DevelopmentController@writing")->name("development.writing");
+    Route::get("/development/reading", "DevelopmentController@reading")->name("development.reading");
     Route::post("/development/unload/{lessonId}", "DevelopmentController@unload")->name("development.unload");
 
     Route::get("/folders", "FoldersController@index")->name("folders.index");
@@ -63,4 +65,6 @@ Route::group(["middleware" => ["auth"]], function () {
 
     Route::get("/input_buttons", "InputButtonsController@index")->name("input_buttons.index");
     Route::post("/input_buttons", "InputButtonsController@store")->name("input_buttons.store");
+
+    Route::get("file_delta", "FileDeltaController@delta")->name("file_delta.delta");
 });

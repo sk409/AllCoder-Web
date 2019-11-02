@@ -6,6 +6,7 @@
     "/css/materials/create.css": "/css/materials/create.css",
     "/css/materials/edit.css": "/css/materials/edit.css",
     "/js/development_ide.js": "/js/development_ide.js",
+    "/js/development_reading.js": "/js/development_reading.js",
     "/js/development_writing.js": "/js/development_writing.js",
     "/js/lodash.full.min.js": "/js/lodash.full.min.js",
     "/js/material_create.js": "/js/material_create.js",

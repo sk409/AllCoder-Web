@@ -2705,7 +2705,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "file-tree",
   props: {
-    lesson: Object
+    hostAppDirectoryPath: {
+      type: String,
+      required: true
+    },
+    containerAppDirectoryPath: {
+      type: String,
+      required: true
+    },
+    deltaLogFilePath: {
+      type: String,
+      required: true
+    }
   },
   components: {
     FileTreeItem: _atoms_FileTreeItem_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
@@ -2725,9 +2736,9 @@ __webpack_require__.r(__webpack_exports__);
     fetchFileTree: function fetchFileTree() {
       var that = this;
       _models_folder_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
-        path: this.lesson.host_app_directory_path
+        path: this.hostAppDirectoryPath
       }, function (response) {
-        that.rootFolder = new _models_folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](that.lesson.host_app_directory_path);
+        that.rootFolder = new _models_folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](that.hostAppDirectoryPath);
         that.fileDictionary = {};
         that.fileDictionary[that.rootFolder.path] = that.rootFolder;
 
@@ -2751,12 +2762,12 @@ __webpack_require__.r(__webpack_exports__);
     observeFiles: function observeFiles() {
       var that = this;
       setInterval(function () {
-        axios.get(_Routes_js__WEBPACK_IMPORTED_MODULE_3__["default"].lessonDelta(that.lesson.id)).then(function (response) {
+        axios.get("/file_delta?delta_log_file_path=" + that.deltaLogFilePath).then(function (response) {
           var fileDeltas = [];
           response.data[1].forEach(function (path, index) {
             path = path.slice(0, -1);
             fileDeltas.push({});
-            fileDeltas[index].path = path.replace(that.lesson.container_app_directory_path, that.lesson.host_app_directory_path);
+            fileDeltas[index].path = path.replace(that.containerAppDirectoryPath, that.hostAppDirectoryPath);
           });
           response.data[2].forEach(function (type, index) {
             //console.log(type);

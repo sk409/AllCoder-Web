@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
 use Auth;
 use App\Lesson;
@@ -16,17 +15,32 @@ class DashboardController extends Controller
         $this->middleware('auth');
     }
 
-    public function materials(): Renderable
+    public function purchasedMaterials(): Renderable
+    {
+        $user = Auth::user();
+        $materials = $user->purchases;
+        return view("dashboard_purchased_materials", [
+            "user" => $user,
+            "materials" => $materials
+        ]);
+    }
+
+    public function createdMaterials(): Renderable
     {
         $user = Auth::user();
         $materials = $user->materials;
-        return view('dashboard_materials', ["user" => $user, "materials" => $materials]);
+        return view('dashboard_created_materials', [
+            "user" => $user,
+            "materials" => $materials
+        ]);
     }
 
     public function lessons(): Renderable
     {
         $user = Auth::user();
         $lessons = Lesson::where("user_id", $user->id)->get()->all();
-        return view('dashboard_lessons', ["user" => $user, "lessons" => $lessons]);
+        return view('dashboard_lessons', [
+            "user" => $user, "lessons" => $lessons
+        ]);
     }
 }

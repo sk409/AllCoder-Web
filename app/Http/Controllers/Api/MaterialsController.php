@@ -79,6 +79,8 @@ class MaterialsController extends Controller
         return MaterialsController::convert($materials);
     }
 
+    // TODO: Web用とモバイル用で別のやり方をしているけど、やり方を統一する。
+    //       元々あるディレクトリからスナップショットを作成するWeb用のやり方に統一する方が良さそう。
     public function purchase(Request $request)
     {
         $material = Material::find($request->material_id);
@@ -86,6 +88,7 @@ class MaterialsController extends Controller
         $userId = $request->user_id;
         $materialId = $request->material_id;
         foreach ($material->lessons as $lesson) {
+            //***** モバイル用 *****//
             $makePath = function ($path, $switch) use ($lesson, $userId, $materialId) {
                 // TODO: Pathクラスを使った書き方に直す
                 $p = ltrim(substr($path, strlen($lesson->host_app_directory_path)), "/");
@@ -113,7 +116,6 @@ class MaterialsController extends Controller
             // exec("docker container stop $lesson->container_id");
             $lessonDirectoryPath = $lesson->lesson_directory_path;
             exec("cd $lessonDirectoryPath && docker-compose up -d");
-            // TODO: コンテナが立ち上がるのを待つ
             exec("cd $lessonDirectoryPath && docker-compose exec -d develop /bin/bash /opt/scripts/mysql_dump.sh");
             $outputs = [];
             exec("cd $lessonDirectoryPath && docker-compose ps -q develop", $outputs);
@@ -175,7 +177,56 @@ class MaterialsController extends Controller
                 $fileHandler,
                 $folderHandler
             );
-            $lesson->save();
+
+
+
+
+            //***** Web用 *****//
+            $webDirectoryPath = Path::purchasedLessonWeb($userId, $materialId, $lesson->id);
+            mkdir($webDirectoryPath);
+            FileUtils::copy(Path::lesson($lesson->id), $webDirectoryPath);
+            $env = file_get_contents(Path::append($webDirectoryPath, ".env"));
+            $env = str_replace($lesson->data_directory_path, Path::append($webDirectoryPath, "data"), $env);  // TODO: Webのdataディレクトリを一箇所で定義する 
+            $env = str_replace($lesson->host_app_directory_path, Path::append($webDirectoryPath, "app"), $env);  // TODO: Webのappディレクトリを一箇所で定義する
+            $env = str_replace($lesson->host_logs_directory_path, Path::append($webDirectoryPath, "logs"), $env);   // TODL: Webのlogsディレクトリを一箇所で定義する
+            file_put_contents(Path::append($webDirectoryPath, ".env"), $env);
+            $fileHandler = function ($path) use ($userId, $materialId, $lesson, $options) {
+                $option = null;
+                foreach ($options as $o) {
+                    if ($o->path === $path) {
+                        $option = $o;
+                        break;
+                    }
+                }
+                $originalText = file_get_contents($path);
+                $workText = $originalText;
+                if ($option) {
+                    $offset = 0;
+                    foreach ($option->questions as $question) {
+                        $workText =
+                            substr($workText, 0, $question->startIndex - $offset) .
+                            substr($workText, $question->endIndex - $offset);
+                        $offset += ($question->endIndex - $question->startIndex);
+                    }
+                }
+                $newPath = Path::purchasedLessonWeb(
+                    $userId,
+                    $materialId,
+                    $lesson->id,
+                    Path::append(
+                        "app",
+                        substr($path, strlen($lesson->host_app_directory_path))
+                    )
+                );
+                file_put_contents(
+                    $newPath,
+                    $workText
+                );
+            };
+            FileTreeIterator::iterate(
+                $lesson->host_app_directory_path,
+                $fileHandler
+            );
         }
     }
 }

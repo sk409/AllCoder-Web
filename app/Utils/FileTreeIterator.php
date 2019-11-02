@@ -7,13 +7,17 @@ use App\Folder;
 class FileTreeIterator
 {
 
-    public static function iterate(string $path, $fileHandler, $folderHandler, string $order = "preorder")
+    public static function iterate(string $path, $fileHandler = null, $folderHandler = null, string $order = "preorder")
     {
         $handle = function () use ($path, $fileHandler, $folderHandler) {
             if (is_file($path)) {
-                $fileHandler($path);
+                if (!is_null($fileHandler)) {
+                    $fileHandler($path);
+                }
             } else {
-                $folderHandler($path);
+                if (!is_null($folderHandler)) {
+                    $folderHandler($path);
+                }
             }
         };
         if ($order === "preorder") {

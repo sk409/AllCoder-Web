@@ -65,6 +65,11 @@ class Path
         return Path::purchasedLesson($userId, $materialId, $lessonId, "work/" . $path);
     }
 
+    public static function purchasedLessonWeb($userId, $materialId, $lessonId, $path = ""): string
+    {
+        return Path::purchasedLesson($userId, $materialId, $lessonId, Path::append("web", $path));
+    }
+
     public static function purchasedLessonOptions($userId, $materialId, $lessonId, $path): string
     {
         return Path::purchasedLesson($userId, $materialId, $lessonId, "options/" . $path);

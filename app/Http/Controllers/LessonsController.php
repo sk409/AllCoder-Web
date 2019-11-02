@@ -95,15 +95,15 @@ class LessonsController extends Controller
         Lesson::find($id)->fill($parameters)->save();
     }
 
-    public function delta(int $id)
-    {
-        $lesson = Lesson::find($id);
-        $logPath = Path::append($lesson->host_logs_directory_path, "app_changes.txt");
-        //$logPath = "$lesson->host_logs_directory_path/app_changes.txt";
-        $appChanges = File::get($logPath, true);
-        File::put($logPath, "");
-        $pattern = "/(\\/opt\\/app\\/.*?) (CREATE|DELETE|MODIFY)(,ISDIR)? (.*)/u";
-        preg_match_all($pattern, $appChanges, $matches);
-        return $matches;
-    }
+    // public function delta(int $id)
+    // {
+    //     $lesson = Lesson::find($id);
+    //     $logPath = Path::append($lesson->host_logs_directory_path, "app_changes.txt");
+    //     //$logPath = "$lesson->host_logs_directory_path/app_changes.txt";
+    //     $appChanges = File::get($logPath, true);
+    //     File::put($logPath, "");
+    //     $pattern = "/(\\/opt\\/app\\/.*?) (CREATE|DELETE|MODIFY)(,ISDIR)? (.*)/u";
+    //     preg_match_all($pattern, $appChanges, $matches);
+    //     return $matches;
+    // }
 }

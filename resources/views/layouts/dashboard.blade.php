@@ -30,8 +30,12 @@
         </div>
         <div id="items">
             <ul class="nav nav-tabs">
-                <li class="nav-item"><a class="nav-link {{ Request::is("dashboard/materials") ? "active" : "" }}"
-                        href="{{ route("dashboard.materials") }}">教材</a></li>
+                <li class="nav-item"><a
+                        class="nav-link {{ Request::is("dashboard/purchased_materials") ? "active" : "" }}"
+                        href="{{ route("dashboard.purchased_materials") }}">購入した教材</a></li>
+                <li class="nav-item"><a
+                        class="nav-link {{ Request::is("dashboard/created_materials") ? "active" : "" }}"
+                        href="{{ route("dashboard.created_materials") }}">作成した教材</a></li>
                 <li class="nav-item"><a class="nav-link {{ Request::is("dashboard/lessons") ? "active" : "" }}"
                         href="{{ route("dashboard.lessons") }}">レッスン</a></li>
             </ul>

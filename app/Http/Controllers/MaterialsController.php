@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Auth;
 use App\Material;
-use App\Lesson;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 
@@ -40,7 +39,7 @@ class MaterialsController extends Controller
         $material->fill($request->all())->save();
         $material->lessons()->detach();
         $this->establishRelationshipWithLessons($material, $request->lessonIds);
-        return redirect()->route("dashboard.materials");
+        return redirect()->route("dashboard.created_materials");
     }
 
     public function edit(int $id)
@@ -49,6 +48,14 @@ class MaterialsController extends Controller
         return view("material_edit", [
             "material" => $material,
             "user" => $material->user,
+        ]);
+    }
+
+    public function show(int $id)
+    {
+        $material = Material::find($id);
+        return view("material_show", [
+            "material" => $material
         ]);
     }
 
