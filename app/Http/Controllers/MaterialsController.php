@@ -22,7 +22,7 @@ class MaterialsController extends Controller
             $material->update(["thumbnail_image_path" => "storage/" . $path . "/" . $fileName]);
         }
         $this->establishRelationshipWithLessons($material, $request->lessonIds);
-        return redirect()->route("dashboard.materials");
+        return redirect()->route("dashboard.purchased_materials");
     }
 
     public function create(): Renderable

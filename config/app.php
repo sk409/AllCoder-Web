@@ -228,6 +228,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         "Form" => Collective\Html\FormFacade::class,
+        "Helper" => App\Helpers\Helper::class,
         "Html" => Collective\Html\HtmlFacade::class,
     ],
 

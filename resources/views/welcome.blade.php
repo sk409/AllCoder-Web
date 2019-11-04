@@ -1,4 +1,39 @@
-<!DOCTYPE html>
+@extends("layouts.app")
+
+@section("links")
+<link rel="stylesheet" href="{{asset("css/welcome.css")}}">
+@endsection
+
+@section("scripts")
+<script src="{{asset("js/welcome.js")}}" defer></script>
+@endsection
+
+@include("components.navbar")
+
+@section("app-content")
+
+<div id="welcome" class="container mt-4">
+    <div id="popular-materials">
+        <h3>人気の教材</h3>
+        <div class="d-flex justify-content-between">
+            @foreach($popularMaterials as $popularMaterial)
+            <div class="popular-material border shadow" v-on:click="clickedPopularMaterial">
+                <img class="material-thumbnail-image border-bottom" src="{{$popularMaterial->thumbnail_image_path}}">
+                <div class="mt-1 p-2">
+                    <div class="material-title">{{$popularMaterial->title}}</div>
+                    <div class="material-author-name">{{$popularMaterial->user->name}}</div>
+                    <div class="material-price">{{Helper::toAmountFormat($popularMaterial->price)}}</div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+
+@endsection
+
+
+{{-- <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
@@ -7,10 +42,10 @@
 
     <title>Laravel</title>
 
-    <!-- Fonts -->
+
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
-    <!-- Styles -->
+
     <style>
         html,
         body {
@@ -66,7 +101,7 @@
 
     </style>
 
-    {{-- <script src="{{asset("js/app.js")}}" defer></script> --}}
+
 </head>
 
 <body>
@@ -103,4 +138,4 @@
     </div>
 </body>
 
-</html>
+</html> --}}
