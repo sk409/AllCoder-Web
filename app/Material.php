@@ -36,6 +36,8 @@ class Material extends Model
         return $this->belongsToMany(User::class, "purchases");
     }
 
+    // TODO: Web用とモバイル用で別のやり方をしているけど、やり方を統一する。
+    //       元々あるディレクトリからスナップショットを作成するWeb用のやり方に統一する方が良さそう。
     public function purchase($userId)
     {
         if ($this->user_id === $userId) {
