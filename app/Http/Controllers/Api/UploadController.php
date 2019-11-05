@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 class UploadController extends Controller
 {
 
+
+    // TODO: Pathクラスを使った実装に変える
     public function store(Request $request)
     {
         $fileUsage = $request->file_usage;
@@ -29,7 +31,7 @@ class UploadController extends Controller
             $folder .= $path;
             $material = Material::find($materialId);
             if ($material) {
-                $material->update(["thumbnail_image_path" => "storage/" . path . "/" . $fileName]);
+                $material->update(["thumbnail_image_path" => "storage/" . $path . "/" . $fileName]);
             }
         }
         $request->file("file")->storeAs($folder, $fileName);

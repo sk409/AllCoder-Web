@@ -1,8 +1,8 @@
 new Vue({
     el: "#welcome",
     methods: {
-        clickedPopularMaterial() {
-            console.log("OKOKOKOKOKO");
+        clickedPopularMaterial(href) {
+            location.href = href;
         }
     }
 })

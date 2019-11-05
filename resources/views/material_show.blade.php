@@ -11,7 +11,7 @@
 @foreach($material->lessons as $lesson)
 <div>
     <a
-        href="{{ route("development.learning", ["user_id" => $material->user->id, "material_id" => $material->id, "lesson_id" => $lesson->id]) }}">
+        href="{{ route("development.learning", ["user_id" => Auth::user()->id, "material_id" => $material->id, "lesson_id" => $lesson->id]) }}">
         {{$lesson->title}}
     </a>
 </div>

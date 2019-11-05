@@ -81,37 +81,41 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./resources/js/welcome.js":
-/*!*********************************!*\
-  !*** ./resources/js/welcome.js ***!
-  \*********************************/
+/***/ "./resources/js/material_purchase_show.js":
+/*!************************************************!*\
+  !*** ./resources/js/material_purchase_show.js ***!
+  \************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
 new Vue({
-  el: "#welcome",
+  el: "#material-purchase-show",
   methods: {
-    clickedPopularMaterial: function clickedPopularMaterial(href) {
-      location.href = href;
+    onClickPurchaseButton: function onClickPurchaseButton(url, userId) {
+      axios.post(url, {
+        user_id: userId
+      }).then(function (response) {
+        console.log(response);
+      });
     }
   }
 });
 
 /***/ }),
 
-/***/ 7:
-/*!***************************************!*\
-  !*** multi ./resources/js/welcome.js ***!
-  \***************************************/
+/***/ 8:
+/*!******************************************************!*\
+  !*** multi ./resources/js/material_purchase_show.js ***!
+  \******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/js/welcome.js */"./resources/js/welcome.js");
+module.exports = __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/js/material_purchase_show.js */"./resources/js/material_purchase_show.js");
 
 
 /***/ })

@@ -1,0 +1,23 @@
+#material-thumbnail-and-details {
+    height: 30%;
+}
+
+#material-thumbnail-image {
+    width: 30%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#material-title {
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+#material-author {
+    color: gray;
+    font-size: 1.5rem;
+}
+
+#material-price {
+    text-align: right;
+}

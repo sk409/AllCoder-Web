@@ -6276,7 +6276,7 @@ module.exports = {
 
 /***/ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/mavon-editor/dist/css/index.css":
 /*!****************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader??ref--11-1!./node_modules/postcss-loader/src??ref--11-2!./node_modules/mavon-editor/dist/css/index.css ***!
+  !*** ./node_modules/css-loader??ref--12-1!./node_modules/postcss-loader/src??ref--12-2!./node_modules/mavon-editor/dist/css/index.css ***!
   \****************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -34164,7 +34164,7 @@ return jQuery;
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader??ref--11-1!../../../postcss-loader/src??ref--11-2!./index.css */ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/mavon-editor/dist/css/index.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--12-1!../../../postcss-loader/src??ref--12-2!./index.css */ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/mavon-editor/dist/css/index.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -54962,6 +54962,17 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
+/***/ "./resources/sass/material_purchase_show.scss":
+/*!****************************************************!*\
+  !*** ./resources/sass/material_purchase_show.scss ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
 /***/ "./resources/sass/materials/create.scss":
 /*!**********************************************!*\
   !*** ./resources/sass/materials/create.scss ***!
@@ -54996,9 +55007,9 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 /***/ }),
 
 /***/ 0:
-/*!*******************************************************************************************************************************************************************************************************************************************************!*\
-  !*** multi ./resources/js/app.js ./resources/sass/app.scss ./resources/sass/development_ide.scss ./resources/sass/dashboard/dashboard.scss ./resources/sass/materials/create.scss ./resources/sass/materials/edit.scss ./resources/sass/welcome.scss ***!
-  \*******************************************************************************************************************************************************************************************************************************************************/
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** multi ./resources/js/app.js ./resources/sass/app.scss ./resources/sass/development_ide.scss ./resources/sass/dashboard/dashboard.scss ./resources/sass/materials/create.scss ./resources/sass/materials/edit.scss ./resources/sass/welcome.scss ./resources/sass/material_purchase_show.scss ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -55008,7 +55019,8 @@ __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/sass/d
 __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/sass/dashboard/dashboard.scss */"./resources/sass/dashboard/dashboard.scss");
 __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/sass/materials/create.scss */"./resources/sass/materials/create.scss");
 __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/sass/materials/edit.scss */"./resources/sass/materials/edit.scss");
-module.exports = __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/sass/welcome.scss */"./resources/sass/welcome.scss");
+__webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/sass/welcome.scss */"./resources/sass/welcome.scss");
+module.exports = __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/sass/material_purchase_show.scss */"./resources/sass/material_purchase_show.scss");
 
 
 /***/ })
