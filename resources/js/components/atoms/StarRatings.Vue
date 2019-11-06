@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="stars-outer">
-      <div class="stars-inner" :style="starStyle"></div>
+    <div class="stars-outer" ref="starsOuter">
+      <div class="stars-inner" ref="starsInner" :style="starStyle"></div>
     </div>
   </div>
 </template>
@@ -16,11 +16,9 @@ export default {
   },
   computed: {
     starStyle() {
-      if (this.rating < 1) {
-        this.rating *= 100;
-      }
+      const maxStarCount = 5;
       return {
-        width: this.rating + "%"
+        width: (this.rating / maxStarCount) * 100 + "%"
       };
     }
   }

@@ -10,10 +10,14 @@ class WelcomeController extends Controller
 {
 
 
-    public function welcome(Request $request): Renderable
+    public function welcome(): Renderable
     {
+        $materials = Material::all();
+        foreach ($materials as $material) {
+            $material->rating = Material::rating($material);
+        }
         return view("welcome", [
-            "popularMaterials" => Material::all(),
+            "popularMaterials" => $materials,
         ]);
     }
 }

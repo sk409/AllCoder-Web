@@ -112,12 +112,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     starStyle: function starStyle() {
-      if (this.rating < 1) {
-        this.rating *= 100;
-      }
-
+      var maxStarCount = 5;
       return {
-        width: this.rating + "%"
+        width: this.rating / maxStarCount * 100 + "%"
       };
     }
   }
@@ -786,8 +783,12 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("div", { staticClass: "stars-outer" }, [
-      _c("div", { staticClass: "stars-inner", style: _vm.starStyle })
+    _c("div", { ref: "starsOuter", staticClass: "stars-outer" }, [
+      _c("div", {
+        ref: "starsInner",
+        staticClass: "stars-inner",
+        style: _vm.starStyle
+      })
     ])
   ])
 }

@@ -39,9 +39,9 @@ class Lesson extends Model
         return $this->belongsToMany(Material::class)->withPivot("index")->withTimestamps();
     }
 
-    public function evaluations()
+    public function ratings()
     {
-        return $this->belongsToMany(User::class, "lesson_evaluations")->withPivot("value")->withTimestamps();
+        return $this->belongsToMany(User::class, "lesson_ratings")->withPivot("value")->withTimestamps();
     }
 
     public function comments()

@@ -51,9 +51,9 @@ class User extends Authenticatable
         return $this->hasMany(Material::class);
     }
 
-    public function lessonEvaluations()
+    public function lessonRatings()
     {
-        return $this->belongsToMany(Lesson::class, "lesson_evaluations")->withPivot("value")->withTimestamps();
+        return $this->belongsToMany(Lesson::class, "lesson_ratings")->withPivot("value")->withTimestamps();
     }
 
     public function lessonComments()

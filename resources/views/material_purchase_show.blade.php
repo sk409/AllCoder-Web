@@ -19,15 +19,19 @@
             <div id="material-author">{{$material->user->name}}</div>
             <div id="material-price">{{Helper::toAmountFormat($material->price)}}</div>
             <div class="text-right">
+                @if(1 === count(Auth::user()->purchases->where("id", $material->id)->all()))
+                <button type="button" class="btn btn-success" disabled>購入済み</button>
+                @else
                 <button type="button" class="btn btn-primary"
                     v-on:click="onClickPurchaseButton('{{route("material_purchase.purchase", $material->id)}}', {{Auth::user()->id}})">購入</button>
+                @endif
             </div>
         </div>
     </div>
     <div id="material-author">
 
     </div>
-    <div id="material-evaluations"></div>
+    <div id="material-ratings"></div>
     <div id="material-comments"></div>
 </div>
 @endsection

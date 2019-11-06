@@ -1,26 +1,14 @@
-// $file-creation-view-height: 80vh;
-// $file-creation-view-width: $file-creation-view-height;
-// $file-creation-view-margin: $file-creation-view-width * 0.01;
-// $file-creation-view-component-margin: $file-creation-view-margin;
-// $file-creation-view-file-name-width: $file-creation-view-width * 0.5;
-// $file-creation-view-button-width: (
-//     $file-creation-view-width - $file-creation-view-file-name-width -
-//       $file-creation-view-margin * 2 - $file-creation-view-component-margin * 2
-//   ) / 2 * 0.8;
-// $file-creation-view-item-width: $file-creation-view-width * 0.2;
-// $file-creation-view-item-height: $file-creation-view-item-width;
-
 #development-ide {
     height: 100%;
 }
 
 #development-header {
-    height: 5%;
+    height: 10%;
 }
 
 #development-body {
     display: flex;
-    height: 95%;
+    height: 90%;
 }
 
 #file-tree-view {

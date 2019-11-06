@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\LessonsController;
 use App\Material;
-use App\Path;
 use App\User;
 use Illuminate\Http\Request;
 use stdClass;

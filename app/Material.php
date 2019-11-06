@@ -14,6 +14,19 @@ use Illuminate\Support\Facades\File;
 class Material extends Model
 {
 
+    public static function rating($material)
+    {
+        $rating = 0;
+        $count = 0;
+        foreach ($material->lessons as $lesson) {
+            foreach ($lesson->ratings->all() as $r) {
+                $rating += $r->pivot->value;
+            }
+            $count += count($lesson->ratings->all());
+        }
+        return $rating / $count;
+    }
+
     protected $fillable = ["title", "description", "price", "thumbnail_image_path", "user_id"];
 
     public function user()

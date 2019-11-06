@@ -2468,9 +2468,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2507,16 +2504,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   })),
   methods: {
-    onShowStoreQuestionOptions: function onShowStoreQuestionOptions() {
-      this.onHideOptions();
+    showStoreQuestionOptions: function showStoreQuestionOptions() {
+      console.log("SHOSHOSHOSHO");
       this.areStoreQuestionOptionsShown = true;
     },
-    onHideOptions: function onHideOptions() {
+    hideStoreQuestionOptions: function hideStoreQuestionOptions() {
+      console.log("OKOKOKO");
       this.areStoreQuestionOptionsShown = false;
-      this.areStoreDescriptionTargetOptionsShown = false;
     },
-    onStoreQuestion: function onStoreQuestion(trimmingOptions) {
-      //console.log(this.filePath);
+    storeQuestion: function storeQuestion(trimmingOptions) {
       var question = new _models_question_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, this.filePath, this.startIndex, this.endIndex, this.fileText.substring(this.startIndex, this.endIndex), this.lessonId);
       question.store(function (response) {
         console.log(response);
@@ -3937,102 +3933,99 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      attrs: { id: "source-code-editor-context-menu" },
-      on: { mouseleave: _vm.onHideOptions }
-    },
-    [
-      _c("div", { staticClass: "d-flex" }, [
-        _c("div", [
+  return _c("div", { attrs: { id: "source-code-editor-context-menu" } }, [
+    _c("div", { staticClass: "d-flex" }, [
+      _c("div", [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-light",
+            attrs: { type: "button" },
+            on: {
+              mouseover: _vm.showStoreQuestionOptions,
+              mouseleave: _vm.hideStoreQuestionOptions
+            }
+          },
+          [_vm._v("問題に追加")]
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.areStoreQuestionOptionsShown,
+              expression: "areStoreQuestionOptionsShown"
+            }
+          ],
+          staticClass: "d-flex flex-column"
+        },
+        [
           _c(
             "button",
             {
-              staticClass: "source-code-editor-context-menu-button",
+              staticClass: "btn btn-light",
               attrs: { type: "button" },
-              on: { mouseover: _vm.onShowStoreQuestionOptions }
-            },
-            [_vm._v("問題に追加")]
-          )
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            directives: [
-              {
-                name: "show",
-                rawName: "v-show",
-                value: _vm.areStoreQuestionOptionsShown,
-                expression: "areStoreQuestionOptionsShown"
+              on: {
+                click: function($event) {
+                  return _vm.storeQuestion([
+                    _vm.trimmingOptions.forward,
+                    _vm.trimmingOptions.backward
+                  ])
+                }
               }
-            ]
-          },
-          [
-            _c(
-              "button",
-              {
-                staticClass: "source-code-editor-context-menu-option-button",
-                attrs: { type: "button" },
-                on: {
-                  click: function($event) {
-                    return _vm.onStoreQuestion([
-                      _vm.trimmingOptions.forward,
-                      _vm.trimmingOptions.backward
-                    ])
-                  }
+            },
+            [_vm._v("トリミング")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-light",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  return _vm.storeQuestion([_vm.trimmingOptions.forward])
                 }
-              },
-              [_vm._v("トリミング")]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "source-code-editor-context-menu-option-button",
-                attrs: { type: "button" },
-                on: {
-                  click: function($event) {
-                    return _vm.onStoreQuestion([_vm.trimmingOptions.forward])
-                  }
+              }
+            },
+            [_vm._v("前方トリミング")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-light",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  return _vm.storeQuestion([_vm.trimmingOptions.backwawrd])
                 }
-              },
-              [_vm._v("前方トリミング")]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "source-code-editor-context-menu-option-button",
-                attrs: { type: "button" },
-                on: {
-                  click: function($event) {
-                    return _vm.onStoreQuestion([_vm.trimmingOptions.backwawrd])
-                  }
+              }
+            },
+            [_vm._v("後方トリミング")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-light",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  return _vm.storeQuestion([])
                 }
-              },
-              [_vm._v("後方トリミング")]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "source-code-editor-context-menu-option-button",
-                attrs: { type: "button" },
-                on: {
-                  click: function($event) {
-                    return _vm.onStoreQuestion([])
-                  }
-                }
-              },
-              [_vm._v("トリミングなし")]
-            )
-          ]
-        )
-      ])
-    ]
-  )
+              }
+            },
+            [_vm._v("トリミングなし")]
+          )
+        ]
+      )
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -5606,24 +5599,19 @@ new Vue({
   },
   data: {
     sourceCodeEditorContextMenu: {
+      isShown: false,
       startIndex: 0,
       endIndex: 0,
       style: {
         position: "absolute",
         left: "0",
-        top: "0",
-        background: "red"
+        top: "0"
       }
     }
   },
-  // mounted() {
-  //     const that = this;
-  //     window.onbeforeunload = function () {
-  //         axios.post("/development/unload/" + that.lesson.id);
-  //     };
-  // },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapMutations"])(["setSourceCodeEditor"]), {
     showSourceCodeEditorContextMenu: function showSourceCodeEditorContextMenu(x, y, startIndex, endIndex) {
+      this.sourceCodeEditorContextMenu.isShown = true;
       this.sourceCodeEditorContextMenu.style.left = x + "px";
       this.sourceCodeEditorContextMenu.style.top = y + "px";
       this.sourceCodeEditorContextMenu.startIndex = startIndex;

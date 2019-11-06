@@ -3,12 +3,12 @@
 }
 
 #development-header {
-  height: 5%;
+  height: 10%;
 }
 
 #development-body {
   display: flex;
-  height: 95%;
+  height: 90%;
 }
 
 #file-tree-view {

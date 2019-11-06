@@ -33,7 +33,7 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::get("material_purchase/{material}", "MaterialPurchaseController@show")->name("material_purchase.show");
     Route::post("material_purchase/{material}", "MaterialPurchaseController@purchase")->name("material_purchase.purchase");
 
-    Route::get("/development/creating", "DevelopmentController@creating")->name("development.creating");
+    Route::get("/development/creating/{lesson}", "DevelopmentController@creating")->name("development.creating");
     Route::get("/development/learning", "DevelopmentController@learning")->name("development.learning");
     Route::get("/development_writing/{lesson}", "DevelopmentController@writing")->name("development.writing");
     Route::get("/development/reading", "DevelopmentController@reading")->name("development.reading");

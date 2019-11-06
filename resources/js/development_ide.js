@@ -16,27 +16,20 @@ new Vue({
     },
     data: {
         sourceCodeEditorContextMenu: {
+            isShown: false,
             startIndex: 0,
             endIndex: 0,
             style: {
                 position: "absolute",
                 left: "0",
                 top: "0",
-                background: "red"
             }
         },
     },
-    // mounted() {
-    //     const that = this;
-
-    //     window.onbeforeunload = function () {
-    //         axios.post("/development/unload/" + that.lesson.id);
-    //     };
-
-    // },
     methods: {
         ...mapMutations(["setSourceCodeEditor"]),
         showSourceCodeEditorContextMenu(x, y, startIndex, endIndex) {
+            this.sourceCodeEditorContextMenu.isShown = true;
             this.sourceCodeEditorContextMenu.style.left = x + "px";
             this.sourceCodeEditorContextMenu.style.top = y + "px";
             this.sourceCodeEditorContextMenu.startIndex = startIndex;

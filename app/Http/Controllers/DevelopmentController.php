@@ -93,36 +93,11 @@ class DevelopmentController extends Controller
             "consolePortNumber" => $consolePortMatches[1],
         ] + $parameters);
     }
-    public function creating(Request $request): Renderable
+
+    public function creating(int $id): Renderable
     {
-        $request->validate([
-            "lesson_id" => "required"
-        ]);
-        $lesson = Lesson::find($request->lesson_id);
-        /******************************/
-        // TODO: DockerContainerClass
+        $lesson = Lesson::find($id);
         $composeDirectoryPath = Path::lesson($lesson->id);
-        // $outputs = [];
-        // exec("cd $lessonDirectoryPath && docker-compose ps", $outputs);
-        // $itemsAndLine = 2;
-        // if ($itemsAndLine === count($outputs)) {
-        //     exec("cd $lessonDirectoryPath && docker-compose up -d");
-        //     exec("cd $lessonDirectoryPath && docker-compose exec -d develop gotty -w bash");
-        //     exec("cd $lessonDirectoryPath && docker-compose exec -d develop /bin/bash /opt/scripts/observe_app_changes.sh $lesson->container_app_directory_path $lesson->container_logs_directory_path/app_changes.txt");
-        //     exec("cd $lessonDirectoryPath && docker-compose exec -d develop /bin/bash /opt/scripts/startup.sh");
-        //     //exec("cd $lessonDirectoryPath && docker-compose up -d && docker-compose exec develop ");
-        //     //exec("docker container exec $lesson->container_name /bin/bash /opt/scripts/startup.sh");
-        //     //exec("docker container exec -itd $lesson->container_name gotty -w bash");
-        //     //exec("docker container exec -itd $lesson->container_name /opt/scripts/observe_app_changes.sh $lesson->container_app_directory_path $lesson->container_logs_directory_path/app_changes.txt");
-        //     // exec("docker container ps -f name=$lesson->container_name -q", $containerId);
-        //     // $lesson->container_id = $containerId[0];
-        //     // exec("docker container port $lesson->container_name", $ports);
-        //     // $portString = join("\n", $ports);
-        //     // $lesson->preview_port_number = $previewPortMatches[1];
-        //     // $lesson->console_port_number = $consolePortMatches[1];
-        //     // $lesson->save();
-        // }
-        /******************************/
         return DevelopmentController::f(
             "creating",
             $lesson->title,

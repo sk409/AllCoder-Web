@@ -39,11 +39,11 @@ class LessonsController extends Controller
         $stdLesson->book = $lesson->book;
         $stdLesson->created_at = $lesson->created_at;
         $stdLesson->updated_at = $lesson->updated_at;
-        $stdLesson->evaluations = [];
-        foreach ($lesson->evaluations as $evaluatsion) {
-            $stdLesson->evaluations[] = $evaluatsion->value;
+        $stdLesson->ratings = [];
+        foreach ($lesson->ratings as $rating) {
+            $stdLesson->ratings[] = $rating->value;
         }
-        $stdLesson->evaluations = array_filter($stdLesson->evaluations); //なぜ?
+        $stdLesson->ratings = array_filter($stdLesson->ratings); //なぜ?
         if (!is_null($lessonId)) {
             $stdLesson->root_folder = new Folder("");
             $options = [];

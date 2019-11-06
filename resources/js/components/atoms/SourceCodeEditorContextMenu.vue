@@ -1,34 +1,31 @@
 <template>
-  <div id="source-code-editor-context-menu" @mouseleave="onHideOptions">
+  <div id="source-code-editor-context-menu">
     <div class="d-flex">
       <div>
         <button
           type="button"
-          class="source-code-editor-context-menu-button"
-          @mouseover="onShowStoreQuestionOptions"
+          class="btn btn-light"
+          @mouseover="showStoreQuestionOptions"
+          @mouseleave="hideStoreQuestionOptions"
         >問題に追加</button>
       </div>
-      <div v-show="areStoreQuestionOptionsShown">
+      <div class="d-flex flex-column" v-show="areStoreQuestionOptionsShown">
         <button
           type="button"
-          class="source-code-editor-context-menu-option-button"
-          @click="onStoreQuestion([trimmingOptions.forward, trimmingOptions.backward])"
+          class="btn btn-light"
+          @click="storeQuestion([trimmingOptions.forward, trimmingOptions.backward])"
         >トリミング</button>
         <button
           type="button"
-          class="source-code-editor-context-menu-option-button"
-          @click="onStoreQuestion([trimmingOptions.forward])"
+          class="btn btn-light"
+          @click="storeQuestion([trimmingOptions.forward])"
         >前方トリミング</button>
         <button
           type="button"
-          class="source-code-editor-context-menu-option-button"
-          @click="onStoreQuestion([trimmingOptions.backwawrd])"
+          class="btn btn-light"
+          @click="storeQuestion([trimmingOptions.backwawrd])"
         >後方トリミング</button>
-        <button
-          type="button"
-          class="source-code-editor-context-menu-option-button"
-          @click="onStoreQuestion([])"
-        >トリミングなし</button>
+        <button type="button" class="btn btn-light" @click="storeQuestion([])">トリミングなし</button>
       </div>
     </div>
   </div>
@@ -69,16 +66,15 @@ export default {
     })
   },
   methods: {
-    onShowStoreQuestionOptions() {
-      this.onHideOptions();
+    showStoreQuestionOptions() {
+      console.log("SHOSHOSHOSHO");
       this.areStoreQuestionOptionsShown = true;
     },
-    onHideOptions() {
+    hideStoreQuestionOptions() {
+      console.log("OKOKOKO");
       this.areStoreQuestionOptionsShown = false;
-      this.areStoreDescriptionTargetOptionsShown = false;
     },
-    onStoreQuestion(trimmingOptions) {
-      //console.log(this.filePath);
+    storeQuestion(trimmingOptions) {
       const question = new Question(
         null,
         this.filePath,

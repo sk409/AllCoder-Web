@@ -36,7 +36,7 @@ class LessonsController extends Controller
         $parameters = $request->all();
         $parameters["book"] = "";
         $lesson = Lesson::create($parameters);
-        $lessonDirectoryPath = $lesson->lesson_directory_path;
+        $lessonDirectoryPath = Path::lesson("$lesson->id");
         // $composeDirectoryPath = resource_path("docker/" . $uniqueName);
         // File::makeDirectory($composeDirectoryPath);
         // $composePath = $composeDirectoryPath . "/docker-compose.yml";
@@ -83,7 +83,7 @@ class LessonsController extends Controller
         $lesson->options_directory_path = $optionsDirectoryPath;
         $lesson->data_directory_path = $dataDirectoryPath;
         $lesson->save();
-        return redirect("/development/{$lesson->id}");
+        return redirect("/development/creating/{$lesson->id}");
     }
 
     public function update(Request $request, int $id)
