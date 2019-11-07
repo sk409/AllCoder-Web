@@ -66,7 +66,7 @@
             @endforeach
             <hr>
             <div class="text-center">
-                全{{count($lesson->ratings)}}件
+                全{{count($lesson->ratings)}}件の評価
             </div>
         </div>
     </div>
