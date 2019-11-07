@@ -54,6 +54,7 @@ class MaterialsController extends Controller
     public function show(int $id)
     {
         $material = Material::find($id);
+        $material->rating = Material::rating($material);
         return view("material_show", [
             "material" => $material
         ]);

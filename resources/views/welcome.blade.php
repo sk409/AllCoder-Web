@@ -23,7 +23,7 @@
                 <div class="mt-1 p-2">
                     <div class="material-title">{{$popularMaterial->title}}</div>
                     <div class="material-author-name">{{$popularMaterial->user->name}}</div>
-                    <star-ratings rating="{{$popularMaterial->rating}}"></star-ratings>
+                    <el-rate :value="{{$popularMaterial->rating}}" :allow-half="true" disabled></el-rate>
                     <div class="material-price">{{Helper::toAmountFormat($popularMaterial->price)}}</div>
                 </div>
             </div>

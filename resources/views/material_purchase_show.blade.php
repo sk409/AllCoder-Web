@@ -15,10 +15,13 @@
     <div id="material-thumbnail-and-details" class="d-flex mt-3">
         <img id="material-thumbnail-image" src="{{url($material->thumbnail_image_path)}}">
         <div class="flex-grow-1 ml-4">
-            <h3 id="material-title">{{$material->title}}</h3>
-            <div id="material-author-name">{{$material->user->name}}</div>
-            <star-ratings :rating="{{$material->rating}}"></star-ratings>
-            <div id="material-price">{{Helper::toAmountFormat($material->price)}}</div>
+            <h3 id="material-title" class="mb-1">{{$material->title}}</h3>
+            <el-rate :value="{{$material->rating}}" :allow-half="true" class="mb-1" disabled></el-rate>
+            <div class="mb-1">
+                <i class="el-icon-download mr-1"></i>
+                <span>{{count($material->purchases)}}</span>
+            </div>
+            <div id="material-price" class="mb-2">{{Helper::toAmountFormat($material->price)}}</div>
             <div class="text-right">
                 @if(1 === count(Auth::user()->purchases->where("id", $material->id)->all()))
                 <button type="button" class="btn btn-success" disabled>購入済み</button>
@@ -46,30 +49,9 @@
         <h3>レッスン一覧</h3>
     </div>
     @foreach($material->lessons as $lesson)
-    <div class="card w-50 mx-auto">
-        <div class="card-header">
-            <div class="d-flex">
-                <div>
-                    {{$lesson->title}}
-                </div>
-                <div class="ml-auto">
-                    <star-ratings :rating="3.3"></star-ratings>
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-            @foreach(Rating::rank($lesson) as $rank => $rate)
-            <div class="d-flex w-50 mx-auto">
-                <star-ratings :rating="{{$rank}}"></star-ratings>
-                <span class="ml-auto">{{(string)($rate * 100) . "%"}}</span>
-            </div>
-            @endforeach
-            <hr>
-            <div class="text-center">
-                全{{count($lesson->ratings)}}件の評価
-            </div>
-        </div>
-    </div>
+    <lesson-details-card :lesson="{{json_encode($lesson)}}" :ratings="{{json_encode($lesson->ratings)}}"
+        :rank="{{json_encode(Rating::rank($lesson))}}">
+    </lesson-details-card>
     @endforeach
     {{-- <div id="material-comments"></div> --}}
 </div>

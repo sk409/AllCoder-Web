@@ -68,4 +68,6 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::post("/input_buttons", "InputButtonsController@store")->name("input_buttons.store");
 
     Route::get("file_delta", "FileDeltaController@delta")->name("file_delta.delta");
+
+    Route::put("lesson_ratings", "LessonRatingsController@update")->name("lesson_ratings.update");
 });

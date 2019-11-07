@@ -1,9 +1,9 @@
-import StarRatings from "./components/atoms/StarRatings.vue"
+import LessonDetailsCard from "./components/atoms/LessonDetailsCard.vue"
 
 new Vue({
     el: "#material-purchase-show",
     components: {
-        StarRatings
+        LessonDetailsCard
     },
     methods: {
         onClickPurchaseButton(url, userId) {
