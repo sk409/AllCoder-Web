@@ -31,13 +31,13 @@ class UsersController extends Controller
         foreach ($users as $index => $user) {
             $stdUsers[$index]->purchased_materials = MaterialsController::convert($user->purchases);
             $stdUsers[$index]->created_materials = MaterialsController::convert($user->materials);
-            $stdUsers[$index]->lessonCompletions = [];
-            foreach ($user->completedLessons as $completedLesson) {
-                $lessonCompletion = new stdClass();
-                $lessonCompletion->material_id = $completedLesson->pivot->material_id;
-                $lessonCompletion->lesson_id = $completedLesson->id;
-                $stdUsers[$index]->lessonCompletions[] = $lessonCompletion;
-            }
+            // $stdUsers[$index]->lessonCompletions = [];
+            // foreach ($user->completedLessons as $completedLesson) {
+            //     $lessonCompletion = new stdClass();
+            //     $lessonCompletion->material_id = $completedLesson->pivot->material_id;
+            //     $lessonCompletion->lesson_id = $completedLesson->id;
+            //     $stdUsers[$index]->lessonCompletions[] = $lessonCompletion;
+            // }
         }
         return $stdUsers;
     }

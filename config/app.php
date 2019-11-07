@@ -229,6 +229,7 @@ return [
 
         "Form" => Collective\Html\FormFacade::class,
         "Helper" => App\Helpers\Helper::class,
+        "Rating" => App\Helpers\Rating::class,
         "Html" => Collective\Html\HtmlFacade::class,
     ],
 

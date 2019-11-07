@@ -11,6 +11,7 @@ class MaterialPurchaseController extends Controller
     public function show($id)
     {
         $material = Material::find($id);
+        $material->rating = Material::rating($material);
         return view("material_purchase_show", [
             "material" => $material
         ]);
