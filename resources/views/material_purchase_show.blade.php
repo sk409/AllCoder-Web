@@ -11,7 +11,8 @@
 @include("components.navbar")
 
 @section("app-content")
-<div id="material-purchase-show" class="container pb-5">
+<div v-loading.fullscreen.lock="loading" element-loading-text="Loading..."
+    element-loading-background="rgba(0, 0, 0, 0.8)" id="material-purchase-show" class="container pb-5">
     <div id="material-thumbnail-and-details" class="d-flex mt-3">
         <img id="material-thumbnail-image" src="{{url($material->thumbnail_image_path)}}">
         <div class="flex-grow-1 ml-4">
@@ -50,7 +51,7 @@
     </div>
     @foreach($material->lessons as $lesson)
     <lesson-details-card :lesson="{{json_encode($lesson)}}" :ratings="{{json_encode($lesson->ratings)}}"
-        :rank="{{json_encode(Rating::rank($lesson))}}">
+        :rank="{{json_encode(Rating::rank($lesson))}}" class="mb-5">
     </lesson-details-card>
     @endforeach
     {{-- <div id="material-comments"></div> --}}

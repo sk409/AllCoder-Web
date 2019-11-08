@@ -42,7 +42,8 @@
     </div>
     <source-code-editor-context-menu id="source-code-editor-context-menu" v-show="sourceCodeEditorContextMenu.isShown"
         :style="sourceCodeEditorContextMenu.style" :start-index="sourceCodeEditorContextMenu.startIndex"
-        :end-index="sourceCodeEditorContextMenu.endIndex" :lesson-id="{{$lesson->id}}">
+        :end-index="sourceCodeEditorContextMenu.endIndex" :lesson-id="{{$lesson->id}}"
+        v-on:hide="hideSourceCodeEditorContextMenu">
     </source-code-editor-context-menu>
 </div>
 @endsection

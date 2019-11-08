@@ -16,12 +16,7 @@
         <img id="material-thumbnail-image" src="{{url($material->thumbnail_image_path)}}">
         <div class="flex-grow-1 ml-4">
             <h3 id="material-title" class="mb-3">{{$material->title}}</h3>
-            <el-rate :value="{{$material->rating}}" :allow-half="true" class="mb-3" disabled></el-rate>
-            <div class="mb-3">
-                <i class="el-icon-download mr-1"></i>
-                <span>{{count($material->purchases)}}</span>
-            </div>
-            <div id="material-price" class="mb-3">{{Helper::toAmountFormat($material->price)}}</div>
+            <div id="material-description">{{$material->description}}</div>
         </div>
     </div>
     <hr>
@@ -37,7 +32,7 @@
                 "lesson_id" => $lesson->id
                 ]
             )
-        }}" :user-id="{{Auth::user()->id}}">
+        }}" :user-id="{{Auth::user()->id}}" class="mb-5 mx-auto lesson-card">
     </purchased-material-lesson-card>
     @endforeach
     {{-- <hr>

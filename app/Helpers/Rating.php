@@ -17,6 +17,9 @@ class Rating
             $m[$i] = 0;
         }
         $total = count($lesson->ratings);
+        if ($total === 0) {
+            return $r;
+        }
         foreach ($lesson->ratings as $rating) {
             $m[$rating->pivot->value] += 1;
         }

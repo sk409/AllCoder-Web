@@ -67,11 +67,9 @@ export default {
   },
   methods: {
     showStoreQuestionOptions() {
-      console.log("SHOSHOSHOSHO");
       this.areStoreQuestionOptionsShown = true;
     },
     hideStoreQuestionOptions() {
-      console.log("OKOKOKO");
       this.areStoreQuestionOptionsShown = false;
     },
     storeQuestion(trimmingOptions) {
@@ -203,6 +201,7 @@ export default {
       //     });
       //   }
       // );
+      this.$emit("hide");
     },
     trim(lineStartIndex, lineEndIndex, line, trimmingOptions) {
       if (trimmingOptions.includes(this.trimmingOptions.forward)) {

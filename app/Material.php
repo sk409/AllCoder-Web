@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\File;
 class Material extends Model
 {
 
-    public static function rating($material)
+    public static function rating($material): float
     {
         $rating = 0;
         $count = 0;
@@ -23,6 +23,9 @@ class Material extends Model
                 $rating += $r->pivot->value;
             }
             $count += count($lesson->ratings->all());
+        }
+        if ($count === 0) {
+            return 0;
         }
         return $rating / $count;
     }

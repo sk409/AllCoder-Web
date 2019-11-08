@@ -2505,11 +2505,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   })),
   methods: {
     showStoreQuestionOptions: function showStoreQuestionOptions() {
-      console.log("SHOSHOSHOSHO");
       this.areStoreQuestionOptionsShown = true;
     },
     hideStoreQuestionOptions: function hideStoreQuestionOptions() {
-      console.log("OKOKOKO");
       this.areStoreQuestionOptionsShown = false;
     },
     storeQuestion: function storeQuestion(trimmingOptions) {
@@ -2633,6 +2631,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       //     });
       //   }
       // );
+
+      this.$emit("hide");
     },
     trim: function trim(lineStartIndex, lineEndIndex, line, trimmingOptions) {
       if (trimmingOptions.includes(this.trimmingOptions.forward)) {
@@ -5617,6 +5617,9 @@ new Vue({
       this.sourceCodeEditorContextMenu.startIndex = startIndex;
       this.sourceCodeEditorContextMenu.endIndex = endIndex;
       console.log(this.sourceCodeEditorContextMenuStyle);
+    },
+    hideSourceCodeEditorContextMenu: function hideSourceCodeEditorContextMenu() {
+      this.sourceCodeEditorContextMenu.isShown = false;
     }
   })
 });

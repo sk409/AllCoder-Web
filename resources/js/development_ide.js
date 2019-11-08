@@ -36,5 +36,8 @@ new Vue({
             this.sourceCodeEditorContextMenu.endIndex = endIndex;
             console.log(this.sourceCodeEditorContextMenuStyle)
         },
+        hideSourceCodeEditorContextMenu() {
+            this.sourceCodeEditorContextMenu.isShown = false;
+        }
     }
 });

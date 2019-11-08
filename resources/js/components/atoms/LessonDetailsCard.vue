@@ -4,7 +4,7 @@
       <h3>{{lesson.title}}</h3>
       <div class="ml-auto">
         <!-- TODO: レッスンのRateを計算する -->
-        <el-rate :value="2.5" :allow-half="true" disabled></el-rate>
+        <el-rate :value="lesson.rating" :allow-half="true" disabled></el-rate>
       </div>
     </div>
     <div>

@@ -11,6 +11,19 @@ use Illuminate\Database\Eloquent\Model;
 class Lesson extends Model
 {
 
+    public static function rating(Lesson $lesson): float
+    {
+        $total = count($lesson->ratings);
+        if ($total === 0) {
+            return 0;
+        }
+        $sum = 0;
+        foreach ($lesson->ratings as $rate) {
+            $sum += $rate->pivot->value;
+        }
+        return $sum / $total;
+    }
+
     protected $fillable = [
         "title",
         "description",

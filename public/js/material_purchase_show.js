@@ -175,7 +175,11 @@ var render = function() {
           { staticClass: "ml-auto" },
           [
             _c("el-rate", {
-              attrs: { value: 2.5, "allow-half": true, disabled: "" }
+              attrs: {
+                value: _vm.lesson.rating,
+                "allow-half": true,
+                disabled: ""
+              }
             })
           ],
           1
@@ -434,12 +438,30 @@ new Vue({
   components: {
     LessonDetailsCard: _components_atoms_LessonDetailsCard_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  data: {
+    loading: false
+  },
   methods: {
     onClickPurchaseButton: function onClickPurchaseButton(url, userId) {
+      this.loading = true;
+      var that = this;
       axios.post(url, {
         user_id: userId
       }).then(function (response) {
-        console.log(response);
+        that.loading = false;
+
+        if (response.status === 200) {
+          that.$notify({
+            message: "購入に成功しました",
+            type: "success",
+            duration: 1500
+          });
+        } else {
+          that.$notify.error({
+            message: "購入に失敗しました",
+            duration: 1500
+          });
+        }
       });
     }
   }

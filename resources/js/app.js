@@ -10,7 +10,6 @@ import lang from 'element-ui/lib/locale/lang/ja';
 locale.use(lang)
 
 
-
 window.Vue = require('vue');
 window.Vuex = require("vuex");
 
