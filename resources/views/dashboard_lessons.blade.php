@@ -12,7 +12,7 @@
     </div>
     <div>
         <el-collapse v-model="expandedNames" class="mb-3">
-            <el-collapse-item title="概要" name="1">{{$lesson->description}}</el-collapse-item>
+            <el-collapse-item title="概要" name="{{$lesson->id}}">{{$lesson->description}}</el-collapse-item>
         </el-collapse>
         <div class="text-center">
             <el-button type="primary"
