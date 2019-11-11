@@ -21,7 +21,8 @@ class DashboardController extends Controller
         $materials = $user->purchases;
         return view("dashboard_purchased_materials", [
             "user" => $user,
-            "materials" => $materials
+            "materials" => $materials,
+            "activeIndex" => "1",
         ]);
     }
 
@@ -31,7 +32,8 @@ class DashboardController extends Controller
         $materials = $user->materials;
         return view('dashboard_created_materials', [
             "user" => $user,
-            "materials" => $materials
+            "materials" => $materials,
+            "activeIndex" => 2,
         ]);
     }
 
@@ -40,7 +42,8 @@ class DashboardController extends Controller
         $user = Auth::user();
         $lessons = Lesson::where("user_id", $user->id)->get()->all();
         return view('dashboard_lessons', [
-            "user" => $user, "lessons" => $lessons
+            "user" => $user, "lessons" => $lessons,
+            "activeIndex" => 3,
         ]);
     }
 }
