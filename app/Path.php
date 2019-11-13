@@ -50,19 +50,23 @@ class Path
         return Path::lesson(Path::append("originals", $path));
     }
 
-    public static function purchasedLesson($userId, $materialId, $lessonId, $path): string
+    public static function purchasedLesson($userId, $materialId, $lessonId, $path = ""): string
     {
         return storage_path("app/purchased_materials/$userId/$materialId/$lessonId/$path");
     }
 
-    public static function purchasedLessonOriginal($userId, $materialId, $lessonId, $path): string
+    public static function purchasedLessonOriginal($userId, $materialId, $lessonId, $path = ""): string
     {
-        return Path::purchasedLesson($userId, $materialId, $lessonId, "original/" . $path);
+        return Path::purchasedLesson($userId, $materialId, $lessonId, Path::append("original", $path));
     }
 
-    public static function purchasedLessonWork($userId, $materialId, $lessonId, $path): string
-    {
-        return Path::purchasedLesson($userId, $materialId, $lessonId, "work/" . $path);
+    // public static function purchasedLessonWork($userId, $materialId, $lessonId, $path): string
+    // {
+    //     return Path::purchasedLesson($userId, $materialId, $lessonId, "work/" . $path);
+    // }
+
+    public static function purchasedLessonMobile($userId, $materialId, $lessonId, $path = ""): string {
+        return Path::purchasedLesson($userId, $materialId, $lessonId, Path::append("mobile", $path));
     }
 
     public static function purchasedLessonWeb($userId, $materialId, $lessonId, $path = ""): string
@@ -70,9 +74,9 @@ class Path
         return Path::purchasedLesson($userId, $materialId, $lessonId, Path::append("web", $path));
     }
 
-    public static function purchasedLessonOptions($userId, $materialId, $lessonId, $path): string
+    public static function purchasedLessonOptions($userId, $materialId, $lessonId, $path = ""): string
     {
-        return Path::purchasedLesson($userId, $materialId, $lessonId, "options/" . $path);
+        return Path::purchasedLessonMobile($userId, $materialId, $lessonId, Path::append("options", $path));
     }
 
     public static function docker($path): string
@@ -85,9 +89,9 @@ class Path
         return Path::docker(Path::append("development", $path));
     }
 
-    // TODO: 修正
-    public static function preview($path): string
-    {
-        return Path::docker("preview/$path");
-    }
+    // // TODO: 修正
+    // public static function preview($path): string
+    // {
+    //     return Path::docker("preview/$path");
+    // }
 }

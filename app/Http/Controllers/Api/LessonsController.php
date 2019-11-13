@@ -55,14 +55,14 @@ class LessonsController extends Controller
                 $options[] = $option;
             }
             FileTreeBuilder::build(
-                Path::purchasedLessonOriginal($userId, $materialId, $lesson->id, ""),
+                Path::purchasedLessonOriginal($userId, $materialId, $lesson->id, "app"),
                 $stdLesson->root_folder,
                 true,
                 $options
             );
             $fileHandler = function (File $file) use ($userId, $materialId, $lesson) {
                 $originalPath = Path::purchasedLessonOriginal($userId, $materialId, $lesson->id, "");
-                $workPath = Path::purchasedLessonWork($userId, $materialId, $lesson->id, "");
+                $workPath = Path::purchasedLessonMobile($userId, $materialId, $lesson->id);
                 $file->path = $workPath . substr($file->path, strlen($originalPath));
             };
             FileTreeIterator::iterateFileTreeItem(

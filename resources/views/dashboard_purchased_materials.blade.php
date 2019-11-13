@@ -15,7 +15,8 @@
             <el-collapse-item title="概要" name="{{$material->id}}">{{$material->description}}</el-collapse-item>
         </el-collapse>
         <div class="text-center">
-            <el-button type="primary">詳細</el-button>
+            <el-button type="primary"
+                v-on:click="transition('{{route("materials.show", ["material" => $material->id])}}')">詳細</el-button>
         </div>
     </div>
 </el-card>

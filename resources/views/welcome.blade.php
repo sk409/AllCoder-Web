@@ -16,7 +16,7 @@
     <div id="popular-materials">
         <h3>人気の教材</h3>
         <div class="d-flex justify-content-between">
-            @foreach(array_slice($popularMaterials->all(), 0, 4) as $popularMaterial)
+            @foreach(array_slice($popularMaterials->all(), 0, 5) as $popularMaterial)
             <div class="popular-material border shadow"
                 v-on:click="clickedPopularMaterial('{{route("material_purchase.show", ["material" => $popularMaterial->id])}}')">
                 <img class="material-thumbnail-image border-bottom" src="{{$popularMaterial->thumbnail_image_path}}">

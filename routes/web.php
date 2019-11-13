@@ -55,18 +55,6 @@ Route::group(["middleware" => ["auth"]], function () {
     //Route::put("/questions/{question}", "QuestionsController@update")->name("questions.update");
     //Route::delete("/questions/{question}", "QuestionsController@destroy")->name("questions.destroy");
 
-    Route::get("/descriptions", "DescriptionsController@index")->name("descriptions.index");
-    Route::post("/descriptions", "DescriptionsController@store")->name("descriptions.store");
-    Route::put("/descriptions/{description}", "DescriptionsController@update")->name("descriptions.update");
-
-    Route::get("/description_targets", "DescriptionTargetsController@index")->name("descriptionTarget.index");
-    Route::post("/description_targets", "DescriptionTargetsController@store")->name("descriptionTarget.store");
-    Route::put("/description_targets/{description_target}", "DescriptionTargetsController@update")->name("descriptionTargets.update");
-    Route::delete("/description_targets/{description_target}", "DescriptionTargetsController@destroy")->name("descriptionTargets.destroy");
-
-    Route::get("/input_buttons", "InputButtonsController@index")->name("input_buttons.index");
-    Route::post("/input_buttons", "InputButtonsController@store")->name("input_buttons.store");
-
     Route::get("file_delta", "FileDeltaController@delta")->name("file_delta.delta");
 
     Route::put("lesson_ratings", "LessonRatingsController@update")->name("lesson_ratings.update");

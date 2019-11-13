@@ -5,6 +5,11 @@
 @endsection
 
 @section("dashboard-content")
+<div id="dashboard-lessons-header" class="d-flex align-items-center mx-auto">
+    <div>全{{count($lessons)}}件</div>
+    <el-button type="primary" class="ml-auto" v-on:click="transition('{{route("lessons.create")}}')">新規作成</el-button>
+</div>
+<el-divider id="dashboard-lessons-top-divider" class="mx-auto"></el-divider>
 @foreach($lessons as $lesson)
 <el-card class="w-75 mx-auto mb-3">
     <div slot="header">

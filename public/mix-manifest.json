@@ -3,6 +3,7 @@
     "/css/app.css": "/css/app.css",
     "/css/development_ide.css": "/css/development_ide.css",
     "/css/dashboard.css": "/css/dashboard.css",
+    "/css/dashboard_lessons.css": "/css/dashboard_lessons.css",
     "/css/materials/create.css": "/css/materials/create.css",
     "/css/materials/edit.css": "/css/materials/edit.css",
     "/css/material_show.css": "/css/material_show.css",
