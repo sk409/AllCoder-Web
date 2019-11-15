@@ -15,6 +15,7 @@
     "/js/development_ide.js": "/js/development_ide.js",
     "/js/development_reading.js": "/js/development_reading.js",
     "/js/development_writing.js": "/js/development_writing.js",
+    "/js/lesson_create.js": "/js/lesson_create.js",
     "/js/lodash.full.min.js": "/js/lodash.full.min.js",
     "/js/material_create.js": "/js/material_create.js",
     "/js/material_edit.js": "/js/material_edit.js",

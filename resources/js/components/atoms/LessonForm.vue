@@ -1,0 +1,143 @@
+<template>
+  <div>
+    <form method="post" :action="action">
+      <input type="hidden" name="_token" :value="csrfToken" />
+      <input type="hidden" name="user_id" :value="userId" />
+      <div class="form-group">
+        <label class="w-100">
+          タイトル
+          <input class="form-control w-100" type="text" name="title" />
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="w-100">
+          説明文
+          <textarea class="form-control" name="description"></textarea>
+        </label>
+      </div>
+      <div class="form-group">
+        <el-card>
+          <div slot="header">環境設定</div>
+          <div>
+            <div>
+              <p>OS</p>
+              {{os}}
+              <div class="text-center">
+                <el-button type="success" @click="showOSDialog">設定</el-button>
+              </div>
+              <el-divider></el-divider>
+              <p>その他</p>
+              <div v-for="environment in environments" :key="environment">{{environment}}</div>
+            </div>
+            <div class="text-center">
+              <el-button type="success" @click="showEnvironmentDialog">追加</el-button>
+            </div>
+          </div>
+        </el-card>
+      </div>
+      <el-divider></el-divider>
+      <div class="text-center">
+        <input class="btn btn-primary" type="submit" value="作成" />
+      </div>
+    </form>
+    <el-dialog title="OS選択" :visible.sync="osDialogVisible">
+      <el-collapse v-model="expandedOSNames">
+        <el-collapse-item title="CentOS" name="CentOS">
+          <lesson-form-setting-item
+            v-for="version in versions.centOS"
+            :key="version"
+            name="CentOS"
+            :version="version"
+            :os="true"
+            @set-os="setOS"
+          ></lesson-form-setting-item>
+        </el-collapse-item>
+      </el-collapse>
+    </el-dialog>
+    <el-dialog title="環境設定" :visible.sync="environmentDialogVisible">
+      <el-collapse v-model="expandedEnvironmentNames">
+        <el-collapse-item title="Laravel" name="Laravel">
+          <lesson-form-setting-item
+            v-for="version in versions.laravel"
+            :key="version"
+            name="Laravel"
+            :version="version"
+            @add-environment="addEnvironment"
+          ></lesson-form-setting-item>
+        </el-collapse-item>
+        <el-collapse-item title="MySQL" name="MySQL">
+          <lesson-form-setting-item
+            v-for="version in versions.mysql"
+            :key="version"
+            name="MySQL"
+            :version="version"
+            @add-environment="addEnvironment"
+          ></lesson-form-setting-item>
+        </el-collapse-item>
+      </el-collapse>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import LessonFormSettingItem from "./LessonFormSettingItem.vue";
+export default {
+  name: "LessonForm",
+  props: {
+    action: {
+      type: String,
+      required: true
+    },
+    userId: {
+      type: Number,
+      required: true
+    },
+    lesson: {
+      type: Object,
+      required: true
+    }
+  },
+  components: {
+    LessonFormSettingItem
+  },
+  data() {
+    return {
+      csrfToken: document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content"),
+      os: "",
+      environments: [],
+      osDialogVisible: false,
+      environmentDialogVisible: false,
+      expandedOSNames: [],
+      expandedEnvironmentNames: [],
+      versions: {
+        centOS: ["7"],
+        laravel: ["5.8"],
+        mysql: ["5.7.21", "8"]
+      }
+    };
+  },
+  methods: {
+    showOSDialog() {
+      this.osDialogVisible = true;
+    },
+    showEnvironmentDialog() {
+      this.environmentDialogVisible = true;
+    },
+    setOS(os) {
+      this.os = os;
+    },
+    addEnvironment(environment) {
+      if (this.environments.find(e => e === environment)) {
+        return;
+      }
+      this.environments.push(environment);
+      this.environments.sort();
+    }
+  }
+};
+</script>
+
+<style scoped>
+</style>
