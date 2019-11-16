@@ -95,7 +95,8 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _LessonFormSettingItem_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LessonFormSettingItem.vue */ "./resources/js/components/atoms/LessonFormSettingItem.vue");
+/* harmony import */ var _LessonFormEnvironmentItem_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LessonFormEnvironmentItem.vue */ "./resources/js/components/atoms/LessonFormEnvironmentItem.vue");
+/* harmony import */ var _LessonFormSettingItem_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LessonFormSettingItem.vue */ "./resources/js/components/atoms/LessonFormSettingItem.vue");
 //
 //
 //
@@ -177,6 +178,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "LessonForm",
@@ -195,7 +200,8 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   components: {
-    LessonFormSettingItem: _LessonFormSettingItem_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+    LessonFormEnvironmentItem: _LessonFormEnvironmentItem_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
+    LessonFormSettingItem: _LessonFormSettingItem_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   data: function data() {
     return {
@@ -208,8 +214,8 @@ __webpack_require__.r(__webpack_exports__);
       expandedEnvironmentNames: [],
       versions: {
         centOS: ["7"],
-        laravel: ["5.8"],
-        mysql: ["5.7.21", "8"]
+        laravel: ["5.7"],
+        mysql: ["5.7.28"]
       }
     };
   },
@@ -222,6 +228,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     setOS: function setOS(os) {
       this.os = os;
+      this.osDialogVisible = false;
     },
     addEnvironment: function addEnvironment(environment) {
       if (this.environments.find(function (e) {
@@ -232,6 +239,60 @@ __webpack_require__.r(__webpack_exports__);
 
       this.environments.push(environment);
       this.environments.sort();
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: "LessonFormEnvironmentItem",
+  props: {
+    environment: {
+      type: String,
+      required: true
     }
   }
 });
@@ -271,6 +332,11 @@ __webpack_require__.r(__webpack_exports__);
     os: {
       type: Boolean,
       "default": false
+    }
+  },
+  computed: {
+    buttonTitle: function buttonTitle() {
+      return this.os ? "設定" : "追加";
     }
   },
   methods: {
@@ -981,9 +1047,33 @@ var render = function() {
                     "div",
                     [
                       _c("p", [_vm._v("OS")]),
-                      _vm._v(
-                        "\n            " + _vm._s(_vm.os) + "\n            "
-                      ),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.os,
+                            expression: "os"
+                          }
+                        ],
+                        attrs: {
+                          type: "text",
+                          name: "os",
+                          disabled: "",
+                          required: ""
+                        },
+                        domProps: { value: _vm.os },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.os = $event.target.value
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
                       _c(
                         "div",
                         { staticClass: "text-center" },
@@ -1005,9 +1095,18 @@ var render = function() {
                       _c("p", [_vm._v("その他")]),
                       _vm._v(" "),
                       _vm._l(_vm.environments, function(environment) {
-                        return _c("div", { key: environment }, [
-                          _vm._v(_vm._s(environment))
-                        ])
+                        return _c(
+                          "div",
+                          { key: environment },
+                          [
+                            _c("el-divider"),
+                            _vm._v(" "),
+                            _c("lesson-form-environment-item", {
+                              attrs: { environment: environment }
+                            })
+                          ],
+                          1
+                        )
                       })
                     ],
                     2
@@ -1015,7 +1114,7 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "div",
-                    { staticClass: "text-center" },
+                    { staticClass: "text-center mt-5" },
                     [
                       _c(
                         "el-button",
@@ -1188,6 +1287,103 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=template&id=0d6ba362&":
+/*!**********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=template&id=0d6ba362& ***!
+  \**********************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _vm.environment.startsWith("MySQL")
+      ? _c("div", [
+          _vm._v("\n    " + _vm._s(_vm.environment) + "\n    "),
+          _vm._m(0),
+          _vm._v(" "),
+          _vm._m(1),
+          _vm._v(" "),
+          _vm._m(2)
+        ])
+      : _c("div", [_vm._v(_vm._s(_vm.environment))])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-row mt-2" }, [
+      _c("label", { staticClass: "col-2", attrs: { for: "mysql-user-name" } }, [
+        _vm._v("ユーザ名")
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "col form-control",
+        attrs: {
+          id: "mysql-user-name",
+          type: "text",
+          name: "mysql-user-name",
+          required: ""
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-row mt-2" }, [
+      _c("label", { staticClass: "col-2", attrs: { for: "mysql-password" } }, [
+        _vm._v("パスワード")
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "col form-control",
+        attrs: {
+          id: "mysql-password",
+          type: "password",
+          name: "mysql-password",
+          required: ""
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-row mt-2" }, [
+      _c("label", { staticClass: "col-2", attrs: { for: "mysql-port" } }, [
+        _vm._v("ポート")
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "col form-control",
+        attrs: {
+          id: "mysql-port",
+          type: "number",
+          name: "mysql-port",
+          value: "3306",
+          required: ""
+        }
+      })
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/atoms/LessonFormSettingItem.vue?vue&type=template&id=1fd6949f&scoped=true&":
 /*!******************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/atoms/LessonFormSettingItem.vue?vue&type=template&id=1fd6949f&scoped=true& ***!
@@ -1219,7 +1415,7 @@ var render = function() {
           _c(
             "el-button",
             { attrs: { type: "primary" }, on: { click: _vm.onclick } },
-            [_vm._v("追加")]
+            [_vm._v(_vm._s(_vm.buttonTitle))]
           )
         ],
         1
@@ -1346,15 +1542,14 @@ function normalizeComponent (
 /*!******************************************************!*\
   !*** ./resources/js/components/atoms/LessonForm.vue ***!
   \******************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _LessonForm_vue_vue_type_template_id_5aba5a18_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LessonForm.vue?vue&type=template&id=5aba5a18&scoped=true& */ "./resources/js/components/atoms/LessonForm.vue?vue&type=template&id=5aba5a18&scoped=true&");
 /* harmony import */ var _LessonForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LessonForm.vue?vue&type=script&lang=js& */ "./resources/js/components/atoms/LessonForm.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _LessonForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _LessonForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -1384,7 +1579,7 @@ component.options.__file = "resources/js/components/atoms/LessonForm.vue"
 /*!*******************************************************************************!*\
   !*** ./resources/js/components/atoms/LessonForm.vue?vue&type=script&lang=js& ***!
   \*******************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1407,6 +1602,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_LessonForm_vue_vue_type_template_id_5aba5a18_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_LessonForm_vue_vue_type_template_id_5aba5a18_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/atoms/LessonFormEnvironmentItem.vue":
+/*!*********************************************************************!*\
+  !*** ./resources/js/components/atoms/LessonFormEnvironmentItem.vue ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _LessonFormEnvironmentItem_vue_vue_type_template_id_0d6ba362___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LessonFormEnvironmentItem.vue?vue&type=template&id=0d6ba362& */ "./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=template&id=0d6ba362&");
+/* harmony import */ var _LessonFormEnvironmentItem_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LessonFormEnvironmentItem.vue?vue&type=script&lang=js& */ "./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _LessonFormEnvironmentItem_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _LessonFormEnvironmentItem_vue_vue_type_template_id_0d6ba362___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _LessonFormEnvironmentItem_vue_vue_type_template_id_0d6ba362___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/atoms/LessonFormEnvironmentItem.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_LessonFormEnvironmentItem_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./LessonFormEnvironmentItem.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_LessonFormEnvironmentItem_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=template&id=0d6ba362&":
+/*!****************************************************************************************************!*\
+  !*** ./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=template&id=0d6ba362& ***!
+  \****************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_LessonFormEnvironmentItem_vue_vue_type_template_id_0d6ba362___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./LessonFormEnvironmentItem.vue?vue&type=template&id=0d6ba362& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/atoms/LessonFormEnvironmentItem.vue?vue&type=template&id=0d6ba362&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_LessonFormEnvironmentItem_vue_vue_type_template_id_0d6ba362___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_LessonFormEnvironmentItem_vue_vue_type_template_id_0d6ba362___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

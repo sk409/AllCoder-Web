@@ -21,15 +21,18 @@
           <div>
             <div>
               <p>OS</p>
-              {{os}}
+              <input type="text" name="os" v-model="os" disabled required />
               <div class="text-center">
                 <el-button type="success" @click="showOSDialog">設定</el-button>
               </div>
               <el-divider></el-divider>
               <p>その他</p>
-              <div v-for="environment in environments" :key="environment">{{environment}}</div>
+              <div v-for="environment in environments" :key="environment">
+                <el-divider></el-divider>
+                <lesson-form-environment-item :environment="environment"></lesson-form-environment-item>
+              </div>
             </div>
-            <div class="text-center">
+            <div class="text-center mt-5">
               <el-button type="success" @click="showEnvironmentDialog">追加</el-button>
             </div>
           </div>
@@ -80,6 +83,7 @@
 </template>
 
 <script>
+import LessonFormEnvironmentItem from "./LessonFormEnvironmentItem.vue";
 import LessonFormSettingItem from "./LessonFormSettingItem.vue";
 export default {
   name: "LessonForm",
@@ -98,6 +102,7 @@ export default {
     }
   },
   components: {
+    LessonFormEnvironmentItem,
     LessonFormSettingItem
   },
   data() {
@@ -113,8 +118,8 @@ export default {
       expandedEnvironmentNames: [],
       versions: {
         centOS: ["7"],
-        laravel: ["5.8"],
-        mysql: ["5.7.21", "8"]
+        laravel: ["5.7"],
+        mysql: ["5.7.28"]
       }
     };
   },
@@ -127,6 +132,7 @@ export default {
     },
     setOS(os) {
       this.os = os;
+      this.osDialogVisible = false;
     },
     addEnvironment(environment) {
       if (this.environments.find(e => e === environment)) {

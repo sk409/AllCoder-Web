@@ -3,7 +3,7 @@
     <el-divider></el-divider>
     <div class="d-flex align-items-center">
       <div class="mr-auto version">{{version}}</div>
-      <el-button type="primary" @click="onclick">追加</el-button>
+      <el-button type="primary" @click="onclick">{{buttonTitle}}</el-button>
     </div>
   </div>
 </template>
@@ -23,6 +23,11 @@ export default {
     os: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    buttonTitle() {
+      return this.os ? "設定" : "追加";
     }
   },
   methods: {

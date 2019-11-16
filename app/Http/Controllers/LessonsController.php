@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\EnvironmentBuilder;
 use App\Http\Requests\LessonCreationRequest;
 use App\Lesson;
 use App\Path;
@@ -33,6 +34,12 @@ class LessonsController extends Controller
 
     public function store(LessonCreationRequest $request)
     {
+        //
+        $environmentBuilder = new EnvironmentBuilder("promark", "centos:7");
+        $environmentBuilder->mysql("5.7.28", "promarkuser", "promarkpassword", "3306");
+        $environmentBuilder->laravel("5.7");
+        $environmentBuilder->write(storage_path("Dockerfile"));
+        //
         $parameters = $request->all();
         $parameters["book"] = "";
         $lesson = Lesson::create($parameters);
