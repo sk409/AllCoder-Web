@@ -26,6 +26,11 @@ new Vue({
             }
         },
     },
+    created() {
+        axios.get("/folders/children?lesson_id=2&root=/").then(response => {
+            console.log(response);
+        });
+    },
     methods: {
         ...mapMutations(["setSourceCodeEditor"]),
         showSourceCodeEditorContextMenu(x, y, startIndex, endIndex) {

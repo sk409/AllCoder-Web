@@ -11,12 +11,12 @@ export default new Vuex.Store({
     actions: {
         async setEditedFile({
             commit
-        }, path) {
-            //console.log(path)
+        }, payload) {
             const response = await File.index({
-                path
+                path: payload.path,
+                lesson_id: payload.lessonId
             });
-            commit("setEditedFile", new File(response.data.path, response.data.text));
+            commit("setEditedFile", new File(response.data.path, response.data.text, payload.lessonId));
         },
     },
     mutations: {

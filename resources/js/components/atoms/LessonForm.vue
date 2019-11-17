@@ -20,13 +20,36 @@
           <div slot="header">環境設定</div>
           <div>
             <div>
-              <p>OS</p>
-              <input type="text" name="os" v-model="os" disabled required />
+              <div>OS</div>
+              <input type="hidden" name="os" :value="dockerfileOS" />
+              <div>{{os}}</div>
               <div class="text-center">
                 <el-button type="success" @click="showOSDialog">設定</el-button>
               </div>
               <el-divider></el-divider>
-              <p>その他</p>
+              <div class="form-group">
+                <label>
+                  ユーザ名
+                  <input class="form-control" type="text" name="username" required />
+                </label>
+              </div>
+              <el-divider></el-divider>
+              <div class="form-group">
+                <label>
+                  コンソールポート
+                  <input class="form-control" type="number" name="console_port" required />
+                </label>
+              </div>
+              <el-divider></el-divider>
+              <div>その他のポート</div>
+              <div class="form-group" v-for="(port, index) in ports" :key="index">
+                <input v-model="ports[index]" type="number" name="ports[]" />
+              </div>
+              <div class="text-center">
+                <el-button type="success" @click="appendPort">追加</el-button>
+              </div>
+              <el-divider></el-divider>
+              <div>フレームワーク・ライブラリ・ミドルウェア</div>
               <div v-for="environment in environments" :key="environment">
                 <el-divider></el-divider>
                 <lesson-form-environment-item :environment="environment"></lesson-form-environment-item>
@@ -111,6 +134,7 @@ export default {
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content"),
       os: "",
+      ports: [],
       environments: [],
       osDialogVisible: false,
       environmentDialogVisible: false,
@@ -122,6 +146,15 @@ export default {
         mysql: ["5.7.28"]
       }
     };
+  },
+  computed: {
+    dockerfileOS() {
+      let os = this.os;
+      if (os.startsWith("CentOS")) {
+        os = os.replace("CentOS", "centos");
+      }
+      return os.replace(/\s+/g, "");
+    }
   },
   methods: {
     showOSDialog() {
@@ -140,10 +173,12 @@ export default {
       }
       this.environments.push(environment);
       this.environments.sort();
+    },
+    appendPort() {
+      this.ports.push("");
     }
   }
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

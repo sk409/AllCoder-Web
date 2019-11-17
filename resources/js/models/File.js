@@ -9,17 +9,19 @@ export default class File extends Model {
         return Model.index(File.baseRoute(), parameters, completion);
     }
 
-    constructor(path, text) {
+    constructor(path, text, lessonId) {
         super(File.baseRoute());
         this.path = path;
         this.text = text;
-        this.isNameEditable = false;
+        this.lessonId = lessonId;
+        // this.isNameEditable = false;
     }
 
     parameters() {
         return {
             path: this.path,
-            text: this.text
+            text: this.text,
+            lesson_id: this.lessonId
         };
     }
 
@@ -48,11 +50,19 @@ export default class File extends Model {
         this._text = value;
     }
 
-    get isNameEditable() {
-        return this._isNameEditable;
+    get lessonId() {
+        return this._lessonId;
     }
 
-    set isNameEditable(value) {
-        this._isNameEditable = value;
+    set lessonId(value) {
+        this._lessonId = value;
     }
+
+    // get isNameEditable() {
+    //     return this._isNameEditable;
+    // }
+
+    // set isNameEditable(value) {
+    //     this._isNameEditable = value;
+    // }
 }

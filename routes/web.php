@@ -39,15 +39,17 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::get("/development/reading", "DevelopmentController@reading")->name("development.reading");
     Route::post("/development/unload/{lessonId}", "DevelopmentController@unload")->name("development.unload");
 
-    Route::get("/folders", "FoldersController@index")->name("folders.index");
-    Route::post("/folders", "FoldersController@store")->name("folders.store");
-    Route::put("/folders/{folder}", "FoldersController@update")->name("folders.update");
-    Route::delete("/folders/{folder}", "FoldersController@destroy")->name("folders.destroy");
+    // Route::get("/folders", "FoldersController@index")->name("folders.index");
+    // Route::post("/folders", "FoldersController@store")->name("folders.store");
+    // Route::put("/folders/{folder}", "FoldersController@update")->name("folders.update");
+    // Route::delete("/folders/{folder}", "FoldersController@destroy")->name("folders.destroy");
+    // Route::get("/folders/tree", "FoldersController@tree")->name("folders.tree");
+    Route::get("/folders/children", "FoldersController@children")->name("folders.children");
 
     Route::get("/files", "FilesController@index")->name("files.index");
-    Route::post("/files", "FilesController@store")->name("files.store");
+    // Route::post("/files", "FilesController@store")->name("files.store");
     Route::put("/files", "FilesController@update")->name("files.update");
-    Route::delete("/files/{file}", "FilesController@destroy")->name("files.destroy");
+    // Route::delete("/files/{file}", "FilesController@destroy")->name("files.destroy");
     //Route::get("/files/fetch_text", "FilesController@fetchText")->name("files.fetchText");
 
     //Route::get("/questions", "QuestionsController@index")->name("questions.index");

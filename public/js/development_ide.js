@@ -1883,22 +1883,47 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "file-tree-item",
   props: {
-    item: Object
+    item: {
+      type: Object,
+      required: true
+    },
+    isFile: {
+      type: Boolean,
+      required: true
+    },
+    lessonId: {
+      type: Number,
+      required: true
+    }
   },
   data: function data() {
     return {
       isExpanded: false
     };
-  },
-  computed: {
-    isFolder: function isFolder() {
-      return this.item.baseRoute === _models_folder_js__WEBPACK_IMPORTED_MODULE_0__["default"].baseRoute();
-    }
   },
   mounted: function mounted() {
     if (!this.$refs.name) {
@@ -1909,35 +1934,54 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])(["setEditedFile"]), {
     onclick: function onclick() {
-      if (this.isFolder) {
-        this.isExpanded = !this.isExpanded;
-      } else {
-        this.setEditedFile(this.item.path);
-      }
-    },
-    onInputItemName: function onInputItemName(e) {
-      if (!e.target.value) {
-        return;
-      }
+      var _this = this;
 
-      this.item.name = e.target.value;
-      this.item.update();
-    },
-    onShowContextMenu: function onShowContextMenu(e, item) {
-      this.$emit("show-context-menu", e, item);
-    },
-    onSetFile: function onSetFile(file) {
-      this.$emit("set-file", file);
-    },
-    onKeyUpEnter: function onKeyUpEnter() {
-      if (this.item.isNameEditable) {
-        this.item.isNameEditable = false;
-        this.item.input.blur();
+      if (this.isFile) {
+        this.setEditedFile({
+          path: this.item.path,
+          lessonId: this.lessonId
+        });
       } else {
-        this.item.isNameEditable = true;
-        this.item.input.focus();
+        this.isExpanded = !this.isExpanded;
+
+        if (this.isExpanded) {
+          var that = this;
+          var url = "/folders/children?lesson_id=".concat(this.lessonId, "&root=").concat(this.item.path);
+          axios.get(url).then(function (response) {
+            _this.item.childFolders = [];
+            _this.item.childFiles = [];
+            response.data.childFolders.forEach(function (childFolder) {
+              return that.item.childFolders.push(childFolder);
+            });
+            response.data.childFiles.forEach(function (childFile) {
+              return that.item.childFiles.push(childFile);
+            });
+          });
+        }
       }
-    }
+    } // onInputItemName(e) {
+    //   if (!e.target.value) {
+    //     return;
+    //   }
+    //   this.item.name = e.target.value;
+    //   this.item.update();
+    // },
+    // onShowContextMenu(e, item) {
+    //   this.$emit("show-context-menu", e, item);
+    // },
+    // onSetFile(file) {
+    //   this.$emit("set-file", file);
+    // },
+    // onKeyUpEnter() {
+    //   if (this.item.isNameEditable) {
+    //     this.item.isNameEditable = false;
+    //     this.item.input.blur();
+    //   } else {
+    //     this.item.isNameEditable = true;
+    //     this.item.input.focus();
+    //   }
+    // }
+
   })
 });
 
@@ -2694,6 +2738,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2701,16 +2755,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "file-tree",
   props: {
-    hostAppDirectoryPath: {
+    // hostAppDirectoryPath: {
+    //   type: String,
+    //   required: true
+    // },
+    // containerAppDirectoryPath: {
+    //   type: String,
+    //   required: true
+    // },
+    // deltaLogFilePath: {
+    //   type: String,
+    //   required: true
+    // }
+    root: {
       type: String,
       required: true
     },
-    containerAppDirectoryPath: {
-      type: String,
-      required: true
-    },
-    deltaLogFilePath: {
-      type: String,
+    lessonId: {
+      type: Number,
       required: true
     }
   },
@@ -2725,125 +2787,144 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   mounted: function mounted() {
-    this.fetchFileTree();
-    this.observeFiles();
+    this.fetchChildren(); //this.fetchFileTree();
+    //this.observeFiles();
   },
   methods: {
-    fetchFileTree: function fetchFileTree() {
+    fetchChildren: function fetchChildren() {
       var that = this;
-      _models_folder_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
-        path: this.hostAppDirectoryPath
-      }, function (response) {
-        that.rootFolder = new _models_folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](that.hostAppDirectoryPath);
-        that.fileDictionary = {};
-        that.fileDictionary[that.rootFolder.path] = that.rootFolder;
-
-        var map = function map(before, after) {
-          before.childFolders.forEach(function (beforeChildFolder) {
-            var afterChild = new _models_folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](beforeChildFolder.path);
-            that.fileDictionary[afterChild.path] = afterChild;
-            map(beforeChildFolder, afterChild);
-            after.children.push(afterChild);
-          });
-          before.childFiles.forEach(function (beforeChildFile) {
-            var afterChild = new _models_file_js__WEBPACK_IMPORTED_MODULE_0__["default"](beforeChildFile.path, "");
-            that.fileDictionary[afterChild.path] = afterChild;
-            after.children.push(afterChild);
-          });
-        };
-
-        map(response.data, that.rootFolder);
+      var url = "/folders/children?lesson_id=".concat(this.lessonId, "&root=").concat(this.root);
+      axios.get(url).then(function (response) {
+        that.rootFolder = response.data;
       });
     },
-    observeFiles: function observeFiles() {
-      var that = this;
-      setInterval(function () {
-        axios.get("/file_delta?delta_log_file_path=" + that.deltaLogFilePath).then(function (response) {
-          var fileDeltas = [];
-          response.data[1].forEach(function (path, index) {
-            path = path.slice(0, -1);
-            fileDeltas.push({});
-            fileDeltas[index].path = path.replace(that.containerAppDirectoryPath, that.hostAppDirectoryPath);
-          });
-          response.data[2].forEach(function (type, index) {
-            //console.log(type);
-            fileDeltas[index].type = type;
-          });
-          response.data[3].forEach(function (isDir, index) {
-            fileDeltas[index].isDir = isDir;
-          });
-          response.data[4].forEach(function (target, index) {
-            fileDeltas[index].target = target;
-          }); //console.log(fileDeltas);
-
-          fileDeltas.concat(that.fileDeltas);
-          that.fileDeltas = [];
-          fileDeltas.forEach(function (fileDelta) {
-            // console.log(fileDelta.type);
-            var fileTreeItem = that.fileDictionary[fileDelta.path];
-
-            if (!fileTreeItem) {
-              that.fileDeltas.push(fileDelta);
-              return;
-            }
-
-            var targetPath = fileDelta.path + "/" + fileDelta.target;
-
-            if (fileDelta.type === "CREATE" && !that.fileDictionary[targetPath]) {
-              //console.log("CREATE");
-              if (!fileTreeItem.children.find(function (child) {
-                return child.path === fileDelta.target;
-              })) {
-                var child = fileDelta.isDir === "" ? new _models_file_js__WEBPACK_IMPORTED_MODULE_0__["default"](targetPath, "") : new _models_folder_js__WEBPACK_IMPORTED_MODULE_1__["default"](targetPath);
-
-                if (!that.fileDictionary[fileDelta.path]) {
-                  return;
-                }
-
-                that.fileDictionary[child.path] = child;
-                fileTreeItem.children.push(child);
-                fileTreeItem.children.sort(function (a, b) {
-                  if (a.baseRoute === _models_folder_js__WEBPACK_IMPORTED_MODULE_1__["default"].baseRoute() && b.baseRoute === _models_file_js__WEBPACK_IMPORTED_MODULE_0__["default"].baseRoute()) {
-                    return -1;
-                  }
-
-                  if (a.baseRoute === _models_file_js__WEBPACK_IMPORTED_MODULE_0__["default"].baseRoute() && b.baseRoute === _models_folder_js__WEBPACK_IMPORTED_MODULE_1__["default"].baseRoute()) {
-                    return 1;
-                  }
-
-                  if (a.path < b.path) {
-                    return -1;
-                  } else if (b.path < a.path) {
-                    return 1;
-                  }
-
-                  return 0;
-                });
-              }
-            } else if (fileDelta.type === "DELETE") {
-              //console.log("DELETE");
-              var targetIndex = fileTreeItem.children.findIndex(function (child) {
-                return child.path === targetPath;
-              });
-              var notFound = -1;
-
-              if (targetIndex !== notFound) {
-                fileTreeItem.children.splice(targetIndex, 1);
-                delete that.fileDictionary[targetPath];
-              }
-            } else if (fileDelta.type === "MODIFY") {//console.log("MODIFY");
-              // if (that.editor.file && that.editor.file.path === targetPath) {
-              //   File.index({ path: targetPath }, response => {
-              //     if (response.data.text !== that.editor.getValue()) {
-              //       that.editor.setValue(response.data.text);
-              //     }
-              //   });
-              // }
-            }
-          });
-        });
-      }, 3000);
-    },
+    //fetchFileTree() {
+    // const that = this;
+    // Folder.index(
+    //   {
+    //     path: this.hostAppDirectoryPath
+    //   },
+    //   response => {
+    //     that.rootFolder = new Folder(that.hostAppDirectoryPath);
+    //     that.fileDictionary = {};
+    //     that.fileDictionary[that.rootFolder.path] = that.rootFolder;
+    //     const map = function(before, after) {
+    //       before.childFolders.forEach(beforeChildFolder => {
+    //         const afterChild = new Folder(beforeChildFolder.path);
+    //         that.fileDictionary[afterChild.path] = afterChild;
+    //         map(beforeChildFolder, afterChild);
+    //         after.children.push(afterChild);
+    //       });
+    //       before.childFiles.forEach(beforeChildFile => {
+    //         const afterChild = new File(beforeChildFile.path, "");
+    //         that.fileDictionary[afterChild.path] = afterChild;
+    //         after.children.push(afterChild);
+    //       });
+    //     };
+    //     map(response.data, that.rootFolder);
+    //   }
+    // );
+    //},
+    // observeFiles() {
+    //   const that = this;
+    //   setInterval(function() {
+    //     axios
+    //       .get("/file_delta?delta_log_file_path=" + that.deltaLogFilePath)
+    //       .then(response => {
+    //         let fileDeltas = [];
+    //         response.data[1].forEach((path, index) => {
+    //           path = path.slice(0, -1);
+    //           fileDeltas.push({});
+    //           fileDeltas[index].path = path.replace(
+    //             that.containerAppDirectoryPath,
+    //             that.hostAppDirectoryPath
+    //           );
+    //         });
+    //         response.data[2].forEach((type, index) => {
+    //           //console.log(type);
+    //           fileDeltas[index].type = type;
+    //         });
+    //         response.data[3].forEach((isDir, index) => {
+    //           fileDeltas[index].isDir = isDir;
+    //         });
+    //         response.data[4].forEach((target, index) => {
+    //           fileDeltas[index].target = target;
+    //         });
+    //         //console.log(fileDeltas);
+    //         fileDeltas.concat(that.fileDeltas);
+    //         that.fileDeltas = [];
+    //         fileDeltas.forEach(fileDelta => {
+    //           // console.log(fileDelta.type);
+    //           const fileTreeItem = that.fileDictionary[fileDelta.path];
+    //           if (!fileTreeItem) {
+    //             that.fileDeltas.push(fileDelta);
+    //             return;
+    //           }
+    //           const targetPath = fileDelta.path + "/" + fileDelta.target;
+    //           if (
+    //             fileDelta.type === "CREATE" &&
+    //             !that.fileDictionary[targetPath]
+    //           ) {
+    //             //console.log("CREATE");
+    //             if (
+    //               !fileTreeItem.children.find(
+    //                 child => child.path === fileDelta.target
+    //               )
+    //             ) {
+    //               const child =
+    //                 fileDelta.isDir === ""
+    //                   ? new File(targetPath, "")
+    //                   : new Folder(targetPath);
+    //               if (!that.fileDictionary[fileDelta.path]) {
+    //                 return;
+    //               }
+    //               that.fileDictionary[child.path] = child;
+    //               fileTreeItem.children.push(child);
+    //               fileTreeItem.children.sort((a, b) => {
+    //                 if (
+    //                   a.baseRoute === Folder.baseRoute() &&
+    //                   b.baseRoute === File.baseRoute()
+    //                 ) {
+    //                   return -1;
+    //                 }
+    //                 if (
+    //                   a.baseRoute === File.baseRoute() &&
+    //                   b.baseRoute === Folder.baseRoute()
+    //                 ) {
+    //                   return 1;
+    //                 }
+    //                 if (a.path < b.path) {
+    //                   return -1;
+    //                 } else if (b.path < a.path) {
+    //                   return 1;
+    //                 }
+    //                 return 0;
+    //               });
+    //             }
+    //           } else if (fileDelta.type === "DELETE") {
+    //             //console.log("DELETE");
+    //             const targetIndex = fileTreeItem.children.findIndex(
+    //               child => child.path === targetPath
+    //             );
+    //             const notFound = -1;
+    //             if (targetIndex !== notFound) {
+    //               fileTreeItem.children.splice(targetIndex, 1);
+    //               delete that.fileDictionary[targetPath];
+    //             }
+    //           } else if (fileDelta.type === "MODIFY") {
+    //             //console.log("MODIFY");
+    //             // if (that.editor.file && that.editor.file.path === targetPath) {
+    //             //   File.index({ path: targetPath }, response => {
+    //             //     if (response.data.text !== that.editor.getValue()) {
+    //             //       that.editor.setValue(response.data.text);
+    //             //     }
+    //             //   });
+    //             // }
+    //           }
+    //         });
+    //       });
+    //   }, 3000);
+    // },
     onShowContextMenu: function onShowContextMenu(e, item) {
       this.$emit("show-context-menu", e, item);
     }
@@ -3822,55 +3903,52 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("li", [
-    _vm.item
-      ? _c("input", {
-          ref: "name",
-          attrs: { readonly: !_vm.item.isNameEditable },
-          domProps: { value: _vm.item.name },
-          on: {
-            click: _vm.onclick,
-            input: _vm.onInputItemName,
-            keyup: function($event) {
-              if (
-                !$event.type.indexOf("key") &&
-                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-              ) {
-                return null
-              }
-              return _vm.onKeyUpEnter($event)
-            },
-            contextmenu: function($event) {
-              $event.stopPropagation()
-              $event.preventDefault()
-              return _vm.onShowContextMenu($event, _vm.item)
-            }
-          }
-        })
-      : _vm._e(),
+    _c("div", { on: { click: _vm.onclick } }, [_vm._v(_vm._s(_vm.item.name))]),
     _vm._v(" "),
-    _vm.isFolder
+    !_vm.isFile
       ? _c(
           "ul",
           { staticClass: "file-tree-item" },
-          _vm._l(_vm.item.children, function(child) {
-            return _c("file-tree-item", {
-              directives: [
-                {
-                  name: "show",
-                  rawName: "v-show",
-                  value: _vm.isExpanded,
-                  expression: "isExpanded"
+          [
+            _vm._l(_vm.item.childFolders, function(child) {
+              return _c("file-tree-item", {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.isExpanded,
+                    expression: "isExpanded"
+                  }
+                ],
+                key: child.path,
+                attrs: {
+                  item: child,
+                  "is-file": false,
+                  "lesson-id": _vm.lessonId
                 }
-              ],
-              key: child.path,
-              attrs: { item: child },
-              on: {
-                "show-context-menu": _vm.onShowContextMenu,
-                "set-file": _vm.onSetFile
-              }
+              })
+            }),
+            _vm._v(" "),
+            _vm._l(_vm.item.childFiles, function(child) {
+              return _c("file-tree-item", {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.isExpanded,
+                    expression: "isExpanded"
+                  }
+                ],
+                key: child.path,
+                attrs: {
+                  item: child,
+                  "is-file": true,
+                  "lesson-id": _vm.lessonId
+                }
+              })
             })
-          }),
-          1
+          ],
+          2
         )
       : _vm._e()
   ])
@@ -4063,14 +4141,32 @@ var render = function() {
               }
             }
           },
-          _vm._l(_vm.rootFolder.children, function(child) {
-            return _c("file-tree-item", {
-              key: child.path,
-              attrs: { item: child },
-              on: { "show-context-menu": _vm.onShowContextMenu }
+          [
+            _vm._l(_vm.rootFolder.childFolders, function(child) {
+              return _c("file-tree-item", {
+                key: child.path,
+                attrs: {
+                  item: child,
+                  "is-file": false,
+                  "lesson-id": _vm.lessonId
+                },
+                on: { "show-context-menu": _vm.onShowContextMenu }
+              })
+            }),
+            _vm._v(" "),
+            _vm._l(_vm.rootFolder.childFiles, function(child) {
+              return _c("file-tree-item", {
+                key: child.path,
+                attrs: {
+                  item: child,
+                  "is-file": true,
+                  "lesson-id": _vm.lessonId
+                },
+                on: { "show-context-menu": _vm.onShowContextMenu }
+              })
             })
-          }),
-          1
+          ],
+          2
         )
       : _vm._e()
   ])
@@ -5609,6 +5705,11 @@ new Vue({
       }
     }
   },
+  created: function created() {
+    axios.get("/folders/children?lesson_id=2&root=/").then(function (response) {
+      console.log(response);
+    });
+  },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapMutations"])(["setSourceCodeEditor"]), {
     showSourceCodeEditorContextMenu: function showSourceCodeEditorContextMenu(x, y, startIndex, endIndex) {
       this.sourceCodeEditorContextMenu.isShown = true;
@@ -5674,7 +5775,7 @@ function (_Model) {
     }
   }]);
 
-  function File(path, text) {
+  function File(path, text, lessonId) {
     var _this;
 
     _classCallCheck(this, File);
@@ -5682,7 +5783,8 @@ function (_Model) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(File).call(this, File.baseRoute()));
     _this.path = path;
     _this.text = text;
-    _this.isNameEditable = false;
+    _this.lessonId = lessonId; // this.isNameEditable = false;
+
     return _this;
   }
 
@@ -5691,7 +5793,8 @@ function (_Model) {
     value: function parameters() {
       return {
         path: this.path,
-        text: this.text
+        text: this.text,
+        lesson_id: this.lessonId
       };
     }
   }, {
@@ -5722,13 +5825,19 @@ function (_Model) {
       this._text = value;
     }
   }, {
-    key: "isNameEditable",
+    key: "lessonId",
     get: function get() {
-      return this._isNameEditable;
+      return this._lessonId;
     },
     set: function set(value) {
-      this._isNameEditable = value;
-    }
+      this._lessonId = value;
+    } // get isNameEditable() {
+    //     return this._isNameEditable;
+    // }
+    // set isNameEditable(value) {
+    //     this._isNameEditable = value;
+    // }
+
   }]);
 
   return File;
@@ -6193,7 +6302,7 @@ Vue.use(Vuex);
     setEditedFile: function () {
       var _setEditedFile = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, path) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, payload) {
         var commit, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
@@ -6202,12 +6311,13 @@ Vue.use(Vuex);
                 commit = _ref.commit;
                 _context.next = 3;
                 return _models_file_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
-                  path: path
+                  path: payload.path,
+                  lesson_id: payload.lessonId
                 });
 
               case 3:
                 response = _context.sent;
-                commit("setEditedFile", new _models_file_js__WEBPACK_IMPORTED_MODULE_1__["default"](response.data.path, response.data.text));
+                commit("setEditedFile", new _models_file_js__WEBPACK_IMPORTED_MODULE_1__["default"](response.data.path, response.data.text, payload.lessonId));
 
               case 5:
               case "end":

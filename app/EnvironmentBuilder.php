@@ -9,17 +9,35 @@ class EnvironmentBuilder
     private $dockerfile = "";
 
 
-    public function __construct(string $user, string $os)
+    public function __construct(string $user, string $os, array $ports)
     {
         $this->user = $user;
         $this->dockerfile .= "FROM $os\n";
         $this->dockerfile .= "RUN useradd $user\n";
+        $this->dockerfile .= <<<EOM
+RUN yum -y install wget \
+    && wget -qO- https://github.com/yudai/gotty/releases/download/v0.0.12/gotty_linux_amd64.tar.gz | tar zx -C /usr/local/bin/ \
+    && yum -y remove wget\n
+EOM;
+        if($ports) {
+            $this->dockerfile .= "EXPOSE";
+            foreach($ports as $port) {
+                if (is_numeric($port) && is_int($port)) {
+                    continue;
+                }
+                $this->dockerfile .= " $port";
+            }
+            $this->dockerfile .= "\n";
+        }
     }
 
-    public function write(string $filename)
-    {
+    public function end() {
         $this->dockerfile .= "USER $this->user";
-        file_put_contents($filename, $this->dockerfile);
+    }
+
+    public function write(string $dir, string $filename = "Dockerfile")
+    {
+        file_put_contents(Path::append($dir, $filename), $this->dockerfile);
     }
 
     public function laravel(string $version): EnvironmentBuilder
@@ -51,10 +69,14 @@ RUN yum localinstall -y http://dev.mysql.com/get/mysql57-community-release-el7-7
 USER $this->user
 RUN mysqld --initialize --user=$this->user \
     && mysqld & sleep 10 \
-    && mysqladmin password $password -u root -p$(cat /var/log/mysqld.log | grep root | awk '{print substr(substr($0, index($0, "localhost:")), 12)}') \
-    && mysql -u root -p$password -e'RENAME USER root@localhost to $user@localhost'
-USER root\n
+    && mysqladmin password $password -u root -p$(cat /var/log/mysqld.log | grep root | awk '{print substr(substr($0, index($0, "localhost:")), 12)}')
 EOM;
+                if ($user !== "root") {
+                    $this->dockerfile .= " \\\n    && mysql -u root -p$password -e'RENAME USER root@localhost to $user@localhost'\n";
+                } else {
+                    $this->dockerfile .= "\n";
+                }
+                $this->dockerfile .= "USER root\n";
         }
         return $this;
     }

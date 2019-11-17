@@ -181,6 +181,29 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -207,6 +230,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
       os: "",
+      ports: [],
       environments: [],
       osDialogVisible: false,
       environmentDialogVisible: false,
@@ -218,6 +242,17 @@ __webpack_require__.r(__webpack_exports__);
         mysql: ["5.7.28"]
       }
     };
+  },
+  computed: {
+    dockerfileOS: function dockerfileOS() {
+      var os = this.os;
+
+      if (os.startsWith("CentOS")) {
+        os = os.replace("CentOS", "centos");
+      }
+
+      return os.replace(/\s+/g, "");
+    }
   },
   methods: {
     showOSDialog: function showOSDialog() {
@@ -239,6 +274,9 @@ __webpack_require__.r(__webpack_exports__);
 
       this.environments.push(environment);
       this.environments.sort();
+    },
+    appendPort: function appendPort() {
+      this.ports.push("");
     }
   }
 });
@@ -254,6 +292,16 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1046,33 +1094,14 @@ var render = function() {
                   _c(
                     "div",
                     [
-                      _c("p", [_vm._v("OS")]),
+                      _c("div", [_vm._v("OS")]),
                       _vm._v(" "),
                       _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.os,
-                            expression: "os"
-                          }
-                        ],
-                        attrs: {
-                          type: "text",
-                          name: "os",
-                          disabled: "",
-                          required: ""
-                        },
-                        domProps: { value: _vm.os },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.os = $event.target.value
-                          }
-                        }
+                        attrs: { type: "hidden", name: "os" },
+                        domProps: { value: _vm.dockerfileOS }
                       }),
+                      _vm._v(" "),
+                      _c("div", [_vm._v(_vm._s(_vm.os))]),
                       _vm._v(" "),
                       _c(
                         "div",
@@ -1092,7 +1121,98 @@ var render = function() {
                       _vm._v(" "),
                       _c("el-divider"),
                       _vm._v(" "),
-                      _c("p", [_vm._v("その他")]),
+                      _c("div", { staticClass: "form-group" }, [
+                        _c("label", [
+                          _vm._v(
+                            "\n                ユーザ名\n                "
+                          ),
+                          _c("input", {
+                            staticClass: "form-control",
+                            attrs: {
+                              type: "text",
+                              name: "username",
+                              required: ""
+                            }
+                          })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("el-divider"),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "form-group" }, [
+                        _c("label", [
+                          _vm._v(
+                            "\n                コンソールポート\n                "
+                          ),
+                          _c("input", {
+                            staticClass: "form-control",
+                            attrs: {
+                              type: "number",
+                              name: "console_port",
+                              required: ""
+                            }
+                          })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("el-divider"),
+                      _vm._v(" "),
+                      _c("div", [_vm._v("その他のポート")]),
+                      _vm._v(" "),
+                      _vm._l(_vm.ports, function(port, index) {
+                        return _c(
+                          "div",
+                          { key: index, staticClass: "form-group" },
+                          [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.ports[index],
+                                  expression: "ports[index]"
+                                }
+                              ],
+                              attrs: { type: "number", name: "ports[]" },
+                              domProps: { value: _vm.ports[index] },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.ports,
+                                    index,
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            })
+                          ]
+                        )
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "text-center" },
+                        [
+                          _c(
+                            "el-button",
+                            {
+                              attrs: { type: "success" },
+                              on: { click: _vm.appendPort }
+                            },
+                            [_vm._v("追加")]
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c("el-divider"),
+                      _vm._v(" "),
+                      _c("div", [
+                        _vm._v("フレームワーク・ライブラリ・ミドルウェア")
+                      ]),
                       _vm._v(" "),
                       _vm._l(_vm.environments, function(environment) {
                         return _c(
@@ -1303,6 +1423,11 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
+    _c("input", {
+      attrs: { type: "hidden", name: "environments[]" },
+      domProps: { value: _vm.environment }
+    }),
+    _vm._v(" "),
     _vm.environment.startsWith("MySQL")
       ? _c("div", [
           _vm._v("\n    " + _vm._s(_vm.environment) + "\n    "),
@@ -1321,16 +1446,17 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "form-row mt-2" }, [
-      _c("label", { staticClass: "col-2", attrs: { for: "mysql-user-name" } }, [
+      _c("label", { staticClass: "col-2", attrs: { for: "mysql-username" } }, [
         _vm._v("ユーザ名")
       ]),
       _vm._v(" "),
       _c("input", {
         staticClass: "col form-control",
         attrs: {
-          id: "mysql-user-name",
+          id: "mysql-username",
           type: "text",
-          name: "mysql-user-name",
+          name: "mysql_username",
+          value: "root",
           required: ""
         }
       })
@@ -1350,7 +1476,8 @@ var staticRenderFns = [
         attrs: {
           id: "mysql-password",
           type: "password",
-          name: "mysql-password",
+          name: "mysql_password",
+          value: "root",
           required: ""
         }
       })
@@ -1370,7 +1497,7 @@ var staticRenderFns = [
         attrs: {
           id: "mysql-port",
           type: "number",
-          name: "mysql-port",
+          name: "mysql_port",
           value: "3306",
           required: ""
         }

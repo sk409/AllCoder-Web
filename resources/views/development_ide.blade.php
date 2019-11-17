@@ -15,7 +15,9 @@
     <div id="development-header" class="border-bottom border-dark">
         <div class="d-flex p-3">
             <h3>{{$title}}</h3>
-            <a class="btn btn-light ml-auto" href="http://localhost:{{$previewPortNumber}}" target="_blank">プレビュー</a>
+            {{-- <a class="btn btn-light ml-auto" href="http://localhost:{{$previewPortNumber}}"
+            target="_blank">プレビュー</a> --}}
+            <a class="btn btn-light ml-auto">ポート</a>
             @if($mode === "creating")
             <a class="btn btn-light" href="{{route("development.writing", ["lesson" => $lesson->id])}}"
                 target="_blank">執筆</a>
@@ -30,14 +32,15 @@
     </div>
     <div id="development-body">
         <ul id="file-tree-view">
-            <file-tree id="file-tree" host-app-directory-path="{{$hostAppDirectoryPath}}"
-                container-app-directory-path="{{$containerAppDirectoryPath}}"
-                delta-log-file-path="{{$deltaLogFilePath}}"></file-tree>
+            {{-- <file-tree id="file-tree" host-app-directory-path="{{$hostAppDirectoryPath}}"
+            container-app-directory-path="{{$containerAppDirectoryPath}}"
+            delta-log-file-path="{{$deltaLogFilePath}}"></file-tree> --}}
+            <file-tree id="file-tree" root="/" :lesson-id="{{$lesson->id}}"></file-tree>
         </ul>
         <div id="center-view">
             <source-code-editor id="source-code-editor"
                 v-on:show-source-code-editor-context-menu="showSourceCodeEditorContextMenu"></source-code-editor>
-            <iframe id="console" src="http://localhost:{{$consolePortNumber}}"></iframe>
+            <iframe id="console" src="http://localhost:{{$consolePort}}"></iframe>
         </div>
     </div>
     <source-code-editor-context-menu id="source-code-editor-context-menu" v-show="sourceCodeEditorContextMenu.isShown"

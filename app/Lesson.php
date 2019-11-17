@@ -3,8 +3,9 @@
 namespace App;
 
 use App\Folder;
-use App\Material;
 use App\LessonComment;
+use App\LessonPort;
+use App\Material;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,17 +29,18 @@ class Lesson extends Model
         "title",
         "description",
         "book",
+        "console_port",
         // "container_id",
         // "container_name",
         // "preview_port_number",
         // "console_port_number",
-        "host_app_directory_path",
-        "host_logs_directory_path",
-        "container_app_directory_path",
-        "container_logs_directory_path",
-        "lesson_directory_path",
-        "options_directory_path",
-        "data_directory_path",
+        // "host_app_directory_path",
+        // "host_logs_directory_path",
+        // "container_app_directory_path",
+        // "container_logs_directory_path",
+        // "lesson_directory_path",
+        // "options_directory_path",
+        // "data_directory_path",
         "user_id"
     ];
 
@@ -65,5 +67,9 @@ class Lesson extends Model
     public function folders()
     {
         return $this->hasMany(Folder::class);
+    }
+
+    public function ports() {
+        return $this->hasMany(LessonPort::class);
     }
 }

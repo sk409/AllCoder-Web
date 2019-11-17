@@ -20,7 +20,6 @@
 
 namespace App\Http\Controllers;
 
-//use App\File;
 use App\Lesson;
 use App\Material;
 use App\Path;
@@ -28,33 +27,9 @@ use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 
-// class File
-// {
-//     public $path = "";
-//     public $text = "";
-
-//     public function __construct(string $path, string $text)
-//     {
-//         $this->path = $path;
-//         $this->text = $text;
-//     }
-// }
-
-// class Folder
-// {
-//     public $path = "";
-//     public $children = [];
-
-//     public function __construct(string $path)
-//     {
-//         $this->path = $path;
-//     }
-
-//     public function appenChild($child)
-//     {
-//         $this->children[] = $child;
-//     }
-// }
+function dockerImageName(string $imageName) {
+    return "promark_" . $imageName;
+}
 
 class DevelopmentController extends Controller
 {
@@ -94,20 +69,47 @@ class DevelopmentController extends Controller
         ] + $parameters);
     }
 
-    public function creating(int $id): Renderable
+    public function creating(int $id)
     {
         $lesson = Lesson::find($id);
-        $composeDirectoryPath = Path::lesson($lesson->id);
-        return DevelopmentController::f(
-            "creating",
-            $lesson->title,
-            $composeDirectoryPath,
-            $lesson->host_app_directory_path,
-            $lesson->container_app_directory_path,
-            $lesson->container_logs_directory_path,
-            Path::append($lesson->host_logs_directory_path, "app_changes.txt"),  // TODO: ファイル名まで含めてDBに保存する,
-            ["lesson" => $lesson]
-        );
+        $lessonDirectoryPath = Path::lesson($lesson->id);
+        $dockerImageName = dockerImageName($lesson->id);
+        exec("docker image rm $dockerImageName");
+        exec("docker image build -t $dockerImageName $lessonDirectoryPath");
+        $outputs = [];
+        exec("docker container run -itd -P $dockerImageName", $outputs);
+        $containerID = $outputs[0];
+        exec("docker container exec -itd $containerID gotty -w -p $lesson->console_port bash");
+        $outputs = [];
+        exec("docker container port $containerID $lesson->console_port", $outputs);
+        preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $consolePortMatches);
+        $consolePort = $consolePortMatches[1];
+        $ports = [];
+        foreach($lesson->ports()->get()->all() as $port) {
+            $outputs = [];
+            exec("docker container port $containerID $port->port", $outputs);
+            preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $portMatches);
+            $ports[] = $portMatches[1];
+        }
+        $lesson->container_id = $containerID;
+        $lesson->save();
+        return view("development_ide", [
+            "mode" => "creating",
+            "title" => $lesson->title,
+            "consolePort" => $consolePort,
+            "ports" => $ports,
+            "lesson" => $lesson,
+        ]);
+        // return DevelopmentController::f(
+        //     "creating",
+        //     $lesson->title,
+        //     $composeDirectoryPath,
+        //     $lesson->host_app_directory_path,
+        //     $lesson->container_app_directory_path,
+        //     $lesson->container_logs_directory_path,
+        //     Path::append($lesson->host_logs_directory_path, "app_changes.txt"),  // TODO: ファイル名まで含めてDBに保存する,
+        //     ["lesson" => $lesson]
+        // );
     }
 
     public function learning(Request $request): Renderable

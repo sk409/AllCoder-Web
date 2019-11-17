@@ -1,14 +1,16 @@
 <template>
   <div>
+    <input type="hidden" name="environments[]" :value="environment" />
     <div v-if="environment.startsWith('MySQL')">
       {{environment}}
       <div class="form-row mt-2">
-        <label class="col-2" for="mysql-user-name">ユーザ名</label>
+        <label class="col-2" for="mysql-username">ユーザ名</label>
         <input
-          id="mysql-user-name"
+          id="mysql-username"
           class="col form-control"
           type="text"
-          name="mysql-user-name"
+          name="mysql_username"
+          value="root"
           required
         />
       </div>
@@ -18,13 +20,21 @@
           id="mysql-password"
           class="col form-control"
           type="password"
-          name="mysql-password"
+          name="mysql_password"
+          value="root"
           required
         />
       </div>
       <div class="form-row mt-2">
         <label class="col-2" for="mysql-port">ポート</label>
-        <input id="mysql-port" class="col form-control" type="number" name="mysql-port" value="3306" required />
+        <input
+          id="mysql-port"
+          class="col form-control"
+          type="number"
+          name="mysql_port"
+          value="3306"
+          required
+        />
       </div>
     </div>
     <div v-else>{{environment}}</div>

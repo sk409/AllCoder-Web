@@ -10,12 +10,14 @@ class Folder /*extends Model*/
 {
 
     public $path = "";
+    public $name = "";
     public $childFiles = [];
     public $childFolders = [];
 
     public function __construct(string $path)
     {
         $this->path = $path;
+        $this->name = basename($path);
     }
 
     public function appenChildFile($childFile)
