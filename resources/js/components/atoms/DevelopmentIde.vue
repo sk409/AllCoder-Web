@@ -1,6 +1,6 @@
 <template>
   <div id="development-ide">
-    <div id="development-header" class="border-bottom border-dark">
+    <div id="development-header">
       <div class="d-flex align-items-center p-3">
         <h3>{{title}}</h3>
         <div v-if="mode === 'creating'" class="ml-auto">
@@ -26,9 +26,7 @@
       </div>
     </div>
     <div id="development-body">
-      <div id="file-tree-view">
-        <file-tree id="file-tree" root="/" :lesson-id="lesson.id"></file-tree>
-      </div>
+      <file-tree id="file-tree-view" :lesson-id="lesson.id"></file-tree>
       <div id="center-view">
         <source-code-editor
           id="source-code-editor"
@@ -203,13 +201,6 @@ export default {
 
 #file-tree-view {
   width: 20%;
-  height: 100%;
-}
-
-#file-tree {
-  overflow: scroll;
-  white-space: nowrap;
-  padding-bottom: 16px;
   height: 100%;
 }
 

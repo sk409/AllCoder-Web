@@ -1,8 +1,16 @@
 <template>
   <div>
+    <el-divider class="m-0"></el-divider>
+    <div id="file-tree-tool-bar" class="d-flex align-items-center p-2">
+      <el-input v-model="rootPath" placeholder="パスを入力"></el-input>
+      <i class="ml-1 el-icon-search" @click="fetchChildren"></i>
+      <el-divider direction="vertical"></el-divider>
+      <i class="el-icon-refresh" @click="fetchChildren"></i>
+    </div>
+    <el-divider class="m-0"></el-divider>
     <div
       v-if="rootFolder"
-      class="w-100 h-100"
+      id="file-tree"
       @contextmenu.stop.prevent="onShowContextMenu($event, rootFolder)"
     >
       <file-tree-item
@@ -45,10 +53,6 @@ export default {
     //   type: String,
     //   required: true
     // }
-    root: {
-      type: String,
-      required: true
-    },
     lessonId: {
       type: Number,
       required: true
@@ -59,9 +63,10 @@ export default {
   },
   data() {
     return {
-      rootFolder: null,
-      fileDictionary: {},
-      fileDeltas: []
+      rootPath: "/",
+      rootFolder: null
+      // fileDictionary: {},
+      // fileDeltas: []
     };
   },
   mounted() {
@@ -72,7 +77,7 @@ export default {
   methods: {
     fetchChildren() {
       const that = this;
-      const url = `/folders/children?lesson_id=${this.lessonId}&root=${this.root}`;
+      const url = `/folders/children?lesson_id=${this.lessonId}&root=${this.rootPath}`;
       axios.get(url).then(response => {
         that.rootFolder = response.data;
       });
@@ -210,3 +215,14 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+#file-tree-tool-bar {
+  height: 10%;
+}
+#file-tree {
+  overflow: scroll;
+  white-space: nowrap;
+  height: 90%;
+}
+</style>
