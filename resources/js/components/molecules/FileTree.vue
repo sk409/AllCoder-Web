@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul
+    <div
       v-if="rootFolder"
       class="w-100 h-100"
       @contextmenu.stop.prevent="onShowContextMenu($event, rootFolder)"
@@ -21,7 +21,7 @@
         :lesson-id="lessonId"
         @show-context-menu="onShowContextMenu"
       ></file-tree-item>
-    </ul>
+    </div>
   </div>
 </template>
 

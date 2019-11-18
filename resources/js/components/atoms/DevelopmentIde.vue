@@ -26,9 +26,9 @@
       </div>
     </div>
     <div id="development-body">
-      <ul id="file-tree-view">
+      <div id="file-tree-view">
         <file-tree id="file-tree" root="/" :lesson-id="lesson.id"></file-tree>
-      </ul>
+      </div>
       <div id="center-view">
         <source-code-editor
           id="source-code-editor"
@@ -201,10 +201,6 @@ export default {
   white-space: nowrap;
   padding-bottom: 16px;
   height: 100%;
-}
-
-.file-tree-item {
-  padding-left: 16px;
 }
 
 #center-view {

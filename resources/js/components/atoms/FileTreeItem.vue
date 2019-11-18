@@ -1,5 +1,5 @@
 <template>
-  <li>
+  <div>
     <!-- <input
       ref="name"
       v-if="item"
@@ -20,8 +20,11 @@
         @set-file="onSetFile"
       ></file-tree-item>
     </ul>-->
-    <div @click="onclick">{{item.name}}</div>
-    <ul v-if="!isFile" class="file-tree-item">
+    <div @click="onclick">
+      <i :class="icon"></i>
+      {{item.name}}
+    </div>
+    <div v-if="!isFile" class="file-tree-item">
       <file-tree-item
         v-show="isExpanded"
         v-for="child in item.childFolders"
@@ -38,8 +41,8 @@
         :is-file="true"
         :lesson-id="lessonId"
       ></file-tree-item>
-    </ul>
-  </li>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -65,6 +68,16 @@ export default {
     return {
       isExpanded: false
     };
+  },
+  computed: {
+    icon() {
+      if (this.isFile) {
+        return { "el-icon-tickets": true };
+      }
+      return this.isExpanded
+        ? { "el-icon-folder-opened": true }
+        : { "el-icon-folder": true };
+    }
   },
   mounted() {
     if (!this.$refs.name) {
@@ -120,3 +133,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.file-tree-item {
+  padding-left: 16px;
+}
+</style>
