@@ -22,6 +22,12 @@ class FoldersController extends Controller
         $rootFolder = new Folder($request->root);
         $fileInfos = [];
         exec("docker container exec -it $lesson->docker_container_id ls -la $request->root/", $fileInfos);
+        if (strpos($fileInfos[0], "Permission denied") !== false) {
+            return "Permission denied";
+        }
+        if (strpos($fileInfos[0], "No such file or directory") !== false) {
+            return "No such directory";
+        }
         array_shift($fileInfos);
         $children = [];
         exec("docker container exec -it $lesson->docker_container_id ls -1a $request->root", $children);

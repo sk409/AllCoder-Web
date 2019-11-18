@@ -19,6 +19,9 @@ class FilesController extends Controller
         $lesson = Lesson::find($request->lesson_id);
         $outputs = [];
         exec("docker container exec -it $lesson->docker_container_id cat $request->path", $outputs);
+        if (strpos($outputs[0], "Permission denied") !== false) {
+            return "Permission denied";
+        }
         $file = new File($request->path, implode("\n", $outputs));
         return json_encode($file);
     }

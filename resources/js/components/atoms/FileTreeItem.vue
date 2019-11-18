@@ -48,6 +48,7 @@
 <script>
 import Folder from "../../models/folder.js";
 import { mapActions } from "vuex";
+import File from "../../models/file";
 export default {
   name: "file-tree-item",
   props: {
@@ -89,21 +90,46 @@ export default {
     ...mapActions(["setEditedFile"]),
     onclick() {
       if (this.isFile) {
-        this.setEditedFile({ path: this.item.path, lessonId: this.lessonId });
+        const that = this;
+        File.index(
+          {
+            path: this.item.path,
+            lesson_id: this.lessonId
+          },
+          response => {
+            if (response.data === "Permission denied") {
+              that.$notify.error({
+                title: "Permission denied",
+                message: "このファイルへのアクセス権限がありません"
+              });
+            } else {
+              that.setEditedFile(
+                new File(that.item.path, response.data.text, that.lessonId)
+              );
+            }
+          }
+        );
       } else {
         this.isExpanded = !this.isExpanded;
         if (this.isExpanded) {
           const that = this;
           const url = `/folders/children?lesson_id=${this.lessonId}&root=${this.item.path}`;
           axios.get(url).then(response => {
-            this.item.childFolders = [];
-            this.item.childFiles = [];
-            response.data.childFolders.forEach(childFolder =>
-              that.item.childFolders.push(childFolder)
-            );
-            response.data.childFiles.forEach(childFile =>
-              that.item.childFiles.push(childFile)
-            );
+            if (response.data === "Permission denied") {
+              that.$notify.error({
+                title: "Permission denied",
+                message: `このフォルダへのアクセス権限がありません`
+              });
+            } else {
+              that.item.childFolders = [];
+              that.item.childFiles = [];
+              response.data.childFolders.forEach(childFolder =>
+                that.item.childFolders.push(childFolder)
+              );
+              response.data.childFiles.forEach(childFile =>
+                that.item.childFiles.push(childFile)
+              );
+            }
           });
         }
       }

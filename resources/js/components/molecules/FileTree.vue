@@ -79,7 +79,19 @@ export default {
       const that = this;
       const url = `/folders/children?lesson_id=${this.lessonId}&root=${this.rootPath}`;
       axios.get(url).then(response => {
-        that.rootFolder = response.data;
+        if (response.data === "Permission denied") {
+          that.$notify.error({
+            title: "Permission deined",
+            message: "フォルダへのアクセス権限がありません"
+          });
+        } else if (response.data === "No such directory") {
+          that.$notify.error({
+            title: "No such directory",
+            message: "フォルダが存在しません"
+          });
+        } else {
+          that.rootFolder = response.data;
+        }
       });
     },
     //fetchFileTree() {
