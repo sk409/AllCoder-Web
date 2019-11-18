@@ -2,6 +2,7 @@
 
 namespace App;
 
+// TODO: CentOS以外にも対応する(現状はyumを使用している)
 class EnvironmentBuilder
 {
 
@@ -19,9 +20,9 @@ RUN yum -y install wget \
     && wget -qO- https://github.com/yudai/gotty/releases/download/v0.0.12/gotty_linux_amd64.tar.gz | tar zx -C /usr/local/bin/ \
     && yum -y remove wget\n
 EOM;
-        if($ports) {
+        if ($ports) {
             $this->dockerfile .= "EXPOSE";
-            foreach($ports as $port) {
+            foreach ($ports as $port) {
                 if (is_numeric($port) && is_int($port)) {
                     continue;
                 }
@@ -31,7 +32,8 @@ EOM;
         }
     }
 
-    public function end() {
+    public function end()
+    {
         $this->dockerfile .= "USER $this->user";
     }
 
@@ -42,12 +44,13 @@ EOM;
 
     public function laravel(string $version): EnvironmentBuilder
     {
+        // TODO: 他の環境にPHPが指定された場合を考慮する
         switch ($version) {
             case "5.7":
                 $this->dockerfile .= <<<EOM
 RUN yum install -y epel-release \
     && rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm \
-    && yum install -y --enablerepo=remi,remi-php73 php php-devel php-mbstring php-pdo php-gd php-xml php-mcrypt php-pecl-zip \
+    && yum install -y --enablerepo=remi,remi-php73 php php-devel php-mbstring php-pdo php-gd php-xml php-mcrypt php-pecl-zip php-mysqlnd \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && composer global require "laravel/installer"\n

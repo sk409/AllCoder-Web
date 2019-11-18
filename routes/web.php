@@ -37,7 +37,7 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::get("/development/learning", "DevelopmentController@learning")->name("development.learning");
     Route::get("/development_writing/{lesson}", "DevelopmentController@writing")->name("development.writing");
     Route::get("/development/reading", "DevelopmentController@reading")->name("development.reading");
-    Route::post("/development/unload/{lessonId}", "DevelopmentController@unload")->name("development.unload");
+    Route::post("/development/down", "DevelopmentController@down")->name("development.down");
 
     // Route::get("/folders", "FoldersController@index")->name("folders.index");
     // Route::post("/folders", "FoldersController@store")->name("folders.store");

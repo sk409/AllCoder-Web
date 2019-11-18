@@ -20,8 +20,6 @@
 </template>
 
 <script>
-//import { Promise } from "q";
-//import Question from "../question/Question.js";
 import SourceCodeEditorContextMenu from "./SourceCodeEditorContextMenu.vue";
 import { mapActions, mapMutations, mapState } from "vuex";
 export default {

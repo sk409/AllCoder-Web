@@ -30,7 +30,8 @@ class Lesson extends Model
         "description",
         "book",
         "console_port",
-        // "container_id",
+        "docker_container_id",
+        "docker_image_name",
         // "container_name",
         // "preview_port_number",
         // "console_port_number",
@@ -69,7 +70,8 @@ class Lesson extends Model
         return $this->hasMany(Folder::class);
     }
 
-    public function ports() {
+    public function ports()
+    {
         return $this->hasMany(LessonPort::class);
     }
 }

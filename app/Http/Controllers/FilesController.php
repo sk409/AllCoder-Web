@@ -18,8 +18,7 @@ class FilesController extends Controller
         ]);
         $lesson = Lesson::find($request->lesson_id);
         $outputs = [];
-        //return "docker container exec -it $lesson->container_id cat $request->path";
-        exec("docker container exec -it $lesson->container_id cat $request->path", $outputs);
+        exec("docker container exec -it $lesson->docker_container_id cat $request->path", $outputs);
         $file = new File($request->path, implode("\n", $outputs));
         return json_encode($file);
     }
@@ -54,7 +53,7 @@ class FilesController extends Controller
         $lesson = Lesson::find($request->lesson_id);
         $tmpFilePath = storage_path(uniqid());
         file_put_contents($tmpFilePath, $request->text);
-        exec("docker container cp $tmpFilePath $lesson->container_id:$request->path");
+        exec("docker container cp $tmpFilePath $lesson->docker_container_id:$request->path");
         unlink($tmpFilePath);
         //\Illuminate\Support\Facades\File::put($request->path, $request->text, true);
     }

@@ -45,19 +45,20 @@ class LessonsController extends Controller
         ]);
         $parameters = $request->all();
         $parameters["book"] = "";
+        $parameters["docker_image_name"] = uniqid();
         $lesson = Lesson::create($parameters);
         $lessonDirectoryPath = Path::lesson("$lesson->id");
         mkdir($lessonDirectoryPath);
         $ports = $request->has("ports") ? $request->ports : [];
         $ports[] = $request->console_port;
-        foreach($ports as $port) {
+        foreach ($ports as $port) {
             LessonPort::create(["port" => $port, "lesson_id" => $lesson->id]);
         }
         $environmentBuilder = new EnvironmentBuilder($request->username, $request->os, $ports);
         if ($request->environments) {
             $laravel = "Laravel";
             $mysql = "MySQL";
-            foreach($request->environments as $environment) {
+            foreach ($request->environments as $environment) {
                 $exploded = explode(": ", $environment);
                 $version = end($exploded);
                 echo $version;

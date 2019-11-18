@@ -12,7 +12,8 @@ use Illuminate\Http\Request;
 class FoldersController extends Controller
 {
 
-    public function children(Request $request) {
+    public function children(Request $request)
+    {
         $request->validate([
             "lesson_id" => "required",
             "root" => "required",
@@ -20,11 +21,11 @@ class FoldersController extends Controller
         $lesson = Lesson::find($request->lesson_id);
         $rootFolder = new Folder($request->root);
         $fileInfos = [];
-        exec("docker container exec -it $lesson->container_id ls -la $request->root/", $fileInfos);
+        exec("docker container exec -it $lesson->docker_container_id ls -la $request->root/", $fileInfos);
         array_shift($fileInfos);
         $children = [];
-        exec("docker container exec -it $lesson->container_id ls -1a $request->root", $children);
-        foreach($children as $index => $child) {
+        exec("docker container exec -it $lesson->docker_container_id ls -1a $request->root", $children);
+        foreach ($children as $index => $child) {
             if (in_array($child, [".", ".."])) {
                 continue;
             }
@@ -48,7 +49,7 @@ class FoldersController extends Controller
     //     $lesson = Lesson::find($request->lesson_id);
     //     $iterator = function(string $path, $currentItem) use ($lesson) {
     //         $items = [];
-    //         exec("docker container exec $lesson->container_id ls $path", $items);
+    //         exec("docker container exec $lesson->docker_container_id ls $path", $items);
     //         // $childFiles = [];
     //         // $childFolders = [];
     //         // foreach($items as $item) {

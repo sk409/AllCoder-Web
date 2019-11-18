@@ -27,10 +27,6 @@ use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 
-function dockerImageName(string $imageName) {
-    return "promark_" . $imageName;
-}
-
 class DevelopmentController extends Controller
 {
 
@@ -73,43 +69,41 @@ class DevelopmentController extends Controller
     {
         $lesson = Lesson::find($id);
         $lessonDirectoryPath = Path::lesson($lesson->id);
-        $dockerImageName = dockerImageName($lesson->id);
-        exec("docker image rm $dockerImageName");
-        exec("docker image build -t $dockerImageName $lessonDirectoryPath");
-        $outputs = [];
-        exec("docker container run -itd -P $dockerImageName", $outputs);
-        $containerID = $outputs[0];
-        exec("docker container exec -itd $containerID gotty -w -p $lesson->console_port bash");
+        $mode = "creating";
+        if (is_null($lesson->docker_container_id)) {
+            exec("docker image build -t $lesson->docker_image_name $lessonDirectoryPath");
+            $outputs = [];
+            exec("docker container run -itd -P $lesson->docker_image_name", $outputs);
+            $containerID = $outputs[0];
+            // TODO: MySQLが選択されている場合にだけ実行する
+            exec("docker container exec -itd $containerID find /var/lib/mysql -type f -exec touch {} \;");
+            exec("docker container exec -itd $containerID gotty -w -p $lesson->console_port bash");
+        } else {
+            $containerID = $lesson->docker_container_id;
+        }
         $outputs = [];
         exec("docker container port $containerID $lesson->console_port", $outputs);
         preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $consolePortMatches);
         $consolePort = $consolePortMatches[1];
-        $ports = [];
-        foreach($lesson->ports()->get()->all() as $port) {
+        $hostPorts = [];
+        $containerPorts = [];
+        foreach ($lesson->ports()->get()->all() as $containerPort) {
             $outputs = [];
-            exec("docker container port $containerID $port->port", $outputs);
+            exec("docker container port $containerID $containerPort->port", $outputs);
             preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $portMatches);
-            $ports[] = $portMatches[1];
+            $hostPorts[] = $portMatches[1];
+            $containerPorts[] = $containerPort->port;
         }
-        $lesson->container_id = $containerID;
+        $lesson->docker_container_id = $containerID;
         $lesson->save();
         return view("development_ide", [
-            "mode" => "creating",
+            "mode" => $mode,
             "title" => $lesson->title,
             "consolePort" => $consolePort,
-            "ports" => $ports,
+            "hostPorts" => $hostPorts,
+            "containerPorts" => $containerPorts,
             "lesson" => $lesson,
         ]);
-        // return DevelopmentController::f(
-        //     "creating",
-        //     $lesson->title,
-        //     $composeDirectoryPath,
-        //     $lesson->host_app_directory_path,
-        //     $lesson->container_app_directory_path,
-        //     $lesson->container_logs_directory_path,
-        //     Path::append($lesson->host_logs_directory_path, "app_changes.txt"),  // TODO: ファイル名まで含めてDBに保存する,
-        //     ["lesson" => $lesson]
-        // );
     }
 
     public function learning(Request $request): Renderable
@@ -165,12 +159,31 @@ class DevelopmentController extends Controller
         /****************/
     }
 
-    public function unload($lessonId)
+    public function down(Request $request)
     {
-        $lesson = Lesson::find($lessonId);
-        exec("cd $lesson->compose_directory_path && docker-compose down");
-        $lesson->preview_port_number = null;
-        $lesson->console_port_number = null;
-        $lesson->save();
+        $request->validate([
+            "mode" => "required",
+            "lesson_id" => "required",
+        ]);
+        if (($request->has("user_id") && !$request->has("material_id")) || (!$request->has("user_id") && $request->has("material_id"))) {
+            return;
+        }
+        $lesson = Lesson::find($request->lesson_id);
+        if ($request->has("user_id") && $request->has("material_id")) {
+            $lessonDirectoryPath = Path::purchasedLesson($request->user_id, $request->material_id, $lesson->id, "");
+        } else {
+            $lessonDirectoryPath = Path::lesson($lesson->id);
+        }
+        if (!is_null($lesson->docker_container_id)) {
+            $dockerImageName = uniqid();
+            exec("docker container commit $lesson->docker_container_id $dockerImageName");
+            exec("docker container kill $lesson->docker_container_id");
+            exec("docker container rm $lesson->docker_container_id");
+            exec("docker image rm $lesson->docker_image_name");
+            file_put_contents(Path::append($lessonDirectoryPath, "Dockerfile"), "FROM $dockerImageName");
+            $lesson->docker_container_id = null;
+            $lesson->docker_image_name = $dockerImageName;
+            $lesson->save();
+        }
     }
 }
