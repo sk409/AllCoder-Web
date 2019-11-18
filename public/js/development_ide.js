@@ -1914,6 +1914,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1962,6 +1991,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
+      activeConsoleIndex: 0,
+      consoleCount: 1,
       sourceCodeEditorContextMenu: {
         isShown: false,
         startIndex: 0,
@@ -1975,31 +2006,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   created: function created() {
-    // axios.post("/development/down", {
-    //   mode: this.mode,
-    //   lesson_id: this.lesson.id
-    // });
-    // onunload = function() {
-    // axios.post("/development/down", {
-    //   mode: this.mode,
-    //   lesson_id: this.lesson.id
-    // });
-    // };
-    // $.ajax({
-    //   url: "/development/down",
-    //   type: "POST",
-    //   dataType: "json",
-    //   data: { mode: this.mode, lesson_id: this.lesson.id },
-    //   async: false
-    // });
-    // axios
-    //   .post("/development/down", {
-    //     mode: this.mode,
-    //     lesson_id: this.lesson.id
-    //   })
-    //   .then(response => {
-    //     console.log(response.data);
-    //   });
     var that = this;
 
     window.onbeforeunload = function (e) {
@@ -2014,12 +2020,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           lesson_id: that.lesson.id
         },
         async: false
-      }); // e.preventDefault();
-      // await axios.post("/development/down", {
-      //   mode: this.mode,
-      //   lesson_id: this.lesson.id
-      // });
-      //e.returnValue = "本当にページを閉じますか？";
+      });
     };
   },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapMutations"])(["setSourceCodeEditor"]), {
@@ -2033,8 +2034,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     hideSourceCodeEditorContextMenu: function hideSourceCodeEditorContextMenu() {
       this.sourceCodeEditorContextMenu.isShown = false;
     },
-    handleDropdownCommand: function handleDropdownCommand(command) {
+    handlePortDropdownCommand: function handlePortDropdownCommand(command) {
       open("http://localhost:".concat(command));
+    },
+    handleConsoleDropdownCommand: function handleConsoleDropdownCommand(command) {
+      this.activeConsoleIndex = command;
+    },
+    addConsole: function addConsole() {
+      ++this.consoleCount;
+      this.activeConsoleIndex = this.consoleCount - 1;
+    },
+    isActiveConsole: function isActiveConsole(consoleId) {
+      return this.activeConsoleIndex === consoleId - 1;
     }
   })
 });
@@ -3161,7 +3172,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n#development-ide[data-v-717c32c7] {\n  height: 100%;\n  overflow: hidden;\n}\n#development-header[data-v-717c32c7] {\n  height: 10%;\n}\n#development-body[data-v-717c32c7] {\n  display: flex;\n  height: 90%;\n}\n#file-tree-view[data-v-717c32c7] {\n  width: 20%;\n  height: 100%;\n}\n#file-tree[data-v-717c32c7] {\n  overflow: scroll;\n  white-space: nowrap;\n  padding-bottom: 16px;\n  height: 100%;\n}\n#center-view[data-v-717c32c7] {\n  width: 80%;\n  height: 100%;\n}\n#source-code-editor[data-v-717c32c7] {\n  width: 100%;\n  height: 60%;\n}\n#console[data-v-717c32c7] {\n  border: none;\n  width: 100%;\n  height: 40%;\n}\n/* \n// #file-tree-context-menu,\n// #source-code-editor-context-menu {\n//   position: absolute;\n// }\n\n// .file-creation-view-button {\n//   width: $file-creation-view-button-width;\n//   margin-left: $file-creation-view-component-margin;\n// }\n\n// .file-creation-view-file-item {\n//   width: $file-creation-view-item-width;\n//   height: $file-creation-view-item-height;\n// }\n\n// #file-creation-view-header {\n//   height: 8vh;\n// }\n\n// #file-creation-view-body {\n//   height: 92vh;\n// }\n\n// #file-creation-view-file-name {\n//   width: $file-creation-view-file-name-width;\n// }\n\n// #file-creation-view {\n//   width: $file-creation-view-width;\n//   height: $file-creation-view-height;\n//   padding: 0 $file-creation-view-margin;\n//   position: absolute;\n//   left: 50%;\n//   top: 50%;\n//   transform: translate(-50%, -50%);\n// }\n\n// .source-code-editor-context-menu-button,\n// .source-code-editor-context-menu-option-button {\n//   display: block;\n//   width: 100%;\n// } */\n", ""]);
+exports.push([module.i, "\n#development-ide[data-v-717c32c7] {\n  height: 100%;\n  overflow: hidden;\n}\n#development-header[data-v-717c32c7] {\n  height: 10%;\n}\n#development-body[data-v-717c32c7] {\n  display: flex;\n  height: 90%;\n}\n#file-tree-view[data-v-717c32c7] {\n  width: 20%;\n  height: 100%;\n}\n#file-tree[data-v-717c32c7] {\n  overflow: scroll;\n  white-space: nowrap;\n  padding-bottom: 16px;\n  height: 100%;\n}\n#center-view[data-v-717c32c7] {\n  width: 80%;\n  height: 100%;\n}\n#source-code-editor[data-v-717c32c7] {\n  width: 100%;\n  height: 60%;\n}\n#console-tool-bar[data-v-717c32c7] {\n  height: 8%;\n}\n#console-container[data-v-717c32c7] {\n  position: relative;\n}\n.console[data-v-717c32c7] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  border: none;\n  width: 100%;\n  height: 32%;\n}\n.active-console[data-v-717c32c7] {\n  z-index: 1;\n}\n/* \n// #file-tree-context-menu,\n// #source-code-editor-context-menu {\n//   position: absolute;\n// }\n\n// .file-creation-view-button {\n//   width: $file-creation-view-button-width;\n//   margin-left: $file-creation-view-component-margin;\n// }\n\n// .file-creation-view-file-item {\n//   width: $file-creation-view-item-width;\n//   height: $file-creation-view-item-height;\n// }\n\n// #file-creation-view-header {\n//   height: 8vh;\n// }\n\n// #file-creation-view-body {\n//   height: 92vh;\n// }\n\n// #file-creation-view-file-name {\n//   width: $file-creation-view-file-name-width;\n// }\n\n// #file-creation-view {\n//   width: $file-creation-view-width;\n//   height: $file-creation-view-height;\n//   padding: 0 $file-creation-view-margin;\n//   position: absolute;\n//   left: 50%;\n//   top: 50%;\n//   transform: translate(-50%, -50%);\n// }\n\n// .source-code-editor-context-menu-button,\n// .source-code-editor-context-menu-option-button {\n//   display: block;\n//   width: 100%;\n// } */\n", ""]);
 
 // exports
 
@@ -4825,7 +4836,7 @@ var render = function() {
         [
           _c(
             "div",
-            { staticClass: "d-flex p-3" },
+            { staticClass: "d-flex align-items-center p-3" },
             [
               _c("h3", [_vm._v(_vm._s(_vm.title))]),
               _vm._v(" "),
@@ -4855,7 +4866,7 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "el-dropdown",
-                { on: { command: _vm.handleDropdownCommand } },
+                { on: { command: _vm.handlePortDropdownCommand } },
                 [
                   _c("span", { staticClass: "el-dropdown-link" }, [
                     _vm._v("\n          ポート\n          "),
@@ -4912,12 +4923,74 @@ var render = function() {
               }
             }),
             _vm._v(" "),
-            _c("iframe", {
-              attrs: {
-                id: "console",
-                src: "http://localhost:" + _vm.consolePort
-              }
-            })
+            _c("div", { staticClass: "h-100", attrs: { id: "console-view" } }, [
+              _c(
+                "div",
+                {
+                  staticClass: "d-flex align-items-center p-2",
+                  attrs: { id: "console-tool-bar" }
+                },
+                [
+                  _c("div", { staticClass: "ml-auto" }, [
+                    _c("i", {
+                      staticClass: "el-icon-plus",
+                      on: { click: _vm.addConsole }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("el-divider", { attrs: { direction: "vertical" } }),
+                  _vm._v(" "),
+                  _c(
+                    "el-dropdown",
+                    { on: { command: _vm.handleConsoleDropdownCommand } },
+                    [
+                      _c("span", { staticClass: "el-dropdown-link" }, [
+                        _vm._v(
+                          "\n              コンソール: " +
+                            _vm._s(_vm.activeConsoleIndex) +
+                            "\n              "
+                        ),
+                        _c("i", {
+                          staticClass: "el-icon-arrow-down el-icon--right"
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "el-dropdown-menu",
+                        { attrs: { slot: "dropdown" }, slot: "dropdown" },
+                        _vm._l(_vm.consoleCount, function(consoleId) {
+                          return _c(
+                            "el-dropdown-item",
+                            {
+                              key: consoleId,
+                              attrs: { command: consoleId - 1 }
+                            },
+                            [_vm._v(_vm._s(consoleId - 1))]
+                          )
+                        }),
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "h-100", attrs: { id: "console-container" } },
+                _vm._l(_vm.consoleCount, function(consoleId) {
+                  return _c("iframe", {
+                    key: consoleId,
+                    staticClass: "console",
+                    class: { "active-console": _vm.isActiveConsole(consoleId) },
+                    attrs: { src: "http://localhost:" + _vm.consolePort }
+                  })
+                }),
+                0
+              )
+            ])
           ],
           1
         )
