@@ -142,6 +142,20 @@ export default {
   },
   created() {
     const that = this;
+    setTimeout(function() {
+      console.log("setTimeout");
+      axios
+        .post("/malware_scan", { lesson_id: that.lesson.id })
+        .then(response => {
+          console.log("RESULT: " + response.data);
+          response.data.forEach(removedFile => {
+            that.$notify.error({
+              title: "マルウェアを削除しました",
+              message: removedFile
+            });
+          });
+        });
+    }, 30000);
     window.onbeforeunload = function(e) {
       const token = document
         .querySelector('meta[name="csrf-token"]')

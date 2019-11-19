@@ -60,4 +60,6 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::get("file_delta", "FileDeltaController@delta")->name("file_delta.delta");
 
     Route::put("lesson_ratings", "LessonRatingsController@update")->name("lesson_ratings.update");
+
+    Route::post("malware_scan", "MalwareScanController@scan")->name("malware_scan.scan");
 });

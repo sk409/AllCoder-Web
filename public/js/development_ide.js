@@ -1993,6 +1993,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   created: function created() {
     var that = this;
+    setTimeout(function () {
+      console.log("setTimeout");
+      axios__WEBPACK_IMPORTED_MODULE_5___default.a.post("/malware_scan", {
+        lesson_id: that.lesson.id
+      }).then(function (response) {
+        console.log("RESULT: " + response.data);
+        response.data.forEach(function (removedFile) {
+          that.$notify.error({
+            title: "マルウェアを削除しました",
+            message: removedFile
+          });
+        });
+      });
+    }, 30000);
 
     window.onbeforeunload = function (e) {
       var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
