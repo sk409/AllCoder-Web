@@ -7,11 +7,9 @@ use App\Http\Requests\LessonCreationRequest;
 use App\Lesson;
 use App\LessonPort;
 use App\Path;
-use App\Utils\FileUtils;
 use Auth;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 
 class LessonsController extends Controller
 {
@@ -48,10 +46,16 @@ class LessonsController extends Controller
         $parameters["docker_image_name"] = uniqid();
         $lesson = Lesson::create($parameters);
         $lessonDirectoryPath = Path::lesson("$lesson->id");
+        $dockerDirectoryPath = Path::append($lessonDirectoryPath, "docker");
         mkdir($lessonDirectoryPath);
+        mkdir(Path::lessonQuestion($lesson->id));
+        mkdir($dockerDirectoryPath);
         $ports = $request->has("ports") ? $request->ports : [];
         $ports[] = $request->console_port;
         foreach ($ports as $port) {
+            if (!$port) {
+                continue;
+            }
             LessonPort::create(["port" => $port, "lesson_id" => $lesson->id]);
         }
         $environmentBuilder = new EnvironmentBuilder($request->username, $request->os, $ports);
@@ -61,7 +65,6 @@ class LessonsController extends Controller
             foreach ($request->environments as $environment) {
                 $exploded = explode(": ", $environment);
                 $version = end($exploded);
-                echo $version;
                 if (substr($environment, 0, strlen($laravel)) === $laravel) {
                     $environmentBuilder->laravel($version);
                 } else if (substr($environment, 0, strlen($mysql)) === $mysql) {
@@ -80,40 +83,18 @@ class LessonsController extends Controller
             }
         }
         $environmentBuilder->end();
-        $environmentBuilder->write($lessonDirectoryPath);
+        $environmentBuilder->write($dockerDirectoryPath);
+        $dockerImageName = uniqid();
+        exec("docker image build -t $dockerImageName $dockerDirectoryPath");
+        $outputs = [];
+        exec("docker container run -itd $dockerImageName", $outputs);
+        $dockerContainerId = $outputs[0];
+        $tarFilePath = Path::append($lessonDirectoryPath, "container.tar");
+        exec("docker container kill $dockerContainerId");
+        exec("docker container export $dockerContainerId > $tarFilePath");
+        exec("docker container rm $dockerContainerId");
+        exec("docker image rm -f $dockerImageName");
         return redirect("/development/creating/{$lesson->id}");
-        //return $request->all();
-
-        // $parameters = $request->all();
-        // $parameters["book"] = "";
-        // $lesson = Lesson::create($parameters);
-        // $lessonDirectoryPath = Path::lesson("$lesson->id");
-        // mkdir($lessonDirectoryPath);
-        // FileUtils::copy(Path::dockerDevelopment(), $lessonDirectoryPath);
-        // $originalPath = Path::lessonOriginals(Path::append("Laravel", "5.8"));
-        // $hostAppDirectoryPath = Path::append($lessonDirectoryPath, "app");
-        // mkdir($hostAppDirectoryPath);
-        // FileUtils::copy($originalPath, $hostAppDirectoryPath);
-        // $optionsDirectoryPath = Path::append($lessonDirectoryPath, "options");
-        // mkdir($optionsDirectoryPath);
-        // $containerAppDirectoryPath = "/opt/app";
-        // $containerLogsDirectoryPath = "/etc/ProMark/logs";
-        // $dataDirectoryPath = Path::append($lessonDirectoryPath, "data");
-        // $hostLogsDirectoryPath = Path::append($lessonDirectoryPath, "logs");
-        // File::put(
-        //     Path::append($lessonDirectoryPath, ".env"),
-        //     "HOST_DATA_DIRECTORY_PATH=$dataDirectoryPath\nHOST_APP_DIRECTORY_PATH=$hostAppDirectoryPath\nHOST_LOGS_DIRECTORY_PATH=$hostLogsDirectoryPath\nCONTAINER_APP_DIRECTORY_PATH=$containerAppDirectoryPath\nCONTAINER_LOGS_DIRECTORY_PATH=$containerLogsDirectoryPath"
-        // );
-        // exec("cd $lessonDirectoryPath && docker-compose build");
-        // $lesson->host_app_directory_path = $hostAppDirectoryPath;
-        // $lesson->host_logs_directory_path = $hostLogsDirectoryPath;
-        // $lesson->container_app_directory_path = $containerAppDirectoryPath;
-        // $lesson->container_logs_directory_path = $containerLogsDirectoryPath;
-        // $lesson->lesson_directory_path = $lessonDirectoryPath;
-        // $lesson->options_directory_path = $optionsDirectoryPath;
-        // $lesson->data_directory_path = $dataDirectoryPath;
-        // $lesson->save();
-        // return redirect("/development/creating/{$lesson->id}");
     }
 
     public function update(Request $request, int $id)

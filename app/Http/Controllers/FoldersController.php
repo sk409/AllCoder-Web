@@ -35,6 +35,7 @@ class FoldersController extends Controller
             if (in_array($child, [".", ".."])) {
                 continue;
             }
+            // TODO: シンボリックリンクに対応する(現状は全てフォルダとして扱っている)
             $isDir = in_array(substr($fileInfos[$index], 0, 1), ["d", "l"], true);
             $newPath = $request->root === "/" ? "/$child" : "$request->root/$child";
             if ($isDir) {

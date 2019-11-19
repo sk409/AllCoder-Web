@@ -37,9 +37,11 @@ EOM;
         $this->dockerfile .= "USER $this->user";
     }
 
-    public function write(string $dir, string $filename = "Dockerfile")
+    public function write(string $dir, string $filename = "Dockerfile"): string
     {
-        file_put_contents(Path::append($dir, $filename), $this->dockerfile);
+        $dockerfilePath = Path::append($dir, $filename);
+        file_put_contents($dockerfilePath, $this->dockerfile);
+        return $dockerfilePath;
     }
 
     public function laravel(string $version): EnvironmentBuilder

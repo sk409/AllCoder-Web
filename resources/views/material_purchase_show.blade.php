@@ -14,7 +14,8 @@
 <div v-loading.fullscreen.lock="loading" element-loading-text="Loading..."
     element-loading-background="rgba(0, 0, 0, 0.8)" id="material-purchase-show" class="container pb-5">
     <div id="material-thumbnail-and-details" class="d-flex mt-3">
-        <img id="material-thumbnail-image" src="{{url($material->thumbnail_image_path)}}">
+        <img id="material-thumbnail-image"
+            src="{{url($material->thumbnail_image_path ? $material->thumbnail_image_path : 'storage/no-image.png')}}">
         <div class="flex-grow-1 ml-4">
             <h3 id="material-title" class="mb-1">{{$material->title}}</h3>
             <el-rate :value="{{$material->rating}}" :allow-half="true" class="mb-1" disabled></el-rate>
@@ -38,7 +39,8 @@
     <hr>
     <div id="material-author" class="d-flex">
         <div id="material-author-profile-image-container">
-            <img id="material-author-profile-image" src="{{url($material->user->profile_image_path)}}">
+            <img id="material-author-profile-image"
+                src="{{url($material->user->profile_image_path ? $material->user->profile_image_path : 'storage/no-image.png')}}">
         </div>
         <div>
             <div>{{$material->user->name}}</div>

@@ -45,6 +45,11 @@ class Path
         return storage_path("app/lessons/$path");
     }
 
+    public static function lessonQuestion($lessonId, string $path = ""): string
+    {
+        return Path::lesson(Path::append($lessonId, Path::append("questions", $path)));
+    }
+
     public static function lessonOriginals($path): string
     {
         return Path::lesson(Path::append("originals", $path));

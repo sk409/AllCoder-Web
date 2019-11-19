@@ -448,6 +448,7 @@ new Vue({
       axios.post(url, {
         user_id: userId
       }).then(function (response) {
+        console.log(response);
         that.loading = false;
 
         if (response.status === 200) {

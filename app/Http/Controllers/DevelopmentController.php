@@ -68,12 +68,25 @@ class DevelopmentController extends Controller
     public function creating(int $id)
     {
         $lesson = Lesson::find($id);
-        $lessonDirectoryPath = Path::lesson($lesson->id);
         $mode = "creating";
         if (is_null($lesson->docker_container_id)) {
-            exec("docker image build -t $lesson->docker_image_name $lessonDirectoryPath");
+            // $dockerImageName = uniqid();
+            // exec("docker image build -t $dockerImageName $lessonDirectoryPath");
+            $lessonDirectoryPath = Path::lesson($lesson->id);
+            $containerTarFilePath = Path::append($lessonDirectoryPath, "container.tar");
+            $dockerImageName = uniqid();
+            exec("cat $containerTarFilePath | docker image import - $dockerImageName");
+            $dockerDirectoryPath = Path::append($lessonDirectoryPath, "docker");
+            $dockerfilePath = Path::append($dockerDirectoryPath, "Dockerfile");
+            file_put_contents($dockerfilePath, "FROM $dockerImageName");
+            $dockerImageName2 = uniqid();
+            exec("docker image build -t $dockerImageName2 $dockerDirectoryPath");
+            $portString = "";
+            foreach ($lesson->ports as $port) {
+                $portString .= "-p $port->port ";
+            }
             $outputs = [];
-            exec("docker container run -itd -P $lesson->docker_image_name", $outputs);
+            exec("docker container run -itd $portString $dockerImageName2 /bin/bash", $outputs);
             $containerID = $outputs[0];
             // TODO: MySQLが選択されている場合にだけ実行する
             exec("docker container exec -itd $containerID find /var/lib/mysql -type f -exec touch {} \;");
@@ -175,14 +188,22 @@ class DevelopmentController extends Controller
             $lessonDirectoryPath = Path::lesson($lesson->id);
         }
         if (!is_null($lesson->docker_container_id)) {
-            $dockerImageName = uniqid();
-            exec("docker container commit $lesson->docker_container_id $dockerImageName");
+            $tarFilePath = Path::append($lessonDirectoryPath, "container.tar");
+            exec("docker container export $lesson->docker_container_id > $tarFilePath");
+            $outputs = [];
+            exec("docker container inspect --format={{.Image}} $lesson->docker_container_id", $outputs);
+            $oldDockerImageId = $outputs[0];
             exec("docker container kill $lesson->docker_container_id");
             exec("docker container rm $lesson->docker_container_id");
-            exec("docker image rm $lesson->docker_image_name");
-            file_put_contents(Path::append($lessonDirectoryPath, "Dockerfile"), "FROM $dockerImageName");
+            $outputs = [];
+            exec("docker image inspect --format={{.RepoTags}} $oldDockerImageId", $outputs);
+            $matches = [];
+            preg_match_all("/([a-z0-9]+):latest/u", $outputs[0], $matches);
+            for ($index = 0; $index < count($matches[1]); ++$index) {
+                $oldDockerImageName = $matches[1][$index];
+                exec("docker image rm -f $oldDockerImageName");
+            }
             $lesson->docker_container_id = null;
-            $lesson->docker_image_name = $dockerImageName;
             $lesson->save();
         }
     }
