@@ -78,7 +78,11 @@ class DevelopmentController extends Controller
             exec("cat $containerTarFilePath | docker image import - $dockerImageName");
             $dockerDirectoryPath = Path::append($lessonDirectoryPath, "docker");
             $dockerfilePath = Path::append($dockerDirectoryPath, "Dockerfile");
-            file_put_contents($dockerfilePath, "FROM $dockerImageName");
+            // TODO: レッスンからユーザ名を取得する
+            $dockerfileText = <<<EOM
+FROM $dockerImageName
+EOM;
+            file_put_contents($dockerfilePath, $dockerfileText);
             $dockerImageName2 = uniqid();
             exec("docker image build -t $dockerImageName2 $dockerDirectoryPath");
             $portString = "";
@@ -86,10 +90,11 @@ class DevelopmentController extends Controller
                 $portString .= "-p $port->port ";
             }
             $outputs = [];
-            exec("docker container run -itd $portString $dockerImageName2 /bin/bash", $outputs);
+            exec("docker container run -d --privileged $portString $dockerImageName2 /sbin/init", $outputs);
             $containerID = $outputs[0];
             // TODO: MySQLが選択されている場合にだけ実行する
-            exec("docker container exec -itd $containerID find /var/lib/mysql -type f -exec touch {} \;");
+            exec("docker container exec -it $containerID find /var/lib/mysql -type f -exec touch {} \;");
+            exec("docker container exec -it --user root $containerID systemctl start clamd@scan");
             exec("docker container exec -itd $containerID gotty -w -p $lesson->console_port bash");
         } else {
             $containerID = $lesson->docker_container_id;

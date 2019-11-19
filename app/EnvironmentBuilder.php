@@ -15,21 +15,29 @@ class EnvironmentBuilder
         $this->user = $user;
         $this->dockerfile .= "FROM $os\n";
         $this->dockerfile .= "RUN useradd $user\n";
-        $this->dockerfile .= <<<EOM
-RUN yum -y install wget \
+        $this->dockerfile .= <<<'EOM'
+RUN yum -y install epel-release \
+    && echo -e "[epel]\nname=Extra Packages for Enterprise Linux 7 - \$basearch\n#baseurl=http://download.fedoraproject.org/pub/epel/7/\$basearch\nmirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=\$basearch\nfailovermethod=priority\nenabled=0\ngpgcheck=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7" > etc/yum.repos.d/epel.repo \
+    && yum -y install --enablerepo=epel clamav-server clamav-data clamav-update clamav-filesystem clamav clamav-scanner clamav-scanner-systemd clamav-devel clamav-lib clamav-server-systemd \
+    && echo -e "LogFile /var/log/clamd.scan\nLogFileMaxSize 2M\nLogTime yes\nLogSyslog yes\nLogRotate yes\nLocalSocket /var/run/clamd.scan/clamd.sock\nFixStaleSocket yes\nExcludePath ^/proc/\nExcludePath ^/sys/\nExcludePath ^/dev/\nUser root" > /etc/clamd.d/scan.conf \
+    && echo -e "UpdateLogFile /var/log/freshclam.log\nLogFileMaxSize 2M\nLogTime yes\nLogSyslog yes\nLogRotate yes\nDatabaseOwner root\nDatabaseMirror db.jp.clamav.net\nNotifyClamd /etc/clamd.d/scan.conf" > /etc/freshclam.conf \
+    && freshclam -u root \
+    && ln -s /etc/clamd.d/scan.conf /etc/clamd.conf \
+    && yum -y install wget \
     && wget -qO- https://github.com/yudai/gotty/releases/download/v0.0.12/gotty_linux_amd64.tar.gz | tar zx -C /usr/local/bin/ \
-    && yum -y remove wget\n
+    && yum -y remove wget
+
 EOM;
-        if ($ports) {
-            $this->dockerfile .= "EXPOSE";
-            foreach ($ports as $port) {
-                if (is_numeric($port) && is_int($port)) {
-                    continue;
-                }
-                $this->dockerfile .= " $port";
-            }
-            $this->dockerfile .= "\n";
-        }
+        // if ($ports) {
+        //     $this->dockerfile .= "EXPOSE";
+        //     foreach ($ports as $port) {
+        //         if (is_numeric($port) && is_int($port)) {
+        //             continue;
+        //         }
+        //         $this->dockerfile .= " $port";
+        //     }
+        //     $this->dockerfile .= "\n";
+        // }
     }
 
     public function end()
@@ -50,9 +58,8 @@ EOM;
         switch ($version) {
             case "5.7":
                 $this->dockerfile .= <<<EOM
-RUN yum install -y epel-release \
-    && rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm \
-    && yum install -y --enablerepo=remi,remi-php73 php php-devel php-mbstring php-pdo php-gd php-xml php-mcrypt php-pecl-zip php-mysqlnd \
+RUN rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm \
+    && yum install -y --enablerepo=remi,remi-php73,epel php php-devel php-mbstring php-pdo php-gd php-xml php-mcrypt php-pecl-zip php-mysqlnd \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && composer global require "laravel/installer"\n
