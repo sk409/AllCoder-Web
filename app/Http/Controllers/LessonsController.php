@@ -43,7 +43,7 @@ class LessonsController extends Controller
         ]);
         $parameters = $request->all();
         $parameters["book"] = "";
-        $parameters["docker_image_name"] = uniqid();
+        $parameters["user_name"] = $request->username;
         $lesson = Lesson::create($parameters);
         $lessonDirectoryPath = Path::lesson("$lesson->id");
         $dockerDirectoryPath = Path::append($lessonDirectoryPath, "docker");

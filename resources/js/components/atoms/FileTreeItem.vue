@@ -31,7 +31,7 @@
         :item="child"
         :key="child.path"
         :is-file="false"
-        :lesson-id="lessonId"
+        :docker-container-id="dockerContainerId"
       ></file-tree-item>
       <file-tree-item
         v-show="isExpanded"
@@ -39,7 +39,7 @@
         :item="child"
         :key="child.path"
         :is-file="true"
-        :lesson-id="lessonId"
+        :docker-container-id="dockerContainerId"
       ></file-tree-item>
     </div>
   </div>
@@ -60,8 +60,8 @@ export default {
       type: Boolean,
       required: true
     },
-    lessonId: {
-      type: Number,
+    dockerContainerId: {
+      type: String,
       required: true
     }
   },
@@ -94,7 +94,7 @@ export default {
         File.index(
           {
             path: this.item.path,
-            lesson_id: this.lessonId
+            docker_container_id: this.dockerContainerId
           },
           response => {
             if (response.data === "Permission denied") {
@@ -104,7 +104,11 @@ export default {
               });
             } else {
               that.setEditedFile(
-                new File(that.item.path, response.data.text, that.lessonId)
+                new File(
+                  that.item.path,
+                  response.data.text,
+                  that.dockerContainerId
+                )
               );
             }
           }
@@ -113,7 +117,7 @@ export default {
         this.isExpanded = !this.isExpanded;
         if (this.isExpanded) {
           const that = this;
-          const url = `/folders/children?lesson_id=${this.lessonId}&root=${this.item.path}`;
+          const url = `/folders/children?docker_container_id=${this.dockerContainerId}&root=${this.item.path}`;
           axios.get(url).then(response => {
             if (response.data === "Permission denied") {
               that.$notify.error({

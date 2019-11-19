@@ -1929,6 +1929,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -1939,9 +1940,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   name: "DevelopmentIde",
   store: _stores_development_js__WEBPACK_IMPORTED_MODULE_0__["default"],
   props: {
+    user: {
+      type: Object
+    },
+    material: {
+      type: Object
+    },
     lesson: {
-      type: Object,
-      required: true
+      type: Object
+    },
+    info: {
+      type: Object
     },
     mode: {
       type: String,
@@ -1991,40 +2000,65 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     };
   },
+  computed: {
+    dockerContainerId: function dockerContainerId() {
+      return this.mode === "creating" ? this.lesson.docker_container_id : this.info.docker_container_id;
+    }
+  },
   created: function created() {
     var that = this;
-    setTimeout(function () {
-      console.log("setTimeout");
-      axios__WEBPACK_IMPORTED_MODULE_5___default.a.post("/malware_scan", {
-        lesson_id: that.lesson.id
-      }).then(function (response) {
-        console.log("RESULT: " + response.data);
-        response.data.forEach(function (removedFile) {
-          that.$notify.error({
-            title: "マルウェアを削除しました",
-            message: removedFile
-          });
+    axios__WEBPACK_IMPORTED_MODULE_5___default.a.post("/malware_scan", {
+      docker_container_id: that.dockerContainerId
+    }).then(function (response) {
+      console.log(response);
+      response.data.forEach(function (removedFile) {
+        that.$notify.error({
+          title: "マルウェアを削除しました",
+          message: removedFile
         });
       });
-    }, 30000);
+    }); // setTimeout(function() {
+    //   axios
+    //     .post("/malware_scan", { docker_container_id: that.dockerContainerId })
+    //     .then(response => {
+    //       response.data.forEach(removedFile => {
+    //         that.$notify.error({
+    //           title: "マルウェアを削除しました",
+    //           message: removedFile
+    //         });
+    //       });
+    //     });
+    // }, 30000);
 
     window.onbeforeunload = function (e) {
       var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+      var data = that.mode === "creating" ? {
+        _token: token,
+        mode: that.mode,
+        lesson_id: that.lesson.id
+      } : {
+        _token: token,
+        mode: that.mode,
+        user_id: that.user.id,
+        material_id: that.material.id,
+        lesson_id: that.lesson.id,
+        info: JSON.stringify(that.info)
+      };
       $.ajax({
         url: "/development/down",
         type: "POST",
         dataType: "json",
-        data: {
-          _token: token,
-          mode: that.mode,
-          lesson_id: that.lesson.id
-        },
+        data: data,
         async: false
       });
     };
   },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapMutations"])(["setSourceCodeEditor"]), {
     showSourceCodeEditorContextMenu: function showSourceCodeEditorContextMenu(x, y, startIndex, endIndex) {
+      if (this.mode === "learning") {
+        return;
+      }
+
       this.sourceCodeEditorContextMenu.isShown = true;
       this.sourceCodeEditorContextMenu.style.left = x + "px";
       this.sourceCodeEditorContextMenu.style.top = y + "px";
@@ -2131,8 +2165,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       type: Boolean,
       required: true
     },
-    lessonId: {
-      type: Number,
+    dockerContainerId: {
+      type: String,
       required: true
     }
   },
@@ -2169,7 +2203,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var that = this;
         _models_file__WEBPACK_IMPORTED_MODULE_2__["default"].index({
           path: this.item.path,
-          lesson_id: this.lessonId
+          docker_container_id: this.dockerContainerId
         }, function (response) {
           if (response.data === "Permission denied") {
             that.$notify.error({
@@ -2177,7 +2211,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               message: "このファイルへのアクセス権限がありません"
             });
           } else {
-            that.setEditedFile(new _models_file__WEBPACK_IMPORTED_MODULE_2__["default"](that.item.path, response.data.text, that.lessonId));
+            that.setEditedFile(new _models_file__WEBPACK_IMPORTED_MODULE_2__["default"](that.item.path, response.data.text, that.dockerContainerId));
           }
         });
       } else {
@@ -2186,7 +2220,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (this.isExpanded) {
           var _that = this;
 
-          var url = "/folders/children?lesson_id=".concat(this.lessonId, "&root=").concat(this.item.path);
+          var url = "/folders/children?docker_container_id=".concat(this.dockerContainerId, "&root=").concat(this.item.path);
           axios.get(url).then(function (response) {
             if (response.data === "Permission denied") {
               _that.$notify.error({
@@ -3020,8 +3054,8 @@ __webpack_require__.r(__webpack_exports__);
     //   type: String,
     //   required: true
     // }
-    lessonId: {
-      type: Number,
+    dockerContainerId: {
+      type: String,
       required: true
     }
   },
@@ -3043,7 +3077,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     fetchChildren: function fetchChildren() {
       var that = this;
-      var url = "/folders/children?lesson_id=".concat(this.lessonId, "&root=").concat(this.rootPath);
+      var url = "/folders/children?docker_container_id=".concat(this.dockerContainerId, "&root=").concat(this.rootPath);
       axios.get(url).then(function (response) {
         if (response.data === "Permission denied") {
           that.$notify.error({
@@ -4242,7 +4276,10 @@ var render = function() {
         { attrs: { id: "development-body" } },
         [
           _c("file-tree", {
-            attrs: { id: "file-tree-view", "lesson-id": _vm.lesson.id }
+            attrs: {
+              id: "file-tree-view",
+              "docker-container-id": _vm.dockerContainerId
+            }
           }),
           _vm._v(" "),
           _c(
@@ -4341,24 +4378,26 @@ var render = function() {
         1
       ),
       _vm._v(" "),
-      _c("source-code-editor-context-menu", {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: _vm.sourceCodeEditorContextMenu.isShown,
-            expression: "sourceCodeEditorContextMenu.isShown"
-          }
-        ],
-        style: _vm.sourceCodeEditorContextMenu.style,
-        attrs: {
-          id: "source-code-editor-context-menu",
-          "start-index": _vm.sourceCodeEditorContextMenu.startIndex,
-          "end-index": _vm.sourceCodeEditorContextMenu.endIndex,
-          "lesson-id": _vm.lesson.id
-        },
-        on: { hide: _vm.hideSourceCodeEditorContextMenu }
-      })
+      _vm.mode === "creating"
+        ? _c("source-code-editor-context-menu", {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.sourceCodeEditorContextMenu.isShown,
+                expression: "sourceCodeEditorContextMenu.isShown"
+              }
+            ],
+            style: _vm.sourceCodeEditorContextMenu.style,
+            attrs: {
+              id: "source-code-editor-context-menu",
+              "start-index": _vm.sourceCodeEditorContextMenu.startIndex,
+              "end-index": _vm.sourceCodeEditorContextMenu.endIndex,
+              "lesson-id": _vm.lesson.id
+            },
+            on: { hide: _vm.hideSourceCodeEditorContextMenu }
+          })
+        : _vm._e()
     ],
     1
   )
@@ -4410,7 +4449,7 @@ var render = function() {
                 attrs: {
                   item: child,
                   "is-file": false,
-                  "lesson-id": _vm.lessonId
+                  "docker-container-id": _vm.dockerContainerId
                 }
               })
             }),
@@ -4429,7 +4468,7 @@ var render = function() {
                 attrs: {
                   item: child,
                   "is-file": true,
-                  "lesson-id": _vm.lessonId
+                  "docker-container-id": _vm.dockerContainerId
                 }
               })
             })
@@ -4673,7 +4712,7 @@ var render = function() {
                   attrs: {
                     item: child,
                     "is-file": false,
-                    "lesson-id": _vm.lessonId
+                    "docker-container-id": _vm.dockerContainerId
                   },
                   on: { "show-context-menu": _vm.onShowContextMenu }
                 })
@@ -4685,7 +4724,7 @@ var render = function() {
                   attrs: {
                     item: child,
                     "is-file": true,
-                    "lesson-id": _vm.lessonId
+                    "docker-container-id": _vm.dockerContainerId
                   },
                   on: { "show-context-menu": _vm.onShowContextMenu }
                 })
@@ -6378,7 +6417,7 @@ function (_Model) {
     }
   }]);
 
-  function File(path, text, lessonId) {
+  function File(path, text, dockerContainerId) {
     var _this;
 
     _classCallCheck(this, File);
@@ -6386,7 +6425,7 @@ function (_Model) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(File).call(this, File.baseRoute()));
     _this.path = path;
     _this.text = text;
-    _this.lessonId = lessonId; // this.isNameEditable = false;
+    _this.dockerContainerId = dockerContainerId; // this.isNameEditable = false;
 
     return _this;
   }
@@ -6397,7 +6436,7 @@ function (_Model) {
       return {
         path: this.path,
         text: this.text,
-        lesson_id: this.lessonId
+        docker_container_id: this.dockerContainerId
       };
     }
   }, {
@@ -6428,12 +6467,12 @@ function (_Model) {
       this._text = value;
     }
   }, {
-    key: "lessonId",
+    key: "dockerContainerId",
     get: function get() {
-      return this._lessonId;
+      return this._dockerContainerId;
     },
     set: function set(value) {
-      this._lessonId = value;
+      this._dockerContainerId = value;
     } // get isNameEditable() {
     //     return this._isNameEditable;
     // }

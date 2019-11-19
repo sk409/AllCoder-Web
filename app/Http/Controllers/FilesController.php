@@ -14,11 +14,10 @@ class FilesController extends Controller
     {
         $request->validate([
             "path" => "required",
-            "lesson_id" => "required",
+            "docker_container_id" => "required",
         ]);
-        $lesson = Lesson::find($request->lesson_id);
         $outputs = [];
-        exec("docker container exec -it $lesson->docker_container_id cat $request->path", $outputs);
+        exec("docker container exec -it $request->docker_container_id cat $request->path", $outputs);
         if (strpos($outputs[0], "Permission denied") !== false) {
             return "Permission denied";
         }
@@ -53,10 +52,12 @@ class FilesController extends Controller
         //     "text" => "required",
         //     "lesson_id" => "required"
         // ]);
-        $lesson = Lesson::find($request->lesson_id);
+        $request->validate([
+            "docker_container_id" => "required",
+        ]);
         $tmpFilePath = storage_path(uniqid());
         file_put_contents($tmpFilePath, $request->text);
-        exec("docker container cp $tmpFilePath $lesson->docker_container_id:$request->path");
+        exec("docker container cp $tmpFilePath $request->docker_container_id:$request->path");
         unlink($tmpFilePath);
         //\Illuminate\Support\Facades\File::put($request->path, $request->text, true);
     }

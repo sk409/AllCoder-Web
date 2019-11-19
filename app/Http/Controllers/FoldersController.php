@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\File;
 use App\Folder;
-use App\Lesson;
 use App\Http\Requests\FolderCreationRequest;
 use App\Utils\FileTreeBuilder;
 use Illuminate\Http\Request;
@@ -15,13 +14,12 @@ class FoldersController extends Controller
     public function children(Request $request)
     {
         $request->validate([
-            "lesson_id" => "required",
+            "docker_container_id" => "required",
             "root" => "required",
         ]);
-        $lesson = Lesson::find($request->lesson_id);
         $rootFolder = new Folder($request->root);
         $fileInfos = [];
-        exec("docker container exec -it $lesson->docker_container_id ls -la $request->root/", $fileInfos);
+        exec("docker container exec -it $request->docker_container_id ls -la $request->root/", $fileInfos);
         if (strpos($fileInfos[0], "Permission denied") !== false) {
             return "Permission denied";
         }
@@ -30,7 +28,7 @@ class FoldersController extends Controller
         }
         array_shift($fileInfos);
         $children = [];
-        exec("docker container exec -it $lesson->docker_container_id ls -1a $request->root", $children);
+        exec("docker container exec -it $request->docker_container_id ls -1a $request->root", $children);
         foreach ($children as $index => $child) {
             if (in_array($child, [".", ".."])) {
                 continue;

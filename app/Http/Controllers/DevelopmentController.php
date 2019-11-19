@@ -65,6 +65,10 @@ class DevelopmentController extends Controller
         ] + $parameters);
     }
 
+    /************/
+    // 購入時にJSONに吐き出す情報
+    // user_name, console_port, ports, container_id(自分で設定), 
+    /************/
     public function creating(int $id)
     {
         $lesson = Lesson::find($id);
@@ -81,6 +85,7 @@ class DevelopmentController extends Controller
             // TODO: レッスンからユーザ名を取得する
             $dockerfileText = <<<EOM
 FROM $dockerImageName
+USER $lesson->user_name
 EOM;
             file_put_contents($dockerfilePath, $dockerfileText);
             $dockerImageName2 = uniqid();
@@ -134,25 +139,70 @@ EOM;
         $user = User::find($request->user_id);
         $material = Material::find($request->material_id);
         $lesson = Lesson::find($request->lesson_id);
-        $composeDirectoryPath = Path::purchasedLessonWeb(
-            $request->user_id,
-            $request->material_id,
-            $request->lesson_id
-        );
-        return DevelopmentController::f(
-            "learning",
-            $lesson->title,
-            $composeDirectoryPath,
-            Path::append($composeDirectoryPath, "app"),
-            $lesson->container_app_directory_path,
-            $lesson->container_logs_directory_path,
-            Path::append(Path::append($composeDirectoryPath, "logs"), "app_changes.txt"),    // TODO: パスの指定の仕方なんとかする
-            [
-                "user" => $user,
-                "material" => $material,
-                "lesson" => $lesson
-            ]
-        );
+        // $composeDirectoryPath = Path::purchasedLessonWeb(
+        //     $request->user_id,
+        //     $request->material_id,
+        //     $request->lesson_id
+        // );
+        $mode = "learning";
+        $lessonDirectoryPathPurchased = Path::purchasedLesson($user->id, $material->id, $lesson->id, "");
+        $infoFilePath = Path::append($lessonDirectoryPathPurchased, "info.json");
+        $info = json_decode(file_get_contents($infoFilePath));
+        if (is_null($info->docker_container_id)) {
+            $containerTarFilePath = Path::append($lessonDirectoryPathPurchased, "container.tar");
+            $dockerImageName = uniqid();
+            exec("cat $containerTarFilePath | docker image import - $dockerImageName");
+            $dockerDirectoryPath = Path::append($lessonDirectoryPathPurchased, "docker");
+            // KOKOKARA
+            $dockerfilePath = Path::append($dockerDirectoryPath, "Dockerfile");
+            // TODO: レッスンからユーザ名を取得する
+            $dockerfileText = <<<EOM
+FROM $dockerImageName
+USER $info->user_name
+EOM;
+            file_put_contents($dockerfilePath, $dockerfileText);
+            $dockerImageName2 = uniqid();
+            exec("docker image build -t $dockerImageName2 $dockerDirectoryPath");
+            $portString = "";
+            foreach ($info->ports as $port) {
+                $portString .= "-p $port->port ";
+            }
+            $outputs = [];
+            exec("docker container run -d --privileged $portString $dockerImageName2 /sbin/init", $outputs);
+            $containerID = $outputs[0];
+            // TODO: MySQLが選択されている場合にだけ実行する
+            exec("docker container exec -it $containerID find /var/lib/mysql -type f -exec touch {} \;");
+            exec("docker container exec -it --user root $containerID systemctl start clamd@scan");
+            exec("docker container exec -itd $containerID gotty -w -p $info->console_port bash");
+        } else {
+            $containerID = $info->container_id;
+        }
+        $outputs = [];
+        exec("docker container port $containerID $info->console_port", $outputs);
+        preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $consolePortMatches);
+        $consolePort = $consolePortMatches[1];
+        $hostPorts = [];
+        $containerPorts = [];
+        foreach ($info->ports as $containerPort) {
+            $outputs = [];
+            exec("docker container port $containerID $containerPort", $outputs);
+            preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $portMatches);
+            $hostPorts[] = $portMatches[1];
+            $containerPorts[] = $containerPort;
+        }
+        $info->docker_container_id = $containerID;
+        file_put_contents($infoFilePath, json_encode($info));
+        return view("development_ide", [
+            "mode" => $mode,
+            "title" => $info->title,
+            "consolePort" => $consolePort,
+            "hostPorts" => $hostPorts,
+            "containerPorts" => $containerPorts,
+            "user" => $user,
+            "material" => $material,
+            "lesson" => $lesson,
+            "info" => $info
+        ]);
     }
 
     public function writing($lessonId): Renderable
@@ -183,33 +233,49 @@ EOM;
             "mode" => "required",
             "lesson_id" => "required",
         ]);
-        if (($request->has("user_id") && !$request->has("material_id")) || (!$request->has("user_id") && $request->has("material_id"))) {
-            return;
-        }
         $lesson = Lesson::find($request->lesson_id);
-        if ($request->has("user_id") && $request->has("material_id")) {
-            $lessonDirectoryPath = Path::purchasedLesson($request->user_id, $request->material_id, $lesson->id, "");
-        } else {
+        if ($request->mode === "creating") {
             $lessonDirectoryPath = Path::lesson($lesson->id);
+            $dockerContainerId = $lesson->docker_container_id;
+        } else {
+            $request->validate([
+                "user_id" => "required",
+                "material_id" => "required",
+                "info" => "required",
+            ]);
+            $lessonDirectoryPath = Path::purchasedLesson($request->user_id, $request->material_id, $lesson->id, "");
+            $info = json_decode($request->info);
+            $dockerContainerId = $info->docker_container_id;
         }
-        if (!is_null($lesson->docker_container_id)) {
-            $tarFilePath = Path::append($lessonDirectoryPath, "container.tar");
-            exec("docker container export $lesson->docker_container_id > $tarFilePath");
-            $outputs = [];
-            exec("docker container inspect --format={{.Image}} $lesson->docker_container_id", $outputs);
-            $oldDockerImageId = $outputs[0];
-            exec("docker container kill $lesson->docker_container_id");
-            exec("docker container rm $lesson->docker_container_id");
-            $outputs = [];
-            exec("docker image inspect --format={{.RepoTags}} $oldDockerImageId", $outputs);
-            $matches = [];
-            preg_match_all("/([a-z0-9]+):latest/u", $outputs[0], $matches);
-            for ($index = 0; $index < count($matches[1]); ++$index) {
-                $oldDockerImageName = $matches[1][$index];
-                exec("docker image rm -f $oldDockerImageName");
-            }
+        $tarFilePath = Path::append($lessonDirectoryPath, "container.tar");
+        exec("docker container export $dockerContainerId > $tarFilePath");
+        $outputs = [];
+        exec("docker container inspect --format={{.Image}} $dockerContainerId", $outputs);
+        $oldDockerImageId = $outputs[0];
+        exec("docker container kill $dockerContainerId");
+        exec("docker container rm $dockerContainerId");
+        $outputs = [];
+        exec("docker image inspect --format={{.RepoTags}} $oldDockerImageId", $outputs);
+        $matches = [];
+        preg_match_all("/([a-z0-9]+):latest/u", $outputs[0], $matches);
+        for ($index = 0; $index < count($matches[1]); ++$index) {
+            $oldDockerImageName = $matches[1][$index];
+            exec("docker image rm -f $oldDockerImageName");
+        }
+        $dockerFilePath = Path::append(Path::append($lessonDirectoryPath, "docker"), "Dockerfile");
+        $dockerfileText = file_get_contents($dockerFilePath);
+        $matches = [];
+        preg_match("/^FROM ([a-z0-9]+)$/um", $dockerfileText, $matches);
+        if (count($matches) == 2) {
+            $oldDockerImageName = $matches[1];
+            exec("docker image rm -f $oldDockerImageName");
+        }
+        if ($request->mode === "creating") {
             $lesson->docker_container_id = null;
             $lesson->save();
+        } else {
+            $info->docker_container_id = null;
+            file_put_contents(Path::append($lessonDirectoryPath, "info.json"), json_encode($info));
         }
     }
 }

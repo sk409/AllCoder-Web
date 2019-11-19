@@ -18,7 +18,7 @@
         :item="child"
         :key="child.path"
         :is-file="false"
-        :lesson-id="lessonId"
+        :docker-container-id="dockerContainerId"
         @show-context-menu="onShowContextMenu"
       ></file-tree-item>
       <file-tree-item
@@ -26,7 +26,7 @@
         :item="child"
         :key="child.path"
         :is-file="true"
-        :lesson-id="lessonId"
+        :docker-container-id="dockerContainerId"
         @show-context-menu="onShowContextMenu"
       ></file-tree-item>
     </div>
@@ -53,8 +53,8 @@ export default {
     //   type: String,
     //   required: true
     // }
-    lessonId: {
-      type: Number,
+    dockerContainerId: {
+      type: String,
       required: true
     }
   },
@@ -77,7 +77,7 @@ export default {
   methods: {
     fetchChildren() {
       const that = this;
-      const url = `/folders/children?lesson_id=${this.lessonId}&root=${this.rootPath}`;
+      const url = `/folders/children?docker_container_id=${this.dockerContainerId}&root=${this.rootPath}`;
       axios.get(url).then(response => {
         if (response.data === "Permission denied") {
           that.$notify.error({

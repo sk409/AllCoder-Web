@@ -17,11 +17,11 @@
         url-writing="{{route("development.writing", ["lesson" => $lesson->id])}}" :console-port="{{$consolePort}}"
         :host-ports="{{json_encode($hostPorts)}}" :container-ports="{{json_encode($containerPorts)}}">
     </development-ide>
-    {{-- @else
-    <development-ide :title="{{$title}}" :lesson="{{json_encode($lesson)}}" :mode="{{$mode}}"
-    url-reading="{{route("development.reading", ["user_id" => $user->id, "material_id" => $material->id, "lesson_id" => $lesson->id])}}"
-    :console-port="{{$consolePort}}">
-    </development-ide> --}}
+    @else
+<development-ide :title="{{$title}}" :user="{{json_encode($user)}}" :material="{{json_encode($material)}}" :lesson="{{json_encode($lesson)}}" :info="{{json_encode($info)}}" :mode="{{$mode}}"
+        url-reading="{{route("development.reading", ["user_id" => $user->id, "material_id" => $material->id, "lesson_id" => $lesson->id])}}"
+        :console-port="{{$consolePort}}">
+    </development-ide>
     @endif
 </div>
 @endsection

@@ -9,11 +9,11 @@ export default class File extends Model {
         return Model.index(File.baseRoute(), parameters, completion);
     }
 
-    constructor(path, text, lessonId) {
+    constructor(path, text, dockerContainerId) {
         super(File.baseRoute());
         this.path = path;
         this.text = text;
-        this.lessonId = lessonId;
+        this.dockerContainerId = dockerContainerId;
         // this.isNameEditable = false;
     }
 
@@ -21,7 +21,7 @@ export default class File extends Model {
         return {
             path: this.path,
             text: this.text,
-            lesson_id: this.lessonId
+            docker_container_id: this.dockerContainerId
         };
     }
 
@@ -50,12 +50,12 @@ export default class File extends Model {
         this._text = value;
     }
 
-    get lessonId() {
-        return this._lessonId;
+    get dockerContainerId() {
+        return this._dockerContainerId;
     }
 
-    set lessonId(value) {
-        this._lessonId = value;
+    set dockerContainerId(value) {
+        this._dockerContainerId = value;
     }
 
     // get isNameEditable() {

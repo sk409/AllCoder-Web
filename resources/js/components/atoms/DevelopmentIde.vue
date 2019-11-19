@@ -26,7 +26,7 @@
       </div>
     </div>
     <div id="development-body">
-      <file-tree id="file-tree-view" :lesson-id="lesson.id"></file-tree>
+      <file-tree id="file-tree-view" :docker-container-id="dockerContainerId"></file-tree>
       <div id="center-view">
         <source-code-editor
           id="source-code-editor"
@@ -65,8 +65,9 @@
       </div>
     </div>
     <source-code-editor-context-menu
-      id="source-code-editor-context-menu"
+      v-if="mode === 'creating'"
       v-show="sourceCodeEditorContextMenu.isShown"
+      id="source-code-editor-context-menu"
       :style="sourceCodeEditorContextMenu.style"
       :start-index="sourceCodeEditorContextMenu.startIndex"
       :end-index="sourceCodeEditorContextMenu.endIndex"
@@ -88,9 +89,17 @@ export default {
   name: "DevelopmentIde",
   store,
   props: {
+    user: {
+      type: Object
+    },
+    material: {
+      type: Object
+    },
     lesson: {
-      type: Object,
-      required: true
+      type: Object
+    },
+    info: {
+      type: Object
     },
     mode: {
       type: String,
@@ -140,31 +149,58 @@ export default {
       }
     };
   },
+  computed: {
+    dockerContainerId() {
+      return this.mode === "creating"
+        ? this.lesson.docker_container_id
+        : this.info.docker_container_id;
+    }
+  },
   created() {
     const that = this;
-    setTimeout(function() {
-      console.log("setTimeout");
-      axios
-        .post("/malware_scan", { lesson_id: that.lesson.id })
-        .then(response => {
-          console.log("RESULT: " + response.data);
-          response.data.forEach(removedFile => {
-            that.$notify.error({
-              title: "マルウェアを削除しました",
-              message: removedFile
-            });
+    axios
+      .post("/malware_scan", { docker_container_id: that.dockerContainerId })
+      .then(response => {
+        console.log(response);
+        response.data.forEach(removedFile => {
+          that.$notify.error({
+            title: "マルウェアを削除しました",
+            message: removedFile
           });
         });
-    }, 30000);
+      });
+    // setTimeout(function() {
+    //   axios
+    //     .post("/malware_scan", { docker_container_id: that.dockerContainerId })
+    //     .then(response => {
+    //       response.data.forEach(removedFile => {
+    //         that.$notify.error({
+    //           title: "マルウェアを削除しました",
+    //           message: removedFile
+    //         });
+    //       });
+    //     });
+    // }, 30000);
     window.onbeforeunload = function(e) {
       const token = document
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content");
+      const data =
+        that.mode === "creating"
+          ? { _token: token, mode: that.mode, lesson_id: that.lesson.id }
+          : {
+              _token: token,
+              mode: that.mode,
+              user_id: that.user.id,
+              material_id: that.material.id,
+              lesson_id: that.lesson.id,
+              info: JSON.stringify(that.info)
+            };
       $.ajax({
         url: "/development/down",
         type: "POST",
         dataType: "json",
-        data: { _token: token, mode: that.mode, lesson_id: that.lesson.id },
+        data: data,
         async: false
       });
     };
@@ -172,6 +208,9 @@ export default {
   methods: {
     ...mapMutations(["setSourceCodeEditor"]),
     showSourceCodeEditorContextMenu(x, y, startIndex, endIndex) {
+      if (this.mode === "learning") {
+        return;
+      }
       this.sourceCodeEditorContextMenu.isShown = true;
       this.sourceCodeEditorContextMenu.style.left = x + "px";
       this.sourceCodeEditorContextMenu.style.top = y + "px";

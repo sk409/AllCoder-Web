@@ -6,6 +6,7 @@ use App\Lesson;
 use App\Material;
 use App\Path;
 use Illuminate\Http\Request;
+use stdClass;
 
 class MaterialPurchaseController extends Controller
 {
@@ -37,12 +38,14 @@ class MaterialPurchaseController extends Controller
         $material->purchases()->attach($request->user_id);
         foreach ($material->lessons as $lesson) {
             $lessonDirectoryPathPurchased = Path::purchasedLesson($request->user_id, $material->id, $lesson->id, "");
+            $dockerDirectoryPathPurchased = Path::append($lessonDirectoryPathPurchased, "docker");
             mkdir($lessonDirectoryPathPurchased, 0755, true);
-            $lessonDirectoryPathOriginal = Path::lesson($lesson->id);
+            mkdir($dockerDirectoryPathPurchased);
+            $dockerDirectoryPathOriginal = Path::append(Path::lesson($lesson->id), "docker");
             $dockerImageNameOriginal = uniqid();
-            exec("docker image build -t $dockerImageNameOriginal $lessonDirectoryPathOriginal");
+            exec("docker image build -t $dockerImageNameOriginal $dockerDirectoryPathOriginal");
             $outputs = [];
-            exec("docker container run -itd $dockerImageNameOriginal", $outputs);
+            exec("docker container run -itd $dockerImageNameOriginal /bin/bash", $outputs);
             $dockerContainerId = $outputs[0];
             $questionFileNames = glob(Path::lessonQuestion($lesson->id, "*.json"));
             foreach ($questionFileNames as $questionFileName) {
@@ -65,9 +68,19 @@ class MaterialPurchaseController extends Controller
                 exec("docker container cp $tmpFilePath $dockerContainerId:$obj->path");
                 unlink($tmpFilePath);
             }
-            $dockerImageNamePurchased = uniqid();
-            exec("docker container commit $dockerContainerId $dockerImageNamePurchased");
-            file_put_contents(Path::append($lessonDirectoryPathPurchased, "Dockerfile"), "FROM $dockerImageNamePurchased");
+            $tarFilePath = Path::append($lessonDirectoryPathPurchased, "container.tar");
+            exec("docker container export $dockerContainerId > $tarFilePath");
+            $info = new stdClass();
+            $info->title = $lesson->title;
+            $info->user_name = $lesson->user_name;
+            $info->console_port = $lesson->console_port;
+            $info->ports = [];
+            foreach ($lesson->ports->all() as $port) {
+                $info->ports[] = $port->port;
+            }
+            $info->container_id = null;
+            $infoFilePath = Path::append($lessonDirectoryPathPurchased, "info.json");
+            file_put_contents($infoFilePath, json_encode($info));
         }
     }
 }
