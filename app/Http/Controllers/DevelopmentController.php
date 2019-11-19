@@ -95,11 +95,11 @@ EOM;
                 $portString .= "-p $port->port ";
             }
             $outputs = [];
-            exec("docker container run -d --privileged $portString $dockerImageName2 /sbin/init", $outputs);
+            exec("docker container run -d $portString $dockerImageName2 /sbin/init", $outputs);
             $containerID = $outputs[0];
             // TODO: MySQLが選択されている場合にだけ実行する
             exec("docker container exec -it $containerID find /var/lib/mysql -type f -exec touch {} \;");
-            exec("docker container exec -it --user root $containerID systemctl start clamd@scan");
+            exec("docker container exec -it --user root $containerID clamd");
             exec("docker container exec -itd $containerID gotty -w -p $lesson->console_port bash");
         } else {
             $containerID = $lesson->docker_container_id;

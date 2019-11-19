@@ -165,7 +165,8 @@ export default {
         response.data.forEach(removedFile => {
           that.$notify.error({
             title: "マルウェアを削除しました",
-            message: removedFile
+            message: removedFile,
+            duration: 0
           });
         });
       });

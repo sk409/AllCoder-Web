@@ -2014,7 +2014,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       response.data.forEach(function (removedFile) {
         that.$notify.error({
           title: "マルウェアを削除しました",
-          message: removedFile
+          message: removedFile,
+          duration: 0
         });
       });
     }); // setTimeout(function() {
