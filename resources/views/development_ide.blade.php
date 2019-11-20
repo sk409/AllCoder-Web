@@ -18,9 +18,11 @@
         :host-ports="{{json_encode($hostPorts)}}" :container-ports="{{json_encode($containerPorts)}}">
     </development-ide>
     @else
-<development-ide :title="{{$title}}" :user="{{json_encode($user)}}" :material="{{json_encode($material)}}" :lesson="{{json_encode($lesson)}}" :info="{{json_encode($info)}}" :mode="{{$mode}}"
+    <development-ide title="{{$title}}" :user="{{json_encode($user)}}" :material="{{json_encode($material)}}"
+        :lesson="{{json_encode($lesson)}}" :info="{{json_encode($info)}}" mode="{{$mode}}"
         url-reading="{{route("development.reading", ["user_id" => $user->id, "material_id" => $material->id, "lesson_id" => $lesson->id])}}"
-        :console-port="{{$consolePort}}">
+        :console-port="{{$consolePort}}" :host-ports="{{json_encode($hostPorts)}}"
+        :container-ports="{{json_encode($containerPorts)}}">
     </development-ide>
     @endif
 </div>

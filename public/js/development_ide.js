@@ -1988,6 +1988,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return {
       activeConsoleIndex: 0,
       consoleCount: 1,
+      isWaitingMalwareScan: false,
       sourceCodeEditorContextMenu: {
         isShown: false,
         startIndex: 0,
@@ -2007,29 +2008,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   created: function created() {
     var that = this;
-    axios__WEBPACK_IMPORTED_MODULE_5___default.a.post("/malware_scan", {
-      docker_container_id: that.dockerContainerId
-    }).then(function (response) {
-      console.log(response);
-      response.data.forEach(function (removedFile) {
-        that.$notify.error({
-          title: "マルウェアを削除しました",
-          message: removedFile,
-          duration: 0
+    setInterval(function () {
+      console.log("setInterval");
+
+      if (that.isWaitingMalwareScan) {
+        return;
+      }
+
+      that.isWaitingMalwareScan = true;
+      axios__WEBPACK_IMPORTED_MODULE_5___default.a.post("/malware_scan", {
+        docker_container_id: that.dockerContainerId
+      }).then(function (response) {
+        that.isWaitingMalwareScan = false;
+        response.data.forEach(function (removedFile) {
+          that.$notify.error({
+            title: "マルウェアを削除しました",
+            message: removedFile,
+            duration: 0
+          });
         });
       });
-    }); // setTimeout(function() {
-    //   axios
-    //     .post("/malware_scan", { docker_container_id: that.dockerContainerId })
-    //     .then(response => {
-    //       response.data.forEach(removedFile => {
-    //         that.$notify.error({
-    //           title: "マルウェアを削除しました",
-    //           message: removedFile
-    //         });
-    //       });
-    //     });
-    // }, 30000);
+    }, 60000);
 
     window.onbeforeunload = function (e) {
       var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
@@ -3035,7 +3034,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 
@@ -3242,7 +3240,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n#development-ide[data-v-717c32c7] {\n  height: 100%;\n  overflow: hidden;\n}\n#development-header[data-v-717c32c7] {\n  height: 10%;\n}\n#development-body[data-v-717c32c7] {\n  display: flex;\n  height: 90%;\n}\n#file-tree-view[data-v-717c32c7] {\n  width: 20%;\n  height: 100%;\n}\n#center-view[data-v-717c32c7] {\n  width: 80%;\n  height: 100%;\n}\n#source-code-editor[data-v-717c32c7] {\n  width: 100%;\n  height: 60%;\n}\n#console-tool-bar[data-v-717c32c7] {\n  height: 8%;\n}\n#console-container[data-v-717c32c7] {\n  position: relative;\n}\n.console[data-v-717c32c7] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  border: none;\n  width: 100%;\n  height: 32%;\n}\n.active-console[data-v-717c32c7] {\n  z-index: 1;\n}\n/* \n// #file-tree-context-menu,\n// #source-code-editor-context-menu {\n//   position: absolute;\n// }\n\n// .file-creation-view-button {\n//   width: $file-creation-view-button-width;\n//   margin-left: $file-creation-view-component-margin;\n// }\n\n// .file-creation-view-file-item {\n//   width: $file-creation-view-item-width;\n//   height: $file-creation-view-item-height;\n// }\n\n// #file-creation-view-header {\n//   height: 8vh;\n// }\n\n// #file-creation-view-body {\n//   height: 92vh;\n// }\n\n// #file-creation-view-file-name {\n//   width: $file-creation-view-file-name-width;\n// }\n\n// #file-creation-view {\n//   width: $file-creation-view-width;\n//   height: $file-creation-view-height;\n//   padding: 0 $file-creation-view-margin;\n//   position: absolute;\n//   left: 50%;\n//   top: 50%;\n//   transform: translate(-50%, -50%);\n// }\n\n// .source-code-editor-context-menu-button,\n// .source-code-editor-context-menu-option-button {\n//   display: block;\n//   width: 100%;\n// } */\n", ""]);
+exports.push([module.i, "\n#development-ide[data-v-717c32c7] {\n  height: 100%;\n  overflow: hidden;\n  color: white;\n}\n#development-header[data-v-717c32c7] {\n  height: 10%;\n  background: rgb(30, 30, 30);\n  border-bottom: solid 1.5px rgb(80, 80, 80);\n}\n#development-body[data-v-717c32c7] {\n  display: flex;\n  height: 90%;\n}\n#file-tree-view[data-v-717c32c7] {\n  width: 20%;\n  height: 100%;\n}\n#center-view[data-v-717c32c7] {\n  width: 80%;\n  height: 100%;\n}\n#source-code-editor[data-v-717c32c7] {\n  width: 100%;\n  height: 60%;\n}\n#console-tool-bar[data-v-717c32c7] {\n  height: 8%;\n  background: rgb(30, 30, 30);\n  border-top: solid 1.5px rgb(80, 80, 80);\n}\n#console-container[data-v-717c32c7] {\n  position: relative;\n}\n.header-button[data-v-717c32c7] {\n  display: block;\n  color: white;\n  font-size: 1rem;\n}\n.console[data-v-717c32c7] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  border: none;\n  width: 100%;\n  height: 32%;\n}\n.active-console[data-v-717c32c7] {\n  z-index: 1;\n}\n/* \n// #file-tree-context-menu,\n// #source-code-editor-context-menu {\n//   position: absolute;\n// }\n\n// .file-creation-view-button {\n//   width: $file-creation-view-button-width;\n//   margin-left: $file-creation-view-component-margin;\n// }\n\n// .file-creation-view-file-item {\n//   width: $file-creation-view-item-width;\n//   height: $file-creation-view-item-height;\n// }\n\n// #file-creation-view-header {\n//   height: 8vh;\n// }\n\n// #file-creation-view-body {\n//   height: 92vh;\n// }\n\n// #file-creation-view-file-name {\n//   width: $file-creation-view-file-name-width;\n// }\n\n// #file-creation-view {\n//   width: $file-creation-view-width;\n//   height: $file-creation-view-height;\n//   padding: 0 $file-creation-view-margin;\n//   position: absolute;\n//   left: 50%;\n//   top: 50%;\n//   transform: translate(-50%, -50%);\n// }\n\n// .source-code-editor-context-menu-button,\n// .source-code-editor-context-menu-option-button {\n//   display: block;\n//   width: 100%;\n// } */\n", ""]);
 
 // exports
 
@@ -3280,7 +3278,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n#file-tree-tool-bar[data-v-6b7b7ff2] {\n  height: 10%;\n}\n#file-tree[data-v-6b7b7ff2] {\n  overflow: scroll;\n  white-space: nowrap;\n  height: 90%;\n}\n", ""]);
+exports.push([module.i, "\n#file-tree-tool-bar[data-v-6b7b7ff2] {\n  height: 10%;\n  background: rgb(30, 37, 51);\n}\n#file-tree[data-v-6b7b7ff2] {\n  overflow: scroll;\n  white-space: nowrap;\n  height: 90%;\n  background: rgb(30, 37, 51);\n}\n", ""]);
 
 // exports
 
@@ -4221,18 +4219,18 @@ var render = function() {
                   _c(
                     "a",
                     {
-                      staticClass: "btn btn-light",
+                      staticClass: "header-button",
                       attrs: { href: _vm.urlWriting, target: "_blank" }
                     },
                     [_vm._v("執筆")]
                   )
                 ])
-              : _c("div", [
+              : _c("div", { staticClass: "ml-auto" }, [
                   _c(
                     "a",
                     {
-                      staticClass: "btn btn-light",
-                      attrs: { href: "", target: "_blank" }
+                      staticClass: "header-button",
+                      attrs: { href: _vm.urlReading, target: "_blank" }
                     },
                     [_vm._v("説明文")]
                   )
@@ -4244,7 +4242,7 @@ var render = function() {
               "el-dropdown",
               { on: { command: _vm.handlePortDropdownCommand } },
               [
-                _c("span", { staticClass: "el-dropdown-link" }, [
+                _c("span", { staticClass: "el-dropdown-link text-white" }, [
                   _vm._v("\n          ポート\n          "),
                   _c("i", { staticClass: "el-icon-arrow-down el-icon--right" })
                 ]),
@@ -4319,16 +4317,20 @@ var render = function() {
                         "el-dropdown",
                         { on: { command: _vm.handleConsoleDropdownCommand } },
                         [
-                          _c("span", { staticClass: "el-dropdown-link" }, [
-                            _vm._v(
-                              "\n              コンソール: " +
-                                _vm._s(_vm.activeConsoleIndex) +
-                                "\n              "
-                            ),
-                            _c("i", {
-                              staticClass: "el-icon-arrow-down el-icon--right"
-                            })
-                          ]),
+                          _c(
+                            "span",
+                            { staticClass: "el-dropdown-link text-white" },
+                            [
+                              _vm._v(
+                                "\n              コンソール: " +
+                                  _vm._s(_vm.activeConsoleIndex) +
+                                  "\n              "
+                              ),
+                              _c("i", {
+                                staticClass: "el-icon-arrow-down el-icon--right"
+                              })
+                            ]
+                          ),
                           _vm._v(" "),
                           _c(
                             "el-dropdown-menu",
@@ -4655,9 +4657,8 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
+    { attrs: { id: "file-tree" } },
     [
-      _c("el-divider", { staticClass: "m-0" }),
-      _vm._v(" "),
       _c(
         "div",
         {
@@ -6946,9 +6947,10 @@ Vue.use(Vuex);
       state.sourceCodeEditor.setOptions({
         enableBasicAutocompletion: true,
         enableSnippets: true,
-        enableLiveAutocompletion: true
+        enableLiveAutocompletion: true,
+        fontSize: "0.8rem"
       });
-      state.sourceCodeEditor.setTheme(payload.theme ? payload.theme : "ace/theme/monokai");
+      state.sourceCodeEditor.setTheme(payload.theme ? payload.theme : "ace/theme/chaos");
       state.sourceCodeEditor.setReadOnly(true);
     },
     setEditedFile: function setEditedFile(state, file) {

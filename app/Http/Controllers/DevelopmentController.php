@@ -82,7 +82,6 @@ class DevelopmentController extends Controller
             exec("cat $containerTarFilePath | docker image import - $dockerImageName");
             $dockerDirectoryPath = Path::append($lessonDirectoryPath, "docker");
             $dockerfilePath = Path::append($dockerDirectoryPath, "Dockerfile");
-            // TODO: レッスンからユーザ名を取得する
             $dockerfileText = <<<EOM
 FROM $dockerImageName
 USER $lesson->user_name
@@ -153,29 +152,27 @@ EOM;
             $dockerImageName = uniqid();
             exec("cat $containerTarFilePath | docker image import - $dockerImageName");
             $dockerDirectoryPath = Path::append($lessonDirectoryPathPurchased, "docker");
-            // KOKOKARA
             $dockerfilePath = Path::append($dockerDirectoryPath, "Dockerfile");
-            // TODO: レッスンからユーザ名を取得する
             $dockerfileText = <<<EOM
 FROM $dockerImageName
-USER $info->user_name
+#USER $info->user_name
 EOM;
             file_put_contents($dockerfilePath, $dockerfileText);
             $dockerImageName2 = uniqid();
             exec("docker image build -t $dockerImageName2 $dockerDirectoryPath");
             $portString = "";
             foreach ($info->ports as $port) {
-                $portString .= "-p $port->port ";
+                $portString .= "-p $port ";
             }
             $outputs = [];
-            exec("docker container run -d --privileged $portString $dockerImageName2 /sbin/init", $outputs);
+            exec("docker container run -d $portString $dockerImageName2 /sbin/init", $outputs);
             $containerID = $outputs[0];
             // TODO: MySQLが選択されている場合にだけ実行する
             exec("docker container exec -it $containerID find /var/lib/mysql -type f -exec touch {} \;");
-            exec("docker container exec -it --user root $containerID systemctl start clamd@scan");
+            exec("docker container exec -it --user root $containerID clamd");
             exec("docker container exec -itd $containerID gotty -w -p $info->console_port bash");
         } else {
-            $containerID = $info->container_id;
+            $containerID = $info->docker_container_id;
         }
         $outputs = [];
         exec("docker container port $containerID $info->console_port", $outputs);
@@ -229,53 +226,59 @@ EOM;
 
     public function down(Request $request)
     {
-        $request->validate([
-            "mode" => "required",
-            "lesson_id" => "required",
-        ]);
-        $lesson = Lesson::find($request->lesson_id);
-        if ($request->mode === "creating") {
-            $lessonDirectoryPath = Path::lesson($lesson->id);
-            $dockerContainerId = $lesson->docker_container_id;
-        } else {
-            $request->validate([
-                "user_id" => "required",
-                "material_id" => "required",
-                "info" => "required",
-            ]);
-            $lessonDirectoryPath = Path::purchasedLesson($request->user_id, $request->material_id, $lesson->id, "");
-            $info = json_decode($request->info);
-            $dockerContainerId = $info->docker_container_id;
-        }
-        $tarFilePath = Path::append($lessonDirectoryPath, "container.tar");
-        exec("docker container export $dockerContainerId > $tarFilePath");
-        $outputs = [];
-        exec("docker container inspect --format={{.Image}} $dockerContainerId", $outputs);
-        $oldDockerImageId = $outputs[0];
-        exec("docker container kill $dockerContainerId");
-        exec("docker container rm $dockerContainerId");
-        $outputs = [];
-        exec("docker image inspect --format={{.RepoTags}} $oldDockerImageId", $outputs);
-        $matches = [];
-        preg_match_all("/([a-z0-9]+):latest/u", $outputs[0], $matches);
-        for ($index = 0; $index < count($matches[1]); ++$index) {
-            $oldDockerImageName = $matches[1][$index];
-            exec("docker image rm -f $oldDockerImageName");
-        }
-        $dockerFilePath = Path::append(Path::append($lessonDirectoryPath, "docker"), "Dockerfile");
-        $dockerfileText = file_get_contents($dockerFilePath);
-        $matches = [];
-        preg_match("/^FROM ([a-z0-9]+)$/um", $dockerfileText, $matches);
-        if (count($matches) == 2) {
-            $oldDockerImageName = $matches[1];
-            exec("docker image rm -f $oldDockerImageName");
-        }
-        if ($request->mode === "creating") {
-            $lesson->docker_container_id = null;
-            $lesson->save();
-        } else {
-            $info->docker_container_id = null;
-            file_put_contents(Path::append($lessonDirectoryPath, "info.json"), json_encode($info));
-        }
+        // $request->validate([
+        //     "mode" => "required",
+        //     "lesson_id" => "required",
+        // ]);
+        // $lesson = Lesson::find($request->lesson_id);
+        // if ($request->mode === "creating") {
+        //     $lessonDirectoryPath = Path::lesson($lesson->id);
+        //     $dockerContainerId = $lesson->docker_container_id;
+        // } else {
+        //     $request->validate([
+        //         "user_id" => "required",
+        //         "material_id" => "required",
+        //         "info" => "required",
+        //     ]);
+        //     $lessonDirectoryPath = Path::purchasedLesson($request->user_id, $request->material_id, $lesson->id, "");
+        //     $info = json_decode($request->info);
+        //     $dockerContainerId = $info->docker_container_id;
+        // }
+        // //
+        // $tarFilePath = Path::append($lessonDirectoryPath, "container.tar");
+        // exec("docker container export $dockerContainerId > $tarFilePath");
+        // $outputs = [];
+        // exec("docker container inspect --format={{.Image}} $dockerContainerId", $outputs);
+        // $oldDockerImageId = $outputs[0];
+        // exec("docker container kill $dockerContainerId");
+        // exec("docker container rm $dockerContainerId");
+        // $outputs = [];
+        // exec("docker image inspect --format={{.RepoTags}} $oldDockerImageId", $outputs);
+        // $matches = [];
+        // //
+        // if (count($outputs) !== 0) {
+        //     preg_match_all("/([a-z0-9]+):latest/u", $outputs[0], $matches);
+        //     if (count($matches) !== 0) {
+        //         for ($index = 0; $index < count($matches[1]); ++$index) {
+        //             $oldDockerImageName = $matches[1][$index];
+        //             exec("docker image rm -f $oldDockerImageName");
+        //         }
+        //     }
+        // }
+        // $dockerFilePath = Path::append(Path::append($lessonDirectoryPath, "docker"), "Dockerfile");
+        // $dockerfileText = file_get_contents($dockerFilePath);
+        // $matches = [];
+        // preg_match("/^FROM ([a-z0-9]+)$/um", $dockerfileText, $matches);
+        // if (count($matches) == 2) {
+        //     $oldDockerImageName = $matches[1];
+        //     exec("docker image rm -f $oldDockerImageName");
+        // }
+        // if ($request->mode === "creating") {
+        //     $lesson->docker_container_id = null;
+        //     $lesson->save();
+        // } else {
+        //     $info->docker_container_id = null;
+        //     file_put_contents(Path::append($lessonDirectoryPath, "info.json"), json_encode($info));
+        // }
     }
 }

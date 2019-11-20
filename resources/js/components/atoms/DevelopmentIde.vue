@@ -4,14 +4,14 @@
       <div class="d-flex align-items-center p-3">
         <h3>{{title}}</h3>
         <div v-if="mode === 'creating'" class="ml-auto">
-          <a class="btn btn-light" :href="urlWriting" target="_blank">執筆</a>
+          <a class="header-button" :href="urlWriting" target="_blank">執筆</a>
         </div>
-        <div v-else>
-          <a class="btn btn-light" href target="_blank">説明文</a>
+        <div v-else class="ml-auto">
+          <a class="header-button" :href="urlReading" target="_blank">説明文</a>
         </div>
         <el-divider direction="vertical"></el-divider>
         <el-dropdown @command="handlePortDropdownCommand">
-          <span class="el-dropdown-link">
+          <span class="el-dropdown-link text-white">
             ポート
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
@@ -39,7 +39,7 @@
             </div>
             <el-divider direction="vertical"></el-divider>
             <el-dropdown @command="handleConsoleDropdownCommand">
-              <span class="el-dropdown-link">
+              <span class="el-dropdown-link text-white">
                 コンソール: {{activeConsoleIndex}}
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
@@ -137,6 +137,7 @@ export default {
     return {
       activeConsoleIndex: 0,
       consoleCount: 1,
+      isWaitingMalwareScan: false,
       sourceCodeEditorContextMenu: {
         isShown: false,
         startIndex: 0,
@@ -158,30 +159,25 @@ export default {
   },
   created() {
     const that = this;
-    axios
-      .post("/malware_scan", { docker_container_id: that.dockerContainerId })
-      .then(response => {
-        console.log(response);
-        response.data.forEach(removedFile => {
-          that.$notify.error({
-            title: "マルウェアを削除しました",
-            message: removedFile,
-            duration: 0
+    setInterval(function() {
+      console.log("setInterval");
+      if (that.isWaitingMalwareScan) {
+        return;
+      }
+      that.isWaitingMalwareScan = true;
+      axios
+        .post("/malware_scan", { docker_container_id: that.dockerContainerId })
+        .then(response => {
+          that.isWaitingMalwareScan = false;
+          response.data.forEach(removedFile => {
+            that.$notify.error({
+              title: "マルウェアを削除しました",
+              message: removedFile,
+              duration: 0
+            });
           });
         });
-      });
-    // setTimeout(function() {
-    //   axios
-    //     .post("/malware_scan", { docker_container_id: that.dockerContainerId })
-    //     .then(response => {
-    //       response.data.forEach(removedFile => {
-    //         that.$notify.error({
-    //           title: "マルウェアを削除しました",
-    //           message: removedFile
-    //         });
-    //       });
-    //     });
-    // }, 30000);
+    }, 60000);
     window.onbeforeunload = function(e) {
       const token = document
         .querySelector('meta[name="csrf-token"]')
@@ -242,10 +238,13 @@ export default {
 #development-ide {
   height: 100%;
   overflow: hidden;
+  color: white;
 }
 
 #development-header {
   height: 10%;
+  background: rgb(30, 30, 30);
+  border-bottom: solid 1.5px rgb(80, 80, 80);
 }
 
 #development-body {
@@ -270,10 +269,18 @@ export default {
 
 #console-tool-bar {
   height: 8%;
+  background: rgb(30, 30, 30);
+  border-top: solid 1.5px rgb(80, 80, 80);
 }
 
 #console-container {
   position: relative;
+}
+
+.header-button {
+  display: block;
+  color: white;
+  font-size: 1rem;
 }
 
 .console {

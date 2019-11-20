@@ -22,9 +22,10 @@ export default new Vuex.Store({
             state.sourceCodeEditor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
-                enableLiveAutocompletion: true
+                enableLiveAutocompletion: true,
+                fontSize: "0.8rem",
             });
-            state.sourceCodeEditor.setTheme(payload.theme ? payload.theme : "ace/theme/monokai");
+            state.sourceCodeEditor.setTheme(payload.theme ? payload.theme : "ace/theme/chaos");
             state.sourceCodeEditor.setReadOnly(true);
         },
         setEditedFile(state, file) {

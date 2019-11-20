@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <el-divider class="m-0"></el-divider>
+  <div id="file-tree">
     <div id="file-tree-tool-bar" class="d-flex align-items-center p-2">
       <el-input v-model="rootPath" placeholder="パスを入力"></el-input>
       <i class="ml-1 el-icon-search" @click="fetchChildren"></i>
@@ -231,10 +230,12 @@ export default {
 <style scoped>
 #file-tree-tool-bar {
   height: 10%;
+  background: rgb(30, 37, 51);
 }
 #file-tree {
   overflow: scroll;
   white-space: nowrap;
   height: 90%;
+  background: rgb(30, 37, 51);
 }
 </style>
