@@ -160,7 +160,6 @@ export default {
   created() {
     const that = this;
     setInterval(function() {
-      console.log("setInterval");
       if (that.isWaitingMalwareScan) {
         return;
       }

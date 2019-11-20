@@ -2009,8 +2009,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   created: function created() {
     var that = this;
     setInterval(function () {
-      console.log("setInterval");
-
       if (that.isWaitingMalwareScan) {
         return;
       }
