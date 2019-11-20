@@ -1,80 +1,98 @@
 <template>
-  <div id="development-ide">
-    <div id="development-header">
-      <div class="d-flex align-items-center p-3">
-        <h3>{{title}}</h3>
-        <div v-if="mode === 'creating'" class="ml-auto">
-          <a class="header-button" :href="urlWriting" target="_blank">執筆</a>
-        </div>
-        <div v-else class="ml-auto">
-          <a class="header-button" :href="urlReading" target="_blank">説明文</a>
-        </div>
-        <el-divider direction="vertical"></el-divider>
-        <el-dropdown @command="handlePortDropdownCommand">
-          <span class="el-dropdown-link text-white">
-            ポート
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              v-for="(containerPort, index) in containerPorts"
-              :key="containerPort"
-              :command="hostPorts[index]"
-            >{{containerPort}}</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-    </div>
-    <div id="development-body">
-      <file-tree id="file-tree-view" :docker-container-id="dockerContainerId"></file-tree>
-      <div id="center-view">
-        <source-code-editor
-          id="source-code-editor"
-          v-on:show-source-code-editor-context-menu="showSourceCodeEditorContextMenu"
-        ></source-code-editor>
-        <div id="console-view" class="h-100">
-          <div id="console-tool-bar" class="d-flex align-items-center p-2">
-            <div class="ml-auto">
-              <i class="el-icon-plus" @click="addConsole"></i>
+    <div id="development-ide">
+        <div id="development-header">
+            <div class="d-flex align-items-center p-3">
+                <h3>{{ title }}</h3>
+                <div v-if="mode === 'creating'" class="ml-auto">
+                    <a class="header-button" :href="urlWriting" target="_blank"
+                        >執筆</a
+                    >
+                </div>
+                <div v-else class="ml-auto">
+                    <a class="header-button" :href="urlReading" target="_blank"
+                        >説明文</a
+                    >
+                </div>
+                <el-divider direction="vertical"></el-divider>
+                <el-dropdown @command="handlePortDropdownCommand">
+                    <span class="el-dropdown-link text-white">
+                        ポート
+                        <i class="el-icon-arrow-down el-icon--right"></i>
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item
+                            v-for="(containerPort, index) in containerPorts"
+                            :key="containerPort"
+                            :command="hostPorts[index]"
+                            >{{ containerPort }}</el-dropdown-item
+                        >
+                    </el-dropdown-menu>
+                </el-dropdown>
             </div>
-            <el-divider direction="vertical"></el-divider>
-            <el-dropdown @command="handleConsoleDropdownCommand">
-              <span class="el-dropdown-link text-white">
-                コンソール: {{activeConsoleIndex}}
-                <i class="el-icon-arrow-down el-icon--right"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="consoleId in consoleCount"
-                  :key="consoleId"
-                  :command="consoleId - 1"
-                >{{consoleId - 1}}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </div>
-          <div id="console-container" class="h-100">
-            <iframe
-              v-for="consoleId in consoleCount"
-              :key="consoleId"
-              :src="'http://localhost:'+consolePort"
-              :class="{'active-console': isActiveConsole(consoleId)}"
-              class="console"
-            ></iframe>
-          </div>
         </div>
-      </div>
+        <div id="development-body">
+            <file-tree
+                id="file-tree-view"
+                :docker-container-id="dockerContainerId"
+            ></file-tree>
+            <div id="center-view">
+                <source-code-editor
+                    id="source-code-editor"
+                    v-on:show-source-code-editor-context-menu="
+                        showSourceCodeEditorContextMenu
+                    "
+                ></source-code-editor>
+                <div id="console-view" class="h-100">
+                    <div
+                        id="console-tool-bar"
+                        class="d-flex align-items-center p-2"
+                    >
+                        <div class="ml-auto">
+                            <i class="el-icon-plus" @click="addConsole"></i>
+                        </div>
+                        <el-divider direction="vertical"></el-divider>
+                        <el-dropdown @command="handleConsoleDropdownCommand">
+                            <span class="el-dropdown-link text-white">
+                                コンソール: {{ activeConsoleIndex }}
+                                <i
+                                    class="el-icon-arrow-down el-icon--right"
+                                ></i>
+                            </span>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item
+                                    v-for="consoleId in consoleCount"
+                                    :key="consoleId"
+                                    :command="consoleId - 1"
+                                    >{{ consoleId - 1 }}</el-dropdown-item
+                                >
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+                    <div id="console-container" class="h-100">
+                        <iframe
+                            v-for="consoleId in consoleCount"
+                            :key="consoleId"
+                            :src="'http://localhost:' + consolePort"
+                            :class="{
+                                'active-console': isActiveConsole(consoleId)
+                            }"
+                            class="console"
+                        ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <source-code-editor-context-menu
+            v-if="mode === 'creating'"
+            v-show="sourceCodeEditorContextMenu.isShown"
+            id="source-code-editor-context-menu"
+            :style="sourceCodeEditorContextMenu.style"
+            :start-index="sourceCodeEditorContextMenu.startIndex"
+            :end-index="sourceCodeEditorContextMenu.endIndex"
+            :lesson-id="lesson.id"
+            v-on:hide="hideSourceCodeEditorContextMenu"
+        ></source-code-editor-context-menu>
     </div>
-    <source-code-editor-context-menu
-      v-if="mode === 'creating'"
-      v-show="sourceCodeEditorContextMenu.isShown"
-      id="source-code-editor-context-menu"
-      :style="sourceCodeEditorContextMenu.style"
-      :start-index="sourceCodeEditorContextMenu.startIndex"
-      :end-index="sourceCodeEditorContextMenu.endIndex"
-      :lesson-id="lesson.id"
-      v-on:hide="hideSourceCodeEditorContextMenu"
-    ></source-code-editor-context-menu>
-  </div>
 </template>
 
 <script>
@@ -86,213 +104,217 @@ import { mapMutations } from "vuex";
 import axios from "axios";
 
 export default {
-  name: "DevelopmentIde",
-  store,
-  props: {
-    user: {
-      type: Object
-    },
-    material: {
-      type: Object
-    },
-    lesson: {
-      type: Object
-    },
-    info: {
-      type: Object
-    },
-    mode: {
-      type: String,
-      required: true
-    },
-    title: {
-      type: String,
-      required: true
-    },
-    urlWriting: {
-      type: String
-    },
-    urlReading: {
-      type: String
-    },
-    consolePort: {
-      type: Number,
-      required: true
-    },
-    hostPorts: {
-      type: Array,
-      required: true
-    },
-    containerPorts: {
-      type: Array,
-      required: true
-    }
-  },
-  components: {
-    FileTree,
-    SourceCodeEditor,
-    SourceCodeEditorContextMenu
-  },
-  data() {
-    return {
-      activeConsoleIndex: 0,
-      consoleCount: 1,
-      isWaitingMalwareScan: false,
-      sourceCodeEditorContextMenu: {
-        isShown: false,
-        startIndex: 0,
-        endIndex: 0,
-        style: {
-          position: "absolute",
-          left: "0",
-          top: "0"
+    name: "DevelopmentIde",
+    store,
+    props: {
+        user: {
+            type: Object
+        },
+        material: {
+            type: Object
+        },
+        lesson: {
+            type: Object
+        },
+        info: {
+            type: Object
+        },
+        mode: {
+            type: String,
+            required: true
+        },
+        title: {
+            type: String,
+            required: true
+        },
+        urlWriting: {
+            type: String
+        },
+        urlReading: {
+            type: String
+        },
+        consolePort: {
+            type: Number,
+            required: true
+        },
+        hostPorts: {
+            type: Array,
+            required: true
+        },
+        containerPorts: {
+            type: Array,
+            required: true
         }
-      }
-    };
-  },
-  computed: {
-    dockerContainerId() {
-      return this.mode === "creating"
-        ? this.lesson.docker_container_id
-        : this.info.docker_container_id;
-    }
-  },
-  created() {
-    const that = this;
-    setInterval(function() {
-      if (that.isWaitingMalwareScan) {
-        return;
-      }
-      that.isWaitingMalwareScan = true;
-      axios
-        .post("/malware_scan", { docker_container_id: that.dockerContainerId })
-        .then(response => {
-          that.isWaitingMalwareScan = false;
-          response.data.forEach(removedFile => {
-            that.$notify.error({
-              title: "マルウェアを削除しました",
-              message: removedFile,
-              duration: 0
+    },
+    components: {
+        FileTree,
+        SourceCodeEditor,
+        SourceCodeEditorContextMenu
+    },
+    data() {
+        return {
+            activeConsoleIndex: 0,
+            consoleCount: 1,
+            isWaitingMalwareScan: false,
+            sourceCodeEditorContextMenu: {
+                isShown: false,
+                startIndex: 0,
+                endIndex: 0,
+                style: {
+                    position: "absolute",
+                    left: "0",
+                    top: "0"
+                }
+            }
+        };
+    },
+    computed: {
+        dockerContainerId() {
+            return this.mode === "creating"
+                ? this.lesson.docker_container_id
+                : this.info.docker_container_id;
+        }
+    },
+    created() {
+        const that = this;
+        // setInterval(function() {
+        //   if (that.isWaitingMalwareScan) {
+        //     return;
+        //   }
+        //   that.isWaitingMalwareScan = true;
+        //   axios
+        //     .post("/malware_scan", { docker_container_id: that.dockerContainerId })
+        //     .then(response => {
+        //       that.isWaitingMalwareScan = false;
+        //       response.data.forEach(removedFile => {
+        //         that.$notify.error({
+        //           title: "マルウェアを削除しました",
+        //           message: removedFile,
+        //           duration: 0
+        //         });
+        //       });
+        //     });
+        // }, 60000);
+        window.onbeforeunload = function(e) {
+            const token = document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute("content");
+            const data =
+                that.mode === "creating"
+                    ? {
+                          _token: token,
+                          mode: that.mode,
+                          lesson_id: that.lesson.id
+                      }
+                    : {
+                          _token: token,
+                          mode: that.mode,
+                          user_id: that.user.id,
+                          material_id: that.material.id,
+                          lesson_id: that.lesson.id,
+                          info: JSON.stringify(that.info)
+                      };
+            $.ajax({
+                url: "/development/down",
+                type: "POST",
+                dataType: "json",
+                data: data,
+                async: false
             });
-          });
-        });
-    }, 60000);
-    window.onbeforeunload = function(e) {
-      const token = document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content");
-      const data =
-        that.mode === "creating"
-          ? { _token: token, mode: that.mode, lesson_id: that.lesson.id }
-          : {
-              _token: token,
-              mode: that.mode,
-              user_id: that.user.id,
-              material_id: that.material.id,
-              lesson_id: that.lesson.id,
-              info: JSON.stringify(that.info)
-            };
-      $.ajax({
-        url: "/development/down",
-        type: "POST",
-        dataType: "json",
-        data: data,
-        async: false
-      });
-    };
-  },
-  methods: {
-    ...mapMutations(["setSourceCodeEditor"]),
-    showSourceCodeEditorContextMenu(x, y, startIndex, endIndex) {
-      if (this.mode === "learning") {
-        return;
-      }
-      this.sourceCodeEditorContextMenu.isShown = true;
-      this.sourceCodeEditorContextMenu.style.left = x + "px";
-      this.sourceCodeEditorContextMenu.style.top = y + "px";
-      this.sourceCodeEditorContextMenu.startIndex = startIndex;
-      this.sourceCodeEditorContextMenu.endIndex = endIndex;
+        };
     },
-    hideSourceCodeEditorContextMenu() {
-      this.sourceCodeEditorContextMenu.isShown = false;
-    },
-    handlePortDropdownCommand(command) {
-      open(`http://localhost:${command}`);
-    },
-    handleConsoleDropdownCommand(command) {
-      this.activeConsoleIndex = command;
-    },
-    addConsole() {
-      ++this.consoleCount;
-      this.activeConsoleIndex = this.consoleCount - 1;
-    },
-    isActiveConsole(consoleId) {
-      return this.activeConsoleIndex === consoleId - 1;
+    methods: {
+        ...mapMutations(["setSourceCodeEditor"]),
+        showSourceCodeEditorContextMenu(x, y, startIndex, endIndex) {
+            if (this.mode === "learning") {
+                return;
+            }
+            this.sourceCodeEditorContextMenu.isShown = true;
+            this.sourceCodeEditorContextMenu.style.left = x + "px";
+            this.sourceCodeEditorContextMenu.style.top = y + "px";
+            this.sourceCodeEditorContextMenu.startIndex = startIndex;
+            this.sourceCodeEditorContextMenu.endIndex = endIndex;
+        },
+        hideSourceCodeEditorContextMenu() {
+            this.sourceCodeEditorContextMenu.isShown = false;
+        },
+        handlePortDropdownCommand(command) {
+            open(`http://localhost:${command}`);
+        },
+        handleConsoleDropdownCommand(command) {
+            this.activeConsoleIndex = command;
+        },
+        addConsole() {
+            ++this.consoleCount;
+            this.activeConsoleIndex = this.consoleCount - 1;
+        },
+        isActiveConsole(consoleId) {
+            return this.activeConsoleIndex === consoleId - 1;
+        }
     }
-  }
 };
 </script>
 
 <style scoped>
 #development-ide {
-  height: 100%;
-  overflow: hidden;
-  color: white;
+    height: 100%;
+    overflow: hidden;
+    color: white;
 }
 
 #development-header {
-  height: 10%;
-  background: rgb(30, 30, 30);
-  border-bottom: solid 1.5px rgb(80, 80, 80);
+    height: 10%;
+    background: rgb(30, 30, 30);
+    border-bottom: solid 1.5px rgb(80, 80, 80);
 }
 
 #development-body {
-  display: flex;
-  height: 90%;
+    display: flex;
+    height: 90%;
 }
 
 #file-tree-view {
-  width: 20%;
-  height: 100%;
+    width: 20%;
+    height: 100%;
 }
 
 #center-view {
-  width: 80%;
-  height: 100%;
+    width: 80%;
+    height: 100%;
 }
 
 #source-code-editor {
-  width: 100%;
-  height: 60%;
+    width: 100%;
+    height: 60%;
 }
 
 #console-tool-bar {
-  height: 8%;
-  background: rgb(30, 30, 30);
-  border-top: solid 1.5px rgb(80, 80, 80);
+    height: 8%;
+    background: rgb(30, 30, 30);
+    border-top: solid 1.5px rgb(80, 80, 80);
 }
 
 #console-container {
-  position: relative;
+    position: relative;
 }
 
 .header-button {
-  display: block;
-  color: white;
-  font-size: 1rem;
+    display: block;
+    color: white;
+    font-size: 1rem;
 }
 
 .console {
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: none;
-  width: 100%;
-  height: 32%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: none;
+    width: 100%;
+    height: 32%;
 }
 
 .active-console {
-  z-index: 1;
+    z-index: 1;
 }
 /* 
 // #file-tree-context-menu,

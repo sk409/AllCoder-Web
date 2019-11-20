@@ -1930,6 +1930,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2007,26 +2025,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   created: function created() {
-    var that = this;
-    setInterval(function () {
-      if (that.isWaitingMalwareScan) {
-        return;
-      }
-
-      that.isWaitingMalwareScan = true;
-      axios__WEBPACK_IMPORTED_MODULE_5___default.a.post("/malware_scan", {
-        docker_container_id: that.dockerContainerId
-      }).then(function (response) {
-        that.isWaitingMalwareScan = false;
-        response.data.forEach(function (removedFile) {
-          that.$notify.error({
-            title: "マルウェアを削除しました",
-            message: removedFile,
-            duration: 0
-          });
-        });
-      });
-    }, 60000);
+    var that = this; // setInterval(function() {
+    //   if (that.isWaitingMalwareScan) {
+    //     return;
+    //   }
+    //   that.isWaitingMalwareScan = true;
+    //   axios
+    //     .post("/malware_scan", { docker_container_id: that.dockerContainerId })
+    //     .then(response => {
+    //       that.isWaitingMalwareScan = false;
+    //       response.data.forEach(removedFile => {
+    //         that.$notify.error({
+    //           title: "マルウェアを削除しました",
+    //           message: removedFile,
+    //           duration: 0
+    //         });
+    //       });
+    //     });
+    // }, 60000);
 
     window.onbeforeunload = function (e) {
       var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
@@ -3238,7 +3254,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n#development-ide[data-v-717c32c7] {\n  height: 100%;\n  overflow: hidden;\n  color: white;\n}\n#development-header[data-v-717c32c7] {\n  height: 10%;\n  background: rgb(30, 30, 30);\n  border-bottom: solid 1.5px rgb(80, 80, 80);\n}\n#development-body[data-v-717c32c7] {\n  display: flex;\n  height: 90%;\n}\n#file-tree-view[data-v-717c32c7] {\n  width: 20%;\n  height: 100%;\n}\n#center-view[data-v-717c32c7] {\n  width: 80%;\n  height: 100%;\n}\n#source-code-editor[data-v-717c32c7] {\n  width: 100%;\n  height: 60%;\n}\n#console-tool-bar[data-v-717c32c7] {\n  height: 8%;\n  background: rgb(30, 30, 30);\n  border-top: solid 1.5px rgb(80, 80, 80);\n}\n#console-container[data-v-717c32c7] {\n  position: relative;\n}\n.header-button[data-v-717c32c7] {\n  display: block;\n  color: white;\n  font-size: 1rem;\n}\n.console[data-v-717c32c7] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  border: none;\n  width: 100%;\n  height: 32%;\n}\n.active-console[data-v-717c32c7] {\n  z-index: 1;\n}\n/* \n// #file-tree-context-menu,\n// #source-code-editor-context-menu {\n//   position: absolute;\n// }\n\n// .file-creation-view-button {\n//   width: $file-creation-view-button-width;\n//   margin-left: $file-creation-view-component-margin;\n// }\n\n// .file-creation-view-file-item {\n//   width: $file-creation-view-item-width;\n//   height: $file-creation-view-item-height;\n// }\n\n// #file-creation-view-header {\n//   height: 8vh;\n// }\n\n// #file-creation-view-body {\n//   height: 92vh;\n// }\n\n// #file-creation-view-file-name {\n//   width: $file-creation-view-file-name-width;\n// }\n\n// #file-creation-view {\n//   width: $file-creation-view-width;\n//   height: $file-creation-view-height;\n//   padding: 0 $file-creation-view-margin;\n//   position: absolute;\n//   left: 50%;\n//   top: 50%;\n//   transform: translate(-50%, -50%);\n// }\n\n// .source-code-editor-context-menu-button,\n// .source-code-editor-context-menu-option-button {\n//   display: block;\n//   width: 100%;\n// } */\n", ""]);
+exports.push([module.i, "\n#development-ide[data-v-717c32c7] {\n    height: 100%;\n    overflow: hidden;\n    color: white;\n}\n#development-header[data-v-717c32c7] {\n    height: 10%;\n    background: rgb(30, 30, 30);\n    border-bottom: solid 1.5px rgb(80, 80, 80);\n}\n#development-body[data-v-717c32c7] {\n    display: flex;\n    height: 90%;\n}\n#file-tree-view[data-v-717c32c7] {\n    width: 20%;\n    height: 100%;\n}\n#center-view[data-v-717c32c7] {\n    width: 80%;\n    height: 100%;\n}\n#source-code-editor[data-v-717c32c7] {\n    width: 100%;\n    height: 60%;\n}\n#console-tool-bar[data-v-717c32c7] {\n    height: 8%;\n    background: rgb(30, 30, 30);\n    border-top: solid 1.5px rgb(80, 80, 80);\n}\n#console-container[data-v-717c32c7] {\n    position: relative;\n}\n.header-button[data-v-717c32c7] {\n    display: block;\n    color: white;\n    font-size: 1rem;\n}\n.console[data-v-717c32c7] {\n    position: absolute;\n    top: 0;\n    left: 0;\n    border: none;\n    width: 100%;\n    height: 32%;\n}\n.active-console[data-v-717c32c7] {\n    z-index: 1;\n}\n/* \n// #file-tree-context-menu,\n// #source-code-editor-context-menu {\n//   position: absolute;\n// }\n\n// .file-creation-view-button {\n//   width: $file-creation-view-button-width;\n//   margin-left: $file-creation-view-component-margin;\n// }\n\n// .file-creation-view-file-item {\n//   width: $file-creation-view-item-width;\n//   height: $file-creation-view-item-height;\n// }\n\n// #file-creation-view-header {\n//   height: 8vh;\n// }\n\n// #file-creation-view-body {\n//   height: 92vh;\n// }\n\n// #file-creation-view-file-name {\n//   width: $file-creation-view-file-name-width;\n// }\n\n// #file-creation-view {\n//   width: $file-creation-view-width;\n//   height: $file-creation-view-height;\n//   padding: 0 $file-creation-view-margin;\n//   position: absolute;\n//   left: 50%;\n//   top: 50%;\n//   transform: translate(-50%, -50%);\n// }\n\n// .source-code-editor-context-menu-button,\n// .source-code-editor-context-menu-option-button {\n//   display: block;\n//   width: 100%;\n// } */\n", ""]);
 
 // exports
 
@@ -4241,7 +4257,7 @@ var render = function() {
               { on: { command: _vm.handlePortDropdownCommand } },
               [
                 _c("span", { staticClass: "el-dropdown-link text-white" }, [
-                  _vm._v("\n          ポート\n          "),
+                  _vm._v("\n                    ポート\n                    "),
                   _c("i", { staticClass: "el-icon-arrow-down el-icon--right" })
                 ]),
                 _vm._v(" "),
@@ -4320,9 +4336,9 @@ var render = function() {
                             { staticClass: "el-dropdown-link text-white" },
                             [
                               _vm._v(
-                                "\n              コンソール: " +
+                                "\n                            コンソール: " +
                                   _vm._s(_vm.activeConsoleIndex) +
-                                  "\n              "
+                                  "\n                            "
                               ),
                               _c("i", {
                                 staticClass: "el-icon-arrow-down el-icon--right"

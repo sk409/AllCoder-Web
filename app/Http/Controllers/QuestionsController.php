@@ -72,27 +72,27 @@ class QuestionsController extends Controller
         }
     }
 
-    // public function index(Request $request)
-    // {
-    //     return Controller::narrowDownFromConditions(
-    //         $request->all(),
-    //         "\App\Question"
-    //     );
-    // }
+    //     // public function index(Request $request)
+    //     // {
+    //     //     return Controller::narrowDownFromConditions(
+    //     //         $request->all(),
+    //     //         "\App\Question"
+    //     //     );
+    //     // }
 
-    // public function store(Request $request)
-    // {
-    //     $question = Question::create($request->all());
-    //     return $question->id;
-    // }
+    //     // public function store(Request $request)
+    //     // {
+    //     //     $question = Question::create($request->all());
+    //     //     return $question->id;
+    //     // }
 
-    // public function update(Request $request, int $id)
-    // {
-    //     Question::find($id)->fill($request->all())->save();
-    // }
+    //     // public function update(Request $request, int $id)
+    //     // {
+    //     //     Question::find($id)->fill($request->all())->save();
+    //     // }
 
-    // public function destroy(Request $request, int $id)
-    // {
-    //     Question::destroy($id);
-    // }
+    //     // public function destroy(Request $request, int $id)
+    //     // {
+    //     //     Question::destroy($id);
+    //     // }
 }
