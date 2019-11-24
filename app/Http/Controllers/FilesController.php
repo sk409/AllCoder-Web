@@ -18,7 +18,7 @@ class FilesController extends Controller
         ]);
         $outputs = [];
         exec("docker container exec -it $request->docker_container_id cat $request->path", $outputs);
-        if (strpos($outputs[0], "Permission denied") !== false) {
+        if (count($outputs) != 0 && strpos($outputs[0], "Permission denied") !== false) {
             return "Permission denied";
         }
         $file = new File($request->path, implode("\n", $outputs));

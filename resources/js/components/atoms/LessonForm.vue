@@ -100,6 +100,15 @@
             @add-environment="addEnvironment"
           ></lesson-form-setting-item>
         </el-collapse-item>
+        <el-collapse-item title="PHP" name="PHP">
+          <lesson-form-setting-item
+            v-for="version in versions.php"
+            :key="version"
+            name="PHP"
+            :version="version"
+            @add-environment="addEnvironment"
+          ></lesson-form-setting-item>
+        </el-collapse-item>
       </el-collapse>
     </el-dialog>
   </div>
@@ -142,8 +151,9 @@ export default {
       expandedEnvironmentNames: [],
       versions: {
         centOS: ["7"],
+        php: ["7.3.12"],
         laravel: ["5.7"],
-        mysql: ["5.7.28"]
+        mysql: ["5.7.28", "8.0.18"]
       }
     };
   },

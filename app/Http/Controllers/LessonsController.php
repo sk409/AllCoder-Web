@@ -60,12 +60,15 @@ class LessonsController extends Controller
         }
         $environmentBuilder = new EnvironmentBuilder($request->username, $request->os, $ports);
         if ($request->environments) {
+            $php = "PHP";
             $laravel = "Laravel";
             $mysql = "MySQL";
             foreach ($request->environments as $environment) {
                 $exploded = explode(": ", $environment);
                 $version = end($exploded);
-                if (substr($environment, 0, strlen($laravel)) === $laravel) {
+                if (substr($environment, 0, strlen($php)) === $php) {
+                    $environmentBuilder->php($version);
+                } else if (substr($environment, 0, strlen($laravel)) === $laravel) {
                     $environmentBuilder->laravel($version);
                 } else if (substr($environment, 0, strlen($mysql)) === $mysql) {
                     $request->validate([

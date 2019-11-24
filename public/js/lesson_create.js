@@ -204,6 +204,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -238,8 +247,9 @@ __webpack_require__.r(__webpack_exports__);
       expandedEnvironmentNames: [],
       versions: {
         centOS: ["7"],
+        php: ["7.3.12"],
         laravel: ["5.7"],
-        mysql: ["5.7.28"]
+        mysql: ["5.7.28", "8.0.18"]
       }
     };
   },
@@ -1345,6 +1355,19 @@ var render = function() {
                   return _c("lesson-form-setting-item", {
                     key: version,
                     attrs: { name: "MySQL", version: version },
+                    on: { "add-environment": _vm.addEnvironment }
+                  })
+                }),
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-collapse-item",
+                { attrs: { title: "PHP", name: "PHP" } },
+                _vm._l(_vm.versions.php, function(version) {
+                  return _c("lesson-form-setting-item", {
+                    key: version,
+                    attrs: { name: "PHP", version: version },
                     on: { "add-environment": _vm.addEnvironment }
                   })
                 }),

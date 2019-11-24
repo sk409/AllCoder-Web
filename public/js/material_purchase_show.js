@@ -455,7 +455,7 @@ new Vue({
           that.$notify({
             message: "購入に成功しました",
             type: "success",
-            duration: 1500
+            duration: 0
           });
         } else {
           that.$notify.error({

@@ -17,6 +17,7 @@ class EnvironmentBuilder
         $this->dockerfile .= "RUN useradd $user\n";
         $this->dockerfile .= <<<'EOM'
 RUN yum -y install epel-release \
+    && rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm \
     && echo -e "[epel]\nname=Extra Packages for Enterprise Linux 7 - \$basearch\n#baseurl=http://download.fedoraproject.org/pub/epel/7/\$basearch\nmirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=\$basearch\nfailovermethod=priority\nenabled=0\ngpgcheck=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7" > etc/yum.repos.d/epel.repo \
     && yum -y install --enablerepo=epel clamav-server clamav-data clamav-update clamav-filesystem clamav clamav-scanner clamav-scanner-systemd clamav-devel clamav-lib clamav-server-systemd \
     && echo -e "LogFile /var/log/clamd.scan\nLogFileMaxSize 2M\nLogTime yes\nLogSyslog yes\nLogRotate yes\nLocalSocket /var/run/clamd.scan/clamd.sock\nFixStaleSocket yes\nExcludePath ^/proc/\nExcludePath ^/sys/\nExcludePath ^/dev/\nUser root" > /etc/clamd.d/scan.conf \
@@ -58,8 +59,7 @@ EOM;
         switch ($version) {
             case "5.7":
                 $this->dockerfile .= <<<EOM
-RUN rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm \
-    && yum install -y --enablerepo=remi,remi-php73,epel php php-devel php-mbstring php-pdo php-gd php-xml php-mcrypt php-pecl-zip php-mysqlnd \
+RUN yum install -y --enablerepo=remi,remi-php73,epel php php-devel php-mbstring php-pdo php-gd php-xml php-mcrypt php-pecl-zip php-mysqlnd \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && composer global require "laravel/installer"\n
@@ -72,8 +72,11 @@ EOM;
     {
         switch ($version) {
             case "5.7.28":
-                $this->dockerfile .= <<<EOM
-RUN yum localinstall -y http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm \
+                $this->dockerfile .= "RUN yum localinstall -y http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm \\\n";
+            case "8.0.18":
+                $this->dockerfile .= "RUN yum localinstall -y https://dev.mysql.com/get/mysql80-community-release-el7-2.noarch.rpm \\\n";
+        }
+        $this->dockerfile .= <<<EOM
     && yum install -y mysql-community-server \
     && chown -hR $this->user:$this->user /var/log/mysqld.log \
     && chown -hR $this->user:$this->user /var/lib/mysql \
@@ -83,12 +86,23 @@ RUN mysqld --initialize --user=$this->user \
     && mysqld & sleep 10 \
     && mysqladmin password $password -u root -p$(cat /var/log/mysqld.log | grep root | awk '{print substr(substr($0, index($0, "localhost:")), 12)}')
 EOM;
-                if ($user !== "root") {
-                    $this->dockerfile .= " \\\n    && mysql -u root -p$password -e'RENAME USER root@localhost to $user@localhost'\n";
-                } else {
-                    $this->dockerfile .= "\n";
-                }
-                $this->dockerfile .= "USER root\n";
+        if ($user !== "root") {
+            $this->dockerfile .= " \\\n    && mysql -u root -p$password -e'RENAME USER root@localhost to $user@localhost'\n";
+        } else {
+            $this->dockerfile .= "\n";
+        }
+        $this->dockerfile .= "USER root\n";
+        return $this;
+    }
+
+    public function php(string $version): EnvironmentBuilder
+    {
+        // TODO: php-mysqlndはMySQLが選択されているときにだけ、インストールする
+        switch ($version) {
+            case "7.3.12":
+                $this->dockerfile .= <<<EOM
+RUN yum install -y --enablerepo=remi,remi-php73,epel php php-devel php-mbstring php-pdo php-gd php-xml php-mcrypt php-pecl-zip php-mysqlnd\n
+EOM;
         }
         return $this;
     }
