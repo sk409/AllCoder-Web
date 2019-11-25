@@ -39,17 +39,28 @@ class MaterialPurchaseController extends Controller
         $material->purchases()->attach($request->user_id);
         foreach ($material->lessons as $lesson) {
             $lessonDirectoryPathPurchased = Path::purchasedLesson($request->user_id, $material->id, $lesson->id, "");
-            $dockerDirectoryPathPurchased = Path::append($lessonDirectoryPathPurchased, "docker");
+            // $dockerDirectoryPathPurchased = Path::append($lessonDirectoryPathPurchased, "docker");
             mkdir($lessonDirectoryPathPurchased, 0755, true);
-            mkdir($dockerDirectoryPathPurchased);
-            $lessonDirectoryPathOriginal = Path::lesson($lesson->id);
-            $tarFilePathOriginal = Path::append($lessonDirectoryPathOriginal, "container.tar");
-            $dockerImageNameOriginal = uniqid();
-            exec("cat $tarFilePathOriginal | docker image import - $dockerImageNameOriginal");
-            //
+            // mkdir($dockerDirectoryPathPurchased);
+            /*********************************/
+            // $lessonDirectoryPathOriginal = Path::lesson($lesson->id);
+            // $tarFilePathOriginal = Path::append($lessonDirectoryPathOriginal, "container.tar");
+            // $dockerImageNameOriginal = uniqid();
+            // exec("cat $tarFilePathOriginal | docker image import - $dockerImageNameOriginal");
+            // $outputs = [];
+            // exec("docker container run -itd $dockerImageNameOriginal /sbin/init", $outputs);
+            /*********************************/
+            $dockerImageName = uniqid();
+            exec("docker container commit $lesson->docker_container_id $dockerImageName");
             $outputs = [];
-            exec("docker container run -itd $dockerImageNameOriginal /sbin/init", $outputs);
+            exec("docker container run -itd -P $dockerImageName", $outputs);
+            /*********************************/
             $dockerContainerId = $outputs[0];
+            // TODO: MySQLが選択されている場合にだけ実行する
+            exec("docker container exec -it $dockerContainerId find /var/lib/mysql -type f -exec touch {} \;");
+            // TODO: ClamAVを無効化
+            //exec("docker container exec -it --user root $dockerContainerId clamd");
+            exec("docker container exec -itd $dockerContainerId gotty -w -p $lesson->console_port bash");
             $questionFileNames = glob(Path::lessonQuestion($lesson->id, "*.json"));
             //
             foreach ($questionFileNames as $questionFileName) {
@@ -72,8 +83,8 @@ class MaterialPurchaseController extends Controller
                 exec("docker container cp $tmpFilePath $dockerContainerId:$obj->path");
                 unlink($tmpFilePath);
             }
-            $tarFilePathPurchased = Path::append($lessonDirectoryPathPurchased, "container.tar");
-            exec("docker container export $dockerContainerId > $tarFilePathPurchased");
+            // $tarFilePathPurchased = Path::append($lessonDirectoryPathPurchased, "container.tar");
+            // exec("docker container export $dockerContainerId > $tarFilePathPurchased");
             $info = new stdClass();
             $info->title = $lesson->title;
             $info->user_name = $lesson->user_name;
@@ -82,7 +93,8 @@ class MaterialPurchaseController extends Controller
             foreach ($lesson->ports->all() as $port) {
                 $info->ports[] = $port->port;
             }
-            $info->docker_container_id = null;
+            // $info->docker_container_id = null;
+            $info->docker_container_id = $dockerContainerId;
             $infoFilePath = Path::append($lessonDirectoryPathPurchased, "info.json");
             file_put_contents($infoFilePath, json_encode($info));
         }

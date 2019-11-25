@@ -31,39 +31,39 @@ class DevelopmentController extends Controller
 {
 
     // TODO: アクセスしてきたユーザとログインしているユーザのIDが一致するかを確認する
-    private static function f(
-        string $mode,
-        string $title,
-        string $composeDirectoryPath,
-        string $hostAppDirectoryPath,
-        string $containerAppDirectoryPath,
-        string $containerLogsDirectoryPath,
-        string $deltaLogFilePath,
-        array $parameters
-    ): Renderable {
-        exec("cd $composeDirectoryPath && docker-compose down");
-        exec("cd $composeDirectoryPath && docker-compose up -d");
-        exec("cd $composeDirectoryPath && docker-compose exec -d develop gotty -w bash");
-        exec("cd $composeDirectoryPath && docker-compose exec -d develop /bin/bash /opt/scripts/observe_app_changes.sh $containerAppDirectoryPath $containerLogsDirectoryPath/app_changes.txt");
-        exec("cd $composeDirectoryPath && docker-compose exec -d develop /bin/bash /opt/scripts/startup.sh");
-        $outputs = [];
-        // TODO: ポート番号決め打ち直す
-        exec("cd $composeDirectoryPath && docker-compose port develop 80", $outputs);
-        preg_match("/.+:([0-9]+)/u", $outputs[0], $previewPortMatches);
-        $outputs = [];
-        // TODO: ポート番号決め打ち直す
-        exec("cd $composeDirectoryPath && docker-compose port develop 8080", $outputs);
-        preg_match("/.+:([0-9]+)/u", $outputs[0], $consolePortMatches);
-        return view("development_ide", [
-            "mode" => $mode,
-            "title" => $title,
-            "hostAppDirectoryPath" => $hostAppDirectoryPath,
-            "containerAppDirectoryPath" => $containerAppDirectoryPath,
-            "deltaLogFilePath" => $deltaLogFilePath,
-            "previewPortNumber" => $previewPortMatches[1],
-            "consolePortNumber" => $consolePortMatches[1],
-        ] + $parameters);
-    }
+    // private static function f(
+    //     string $mode,
+    //     string $title,
+    //     string $composeDirectoryPath,
+    //     string $hostAppDirectoryPath,
+    //     string $containerAppDirectoryPath,
+    //     string $containerLogsDirectoryPath,
+    //     string $deltaLogFilePath,
+    //     array $parameters
+    // ): Renderable {
+    //     exec("cd $composeDirectoryPath && docker-compose down");
+    //     exec("cd $composeDirectoryPath && docker-compose up -d");
+    //     exec("cd $composeDirectoryPath && docker-compose exec -d develop gotty -w bash");
+    //     exec("cd $composeDirectoryPath && docker-compose exec -d develop /bin/bash /opt/scripts/observe_app_changes.sh $containerAppDirectoryPath $containerLogsDirectoryPath/app_changes.txt");
+    //     exec("cd $composeDirectoryPath && docker-compose exec -d develop /bin/bash /opt/scripts/startup.sh");
+    //     $outputs = [];
+    //     // TODO: ポート番号決め打ち直す
+    //     exec("cd $composeDirectoryPath && docker-compose port develop 80", $outputs);
+    //     preg_match("/.+:([0-9]+)/u", $outputs[0], $previewPortMatches);
+    //     $outputs = [];
+    //     // TODO: ポート番号決め打ち直す
+    //     exec("cd $composeDirectoryPath && docker-compose port develop 8080", $outputs);
+    //     preg_match("/.+:([0-9]+)/u", $outputs[0], $consolePortMatches);
+    //     return view("development_ide", [
+    //         "mode" => $mode,
+    //         "title" => $title,
+    //         "hostAppDirectoryPath" => $hostAppDirectoryPath,
+    //         "containerAppDirectoryPath" => $containerAppDirectoryPath,
+    //         "deltaLogFilePath" => $deltaLogFilePath,
+    //         "previewPortNumber" => $previewPortMatches[1],
+    //         "consolePortNumber" => $consolePortMatches[1],
+    //     ] + $parameters);
+    // }
 
     /************/
     // 購入時にJSONに吐き出す情報
@@ -73,51 +73,51 @@ class DevelopmentController extends Controller
     {
         $lesson = Lesson::find($id);
         $mode = "creating";
-        if (is_null($lesson->docker_container_id)) {
-            // $dockerImageName = uniqid();
-            // exec("docker image build -t $dockerImageName $lessonDirectoryPath");
-            $lessonDirectoryPath = Path::lesson($lesson->id);
-            $containerTarFilePath = Path::append($lessonDirectoryPath, "container.tar");
-            $dockerImageName = uniqid();
-            exec("cat $containerTarFilePath | docker image import - $dockerImageName");
-            $dockerDirectoryPath = Path::append($lessonDirectoryPath, "docker");
-            $dockerfilePath = Path::append($dockerDirectoryPath, "Dockerfile");
-            $dockerfileText = <<<EOM
-FROM $dockerImageName
-USER $lesson->user_name
-EOM;
-            file_put_contents($dockerfilePath, $dockerfileText);
-            $dockerImageName2 = uniqid();
-            exec("docker image build -t $dockerImageName2 $dockerDirectoryPath");
-            $portString = "";
-            foreach ($lesson->ports as $port) {
-                $portString .= "-p $port->port ";
-            }
-            $outputs = [];
-            exec("docker container run -d $portString $dockerImageName2 /sbin/init", $outputs);
-            $containerID = $outputs[0];
-            // TODO: MySQLが選択されている場合にだけ実行する
-            exec("docker container exec -it $containerID find /var/lib/mysql -type f -exec touch {} \;");
-            exec("docker container exec -it --user root $containerID clamd");
-            exec("docker container exec -itd $containerID gotty -w -p $lesson->console_port bash");
-        } else {
-            $containerID = $lesson->docker_container_id;
-        }
+        //         if (is_null($lesson->docker_container_id)) {
+        //             // $dockerImageName = uniqid();
+        //             // exec("docker image build -t $dockerImageName $lessonDirectoryPath");
+        //             $lessonDirectoryPath = Path::lesson($lesson->id);
+        //             $containerTarFilePath = Path::append($lessonDirectoryPath, "container.tar");
+        //             $dockerImageName = uniqid();
+        //             exec("cat $containerTarFilePath | docker image import - $dockerImageName");
+        //             $dockerDirectoryPath = Path::append($lessonDirectoryPath, "docker");
+        //             $dockerfilePath = Path::append($dockerDirectoryPath, "Dockerfile");
+        //             $dockerfileText = <<<EOM
+        // FROM $dockerImageName
+        // USER $lesson->user_name
+        // EOM;
+        //             file_put_contents($dockerfilePath, $dockerfileText);
+        //             $dockerImageName2 = uniqid();
+        //             exec("docker image build -t $dockerImageName2 $dockerDirectoryPath");
+        //             $portString = "";
+        //             foreach ($lesson->ports as $port) {
+        //                 $portString .= "-p $port->port ";
+        //             }
+        //             $outputs = [];
+        //             exec("docker container run -d $portString $dockerImageName2 /sbin/init", $outputs);
+        //             $containerID = $outputs[0];
+        //             // TODO: MySQLが選択されている場合にだけ実行する
+        //             exec("docker container exec -it $containerID find /var/lib/mysql -type f -exec touch {} \;");
+        //             exec("docker container exec -it --user root $containerID clamd");
+        //             exec("docker container exec -itd $containerID gotty -w -p $lesson->console_port bash");
+        //         } else {
+        //             $containerID = $lesson->docker_container_id;
+        //         }
         $outputs = [];
-        exec("docker container port $containerID $lesson->console_port", $outputs);
+        exec("docker container port $lesson->docker_container_id $lesson->console_port", $outputs);
         preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $consolePortMatches);
         $consolePort = $consolePortMatches[1];
         $hostPorts = [];
         $containerPorts = [];
         foreach ($lesson->ports()->get()->all() as $containerPort) {
             $outputs = [];
-            exec("docker container port $containerID $containerPort->port", $outputs);
+            exec("docker container port $lesson->docker_container_id $containerPort->port", $outputs);
             preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $portMatches);
             $hostPorts[] = $portMatches[1];
             $containerPorts[] = $containerPort->port;
         }
-        $lesson->docker_container_id = $containerID;
-        $lesson->save();
+        // $lesson->docker_container_id = $containerID;
+        // $lesson->save();
         return view("development_ide", [
             "mode" => $mode,
             "title" => $lesson->title,
@@ -147,48 +147,48 @@ EOM;
         $lessonDirectoryPathPurchased = Path::purchasedLesson($user->id, $material->id, $lesson->id, "");
         $infoFilePath = Path::append($lessonDirectoryPathPurchased, "info.json");
         $info = json_decode(file_get_contents($infoFilePath));
-        if (is_null($info->docker_container_id)) {
-            $containerTarFilePath = Path::append($lessonDirectoryPathPurchased, "container.tar");
-            $dockerImageName = uniqid();
-            exec("cat $containerTarFilePath | docker image import - $dockerImageName");
-            $dockerDirectoryPath = Path::append($lessonDirectoryPathPurchased, "docker");
-            $dockerfilePath = Path::append($dockerDirectoryPath, "Dockerfile");
-            $dockerfileText = <<<EOM
-FROM $dockerImageName
-USER $info->user_name
-EOM;
-            file_put_contents($dockerfilePath, $dockerfileText);
-            $dockerImageName2 = uniqid();
-            exec("docker image build -t $dockerImageName2 $dockerDirectoryPath");
-            $portString = "";
-            foreach ($info->ports as $port) {
-                $portString .= "-p $port ";
-            }
-            $outputs = [];
-            exec("docker container run -d $portString $dockerImageName2 /sbin/init", $outputs);
-            $containerID = $outputs[0];
-            // TODO: MySQLが選択されている場合にだけ実行する
-            exec("docker container exec -it $containerID find /var/lib/mysql -type f -exec touch {} \;");
-            exec("docker container exec -it --user root $containerID clamd");
-            exec("docker container exec -itd $containerID gotty -w -p $info->console_port bash");
-        } else {
-            $containerID = $info->docker_container_id;
-        }
+        //         if (is_null($info->docker_container_id)) {
+        //             $containerTarFilePath = Path::append($lessonDirectoryPathPurchased, "container.tar");
+        //             $dockerImageName = uniqid();
+        //             exec("cat $containerTarFilePath | docker image import - $dockerImageName");
+        //             $dockerDirectoryPath = Path::append($lessonDirectoryPathPurchased, "docker");
+        //             $dockerfilePath = Path::append($dockerDirectoryPath, "Dockerfile");
+        //             $dockerfileText = <<<EOM
+        // FROM $dockerImageName
+        // USER $info->user_name
+        // EOM;
+        //             file_put_contents($dockerfilePath, $dockerfileText);
+        //             $dockerImageName2 = uniqid();
+        //             exec("docker image build -t $dockerImageName2 $dockerDirectoryPath");
+        //             $portString = "";
+        //             foreach ($info->ports as $port) {
+        //                 $portString .= "-p $port ";
+        //             }
+        //             $outputs = [];
+        //             exec("docker container run -d $portString $dockerImageName2 /sbin/init", $outputs);
+        //             $containerID = $outputs[0];
+        //             // TODO: MySQLが選択されている場合にだけ実行する
+        //             exec("docker container exec -it $containerID find /var/lib/mysql -type f -exec touch {} \;");
+        //             exec("docker container exec -it --user root $containerID clamd");
+        //             exec("docker container exec -itd $containerID gotty -w -p $info->console_port bash");
+        //         } else {
+        //             $containerID = $info->docker_container_id;
+        //         }
         $outputs = [];
-        exec("docker container port $containerID $info->console_port", $outputs);
+        exec("docker container port $info->docker_container_id $info->console_port", $outputs);
         preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $consolePortMatches);
         $consolePort = $consolePortMatches[1];
         $hostPorts = [];
         $containerPorts = [];
         foreach ($info->ports as $containerPort) {
             $outputs = [];
-            exec("docker container port $containerID $containerPort", $outputs);
+            exec("docker container port $info->docker_container_id $containerPort", $outputs);
             preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $portMatches);
             $hostPorts[] = $portMatches[1];
             $containerPorts[] = $containerPort;
         }
-        $info->docker_container_id = $containerID;
-        file_put_contents($infoFilePath, json_encode($info));
+        // $info->docker_container_id = $containerID;
+        // file_put_contents($infoFilePath, json_encode($info));
         return view("development_ide", [
             "mode" => $mode,
             "title" => $info->title,

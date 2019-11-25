@@ -15,6 +15,13 @@ class EnvironmentBuilder
         $this->user = $user;
         $this->dockerfile .= "FROM $os\n";
         $this->dockerfile .= "RUN useradd $user\n";
+        if ($ports) {
+            $this->dockerfile .= "EXPOSE";
+            foreach ($ports as $port) {
+                $this->dockerfile .= " $port";
+            }
+            $this->dockerfile .= "\n";
+        }
         $this->dockerfile .= <<<'EOM'
 RUN yum -y install epel-release \
     && rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm \
@@ -69,6 +76,7 @@ EOM;
         return $this;
     }
 
+    // TODO: ポート番号を受け取った引数に変更する
     public function mysql(string $version, string $user, string $password, string $port): EnvironmentBuilder
     {
         switch ($version) {
