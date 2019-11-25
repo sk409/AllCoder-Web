@@ -64,6 +64,7 @@ RUN yum install -y --enablerepo=remi,remi-php73,epel php php-devel php-mbstring 
     && mv composer.phar /usr/local/bin/composer \
     && composer global require "laravel/installer"\n
 EOM;
+                break;
         }
         return $this;
     }
@@ -73,8 +74,10 @@ EOM;
         switch ($version) {
             case "5.7.28":
                 $this->dockerfile .= "RUN yum localinstall -y http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm \\\n";
+                break;
             case "8.0.18":
                 $this->dockerfile .= "RUN yum localinstall -y https://dev.mysql.com/get/mysql80-community-release-el7-2.noarch.rpm \\\n";
+                break;
         }
         $this->dockerfile .= <<<EOM
     && yum install -y mysql-community-server \
@@ -103,6 +106,7 @@ EOM;
                 $this->dockerfile .= <<<EOM
 RUN yum install -y --enablerepo=remi,remi-php73,epel php php-devel php-mbstring php-pdo php-gd php-xml php-mcrypt php-pecl-zip php-mysqlnd\n
 EOM;
+                break;
         }
         return $this;
     }
