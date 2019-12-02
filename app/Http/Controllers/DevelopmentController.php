@@ -118,6 +118,10 @@ class DevelopmentController extends Controller
         }
         // $lesson->docker_container_id = $containerID;
         // $lesson->save();
+        exec("docker container exec -it $lesson->docker_container_id find /var/lib/mysql -type f -exec touch {} \;");
+        // TODO: ClamAVを無効化
+        //exec("docker container exec -it --user root $dockerContainerId clamd");
+        exec("docker container exec -itd $lesson->docker_container_id gotty -w -p $lesson->console_port bash");
         return view("development_ide", [
             "mode" => $mode,
             "title" => $lesson->title,
@@ -189,6 +193,10 @@ class DevelopmentController extends Controller
         }
         // $info->docker_container_id = $containerID;
         // file_put_contents($infoFilePath, json_encode($info));
+        exec("docker container exec -it $info->docker_container_id find /var/lib/mysql -type f -exec touch {} \;");
+        // TODO: ClamAVを無効化
+        //exec("docker container exec -it --user root $dockerContainerId clamd");
+        exec("docker container exec -itd $info->docker_container_id gotty -w -p $info->console_port bash");
         return view("development_ide", [
             "mode" => $mode,
             "title" => $info->title,

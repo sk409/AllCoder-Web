@@ -13,7 +13,8 @@
 @section("app-content")
 <div id="material-show" class="container pb-5">
     <div id="material-thumbnail-and-details" class="d-flex mt-4">
-        <img id="material-thumbnail-image" src="{{url($material->thumbnail_image_path)}}">
+        <img id="material-thumbnail-image"
+            src="{{is_null($material->thumbnail_image_path) ? url("storage/no-image.png") : url($material->thumbnail_image_path)}}">
         <div class="flex-grow-1 ml-4">
             <h3 id="material-title" class="mb-3">{{$material->title}}</h3>
             <div id="material-description">{{$material->description}}</div>

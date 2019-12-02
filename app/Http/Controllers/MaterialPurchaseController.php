@@ -73,8 +73,11 @@ class MaterialPurchaseController extends Controller
                 $text = implode("\n", $outputs);
                 $newText = "";
                 $seek = 0;
+                usort($obj->questions, function ($a, $b) {
+                    $a->startIndex - $b->startIndex;
+                });
                 foreach ($obj->questions as $question) {
-                    $newText .= substr($text, $seek, $question->startIndex - $seek);
+                    $newText .= substr($text, $seek, $question->startIndex);
                     $seek = $question->endIndex;
                 }
                 $newText .= substr($text, $seek, strlen($text));

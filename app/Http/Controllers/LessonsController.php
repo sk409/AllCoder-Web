@@ -93,10 +93,10 @@ class LessonsController extends Controller
         exec("docker container run -itd -P $dockerImageName", $outputs);
         $dockerContainerId = $outputs[0];
         // TODO: MySQLが選択されている場合にだけ実行する
-        exec("docker container exec -it $dockerContainerId find /var/lib/mysql -type f -exec touch {} \;");
-        // TODO: ClamAVを無効化
-        //exec("docker container exec -it --user root $dockerContainerId clamd");
-        exec("docker container exec -itd $dockerContainerId gotty -w -p $lesson->console_port bash");
+        // exec("docker container exec -it $dockerContainerId find /var/lib/mysql -type f -exec touch {} \;");
+        // // TODO: ClamAVを無効化
+        // //exec("docker container exec -it --user root $dockerContainerId clamd");
+        // exec("docker container exec -itd $dockerContainerId gotty -w -p $lesson->console_port bash");
         $lesson->docker_container_id = $dockerContainerId;
         $lesson->save();
         // $tarFilePath = Path::append($lessonDirectoryPath, "container.tar");
