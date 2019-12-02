@@ -1,11 +1,11 @@
 <template>
   <div id="file-tree">
-    <div id="file-tree-tool-bar" class="d-flex align-items-center p-2">
+    <!-- <div id="file-tree-tool-bar" class="d-flex align-items-center p-2">
       <el-input v-model="rootPath" placeholder="パスを入力"></el-input>
       <i class="ml-1 el-icon-search" @click="fetchChildren"></i>
       <el-divider direction="vertical"></el-divider>
       <i class="el-icon-refresh" @click="fetchChildren"></i>
-    </div>
+    </div>-->
     <el-divider class="m-0"></el-divider>
     <div
       v-if="rootFolder"
@@ -235,7 +235,7 @@ export default {
 #file-tree {
   overflow: scroll;
   white-space: nowrap;
-  height: 90%;
+  height: 100%;
   background: rgb(30, 37, 51);
 }
 </style>

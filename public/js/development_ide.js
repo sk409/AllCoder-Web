@@ -3522,7 +3522,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n#file-tree-tool-bar[data-v-6b7b7ff2] {\n  height: 10%;\n  background: rgb(30, 37, 51);\n}\n#file-tree[data-v-6b7b7ff2] {\n  overflow: scroll;\n  white-space: nowrap;\n  height: 90%;\n  background: rgb(30, 37, 51);\n}\n", ""]);
+exports.push([module.i, "\n#file-tree-tool-bar[data-v-6b7b7ff2] {\n  height: 10%;\n  background: rgb(30, 37, 51);\n}\n#file-tree[data-v-6b7b7ff2] {\n  overflow: scroll;\n  white-space: nowrap;\n  height: 100%;\n  background: rgb(30, 37, 51);\n}\n", ""]);
 
 // exports
 
@@ -5028,39 +5028,6 @@ var render = function() {
     "div",
     { attrs: { id: "file-tree" } },
     [
-      _c(
-        "div",
-        {
-          staticClass: "d-flex align-items-center p-2",
-          attrs: { id: "file-tree-tool-bar" }
-        },
-        [
-          _c("el-input", {
-            attrs: { placeholder: "パスを入力" },
-            model: {
-              value: _vm.rootPath,
-              callback: function($$v) {
-                _vm.rootPath = $$v
-              },
-              expression: "rootPath"
-            }
-          }),
-          _vm._v(" "),
-          _c("i", {
-            staticClass: "ml-1 el-icon-search",
-            on: { click: _vm.fetchChildren }
-          }),
-          _vm._v(" "),
-          _c("el-divider", { attrs: { direction: "vertical" } }),
-          _vm._v(" "),
-          _c("i", {
-            staticClass: "el-icon-refresh",
-            on: { click: _vm.fetchChildren }
-          })
-        ],
-        1
-      ),
-      _vm._v(" "),
       _c("el-divider", { staticClass: "m-0" }),
       _vm._v(" "),
       _vm.rootFolder
