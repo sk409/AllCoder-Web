@@ -111941,21 +111941,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var element_ui__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(element_ui__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var element_ui_lib_theme_chalk_index_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! element-ui/lib/theme-chalk/index.css */ "./node_modules/element-ui/lib/theme-chalk/index.css");
 /* harmony import */ var element_ui_lib_theme_chalk_index_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(element_ui_lib_theme_chalk_index_css__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var element_ui_lib_locale__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! element-ui/lib/locale */ "./node_modules/element-ui/lib/locale/index.js");
-/* harmony import */ var element_ui_lib_locale__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(element_ui_lib_locale__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! element-ui/lib/locale/lang/ja */ "./node_modules/element-ui/lib/locale/lang/ja.js");
-/* harmony import */ var element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _mixin_htmlescape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./mixin/htmlescape.js */ "./resources/js/mixin/htmlescape.js");
+/* harmony import */ var _mixin_is_string_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./mixin/is_string.js */ "./resources/js/mixin/is_string.js");
+/* harmony import */ var _mixin_is_string_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_mixin_is_string_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var element_ui_lib_locale__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! element-ui/lib/locale */ "./node_modules/element-ui/lib/locale/index.js");
+/* harmony import */ var element_ui_lib_locale__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(element_ui_lib_locale__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! element-ui/lib/locale/lang/ja */ "./node_modules/element-ui/lib/locale/lang/ja.js");
+/* harmony import */ var element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _mixin_nl2br_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./mixin/nl2br.js */ "./resources/js/mixin/nl2br.js");
 
 
 
 
 
 
-element_ui_lib_locale__WEBPACK_IMPORTED_MODULE_4___default.a.use(element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_5___default.a);
+
+
+
+element_ui_lib_locale__WEBPACK_IMPORTED_MODULE_6___default.a.use(element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_7___default.a);
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 window.Vuex = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 Vue.use(__webpack_require__(/*! mavon-editor */ "./node_modules/mavon-editor/dist/mavon-editor.js"));
 Vue.use(element_ui__WEBPACK_IMPORTED_MODULE_2___default.a);
+Vue.mixin(_mixin_htmlescape_js__WEBPACK_IMPORTED_MODULE_4__["default"]);
+Vue.mixin(_mixin_is_string_js__WEBPACK_IMPORTED_MODULE_5___default.a);
+Vue.mixin(_mixin_nl2br_js__WEBPACK_IMPORTED_MODULE_8__["default"]);
 
 __webpack_require__(/*! mavon-editor/dist/css/index.css */ "./node_modules/mavon-editor/dist/css/index.css");
 
@@ -115943,6 +115953,139 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))) : Nn ? ((Nn.exports = rt)._ = rt, Fn._ = rt) : $n._ = rt;
 }).call(this);
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../../node_modules/webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
+
+/***/ }),
+
+/***/ "./resources/js/mixin/htmlescape.js":
+/*!******************************************!*\
+  !*** ./resources/js/mixin/htmlescape.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utils_htmlescape_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/htmlescape.js */ "./resources/js/utils/htmlescape.js");
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  methods: {
+    htmlescape: function htmlescape(string) {
+      return Object(_utils_htmlescape_js__WEBPACK_IMPORTED_MODULE_0__["default"])(string);
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/mixin/is_string.js":
+/*!*****************************************!*\
+  !*** ./resources/js/mixin/is_string.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function isString(obj) {
+  return typeof obj == "string" || obj instanceof String;
+}
+
+;
+
+/***/ }),
+
+/***/ "./resources/js/mixin/nl2br.js":
+/*!*************************************!*\
+  !*** ./resources/js/mixin/nl2br.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utils_htmlescape_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/htmlescape.js */ "./resources/js/utils/htmlescape.js");
+/* harmony import */ var _utils_nl2br_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/nl2br.js */ "./resources/js/utils/nl2br.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  methods: {
+    nl2br: function nl2br(target) {
+      Object(_utils_nl2br_js__WEBPACK_IMPORTED_MODULE_1__["default"])(target);
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/utils/htmlescape.js":
+/*!******************************************!*\
+  !*** ./resources/js/utils/htmlescape.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return htmlescape; });
+function htmlescape(string) {
+  if (typeof string !== 'string') {
+    return string;
+  }
+
+  return string.replace(/[&'`"<>]/g, function (match) {
+    return {
+      '&': '&amp;',
+      "'": '&#x27;',
+      '`': '&#x60;',
+      '"': '&quot;',
+      '<': '&lt;',
+      '>': '&gt;'
+    }[match];
+  });
+}
+
+/***/ }),
+
+/***/ "./resources/js/utils/nl2br.js":
+/*!*************************************!*\
+  !*** ./resources/js/utils/nl2br.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return nl2br; });
+function nl2br(target) {
+  var isString = typeof target == "string" || target instanceof String;
+
+  if (isString) {
+    return target.replace(/\n/g, "<br>");
+  } else {
+    Array.from(target.childNodes).forEach(function (childNode) {
+      if (childNode.nodeType !== Node.TEXT_NODE) {
+        return;
+      }
+
+      var text = childNode.textContent;
+      childNode.textContent = "";
+      var newLineRegex = new RegExp(/\\n|\n/g);
+      var match;
+      var startIndex = 0;
+
+      while (match = newLineRegex.exec(text)) {
+        var _textNode = document.createTextNode(text.substring(startIndex, match.index));
+
+        childNode.parentNode.insertBefore(_textNode, childNode);
+        var brNode = document.createElement("br");
+        childNode.parentNode.insertBefore(brNode, childNode);
+        startIndex = match.index + match[0].length;
+      }
+
+      var textNode = document.createTextNode(text.substring(startIndex));
+      childNode.parentNode.insertBefore(textNode, childNode);
+      childNode.remove();
+    });
+  }
+}
 
 /***/ }),
 

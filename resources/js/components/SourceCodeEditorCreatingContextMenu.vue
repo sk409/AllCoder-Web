@@ -10,7 +10,7 @@
         >問題に追加</button>
       </div>
       <div class="d-flex flex-column" v-show="areStoreQuestionOptionsShown">
-        <button type="button" class="btn btn-light" @click="showCodeDialog">トリミング</button>
+        <button type="button" class="btn btn-light" @click="showDialogCode">トリミング</button>
         <!-- <button
           type="button"
           class="btn btn-light"
@@ -24,18 +24,14 @@
         <button type="button" class="btn btn-light" @click="storeQuestion([])">トリミングなし</button>-->
       </div>
     </div>
-    <el-dialog :visible.sync="isCodeDialogVisible" :fullscreen="true">
-      <div>{{answer}}</div>
-      <textarea>aoeirgjoaeirjgoiarejogiaje</textarea>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import Question from "../../models/question.js";
+import Question from "../models/question.js";
 import { mapState } from "vuex";
 export default {
-  name: "source-code-editor-context-menu",
+  name: "SourceCodeEditorCreatingContextMenu",
   props: {
     startIndex: {
       type: Number,
@@ -53,7 +49,6 @@ export default {
   data() {
     return {
       areStoreQuestionOptionsShown: false,
-      isCodeDialogVisible: false,
       trimmingOptions: {
         forward: "forward",
         backward: "backward"
@@ -79,8 +74,8 @@ export default {
     hideStoreQuestionOptions() {
       this.areStoreQuestionOptionsShown = false;
     },
-    showCodeDialog() {
-      this.isCodeDialogVisible = true;
+    showDialogCode() {
+      this.$emit("show-dialog-code");
     },
     storeQuestion(trimmingOptions) {
       const question = new Question(

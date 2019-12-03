@@ -83,31 +83,6 @@ export default {
         );
       }
     },
-    nl2br(target) {
-      Array.from(target.childNodes).forEach(childNode => {
-        if (childNode.nodeType !== Node.TEXT_NODE) {
-          return;
-        }
-        const text = childNode.textContent;
-        childNode.textContent = "";
-        const newLineRegex = new RegExp(/\\n/g);
-        let match;
-        let startIndex = 0;
-        console.log(text);
-        while ((match = newLineRegex.exec(text))) {
-          const textNode = document.createTextNode(
-            text.substring(startIndex, match.index)
-          );
-          childNode.parentNode.insertBefore(textNode, childNode);
-          const brNode = document.createElement("br");
-          childNode.parentNode.insertBefore(brNode, childNode);
-          startIndex = match.index + match[0].length;
-        }
-        const textNode = document.createTextNode(text.substring(startIndex));
-        childNode.parentNode.insertBefore(textNode, childNode);
-        childNode.remove();
-      });
-    },
     highlight() {
       function split(textNode) {
         const color = function(color, match) {

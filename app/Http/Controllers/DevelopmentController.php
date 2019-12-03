@@ -122,7 +122,7 @@ class DevelopmentController extends Controller
         // TODO: ClamAVを無効化
         //exec("docker container exec -it --user root $dockerContainerId clamd");
         exec("docker container exec -itd $lesson->docker_container_id gotty -w -p $lesson->console_port bash");
-        return view("development_ide", [
+        return view("development_ide_creating", [
             "mode" => $mode,
             "title" => $lesson->title,
             "consolePort" => $consolePort,
@@ -197,8 +197,7 @@ class DevelopmentController extends Controller
         // TODO: ClamAVを無効化
         //exec("docker container exec -it --user root $dockerContainerId clamd");
         exec("docker container exec -itd $info->docker_container_id gotty -w -p $info->console_port bash");
-        return view("development_ide", [
-            "mode" => $mode,
+        return view("development_ide_learning", [
             "title" => $info->title,
             "consolePort" => $consolePort,
             "hostPorts" => $hostPorts,

@@ -15,15 +15,14 @@
     @contextmenu.stop.prevent="oncontextmenu"
   ></textarea>-->
   <div @contextmenu.stop.prevent="showContextMenu">
-    <div id="source-code-editor"></div>
+    <div class="h-100" id="source-code-editor"></div>
   </div>
 </template>
 
 <script>
-import SourceCodeEditorContextMenu from "./SourceCodeEditorContextMenu.vue";
 import { mapGetters, mapActions } from "vuex";
 export default {
-  name: "source-code-editor",
+  name: "SourceCodeEditorCreating",
   data() {
     return {
       sourceCodeEditor: null
@@ -102,13 +101,7 @@ export default {
       f(this.sourceCodeEditor.selection.getRange().end.row);
       const endIndex =
         characterIndex + this.sourceCodeEditor.selection.getRange().end.column;
-      this.$emit(
-        "show-source-code-editor-context-menu",
-        e.pageX,
-        e.pageY,
-        startIndex,
-        endIndex
-      );
+      this.$emit("show-context-menu", e.pageX, e.pageY, startIndex, endIndex);
     }
     // oninput(e) {
     //   const that = this;
