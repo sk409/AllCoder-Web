@@ -1838,6 +1838,15 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _models_code_question_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../models/code_question.js */ "./resources/js/models/code_question.js");
+/* harmony import */ var _models_code_question_close_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/code_question_close.js */ "./resources/js/models/code_question_close.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -1894,6 +1903,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "AddQuestionDialogCode",
   props: {
@@ -1903,6 +1915,18 @@ __webpack_require__.r(__webpack_exports__);
     },
     answer: {
       type: String,
+      required: true
+    },
+    startIndex: {
+      type: Number,
+      required: true
+    },
+    endIndex: {
+      type: Number,
+      required: true
+    },
+    lessonId: {
+      type: Number,
       required: true
     }
   },
@@ -1923,17 +1947,12 @@ __webpack_require__.r(__webpack_exports__);
       }
     };
   },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])(["editedFilePath"])),
   watch: {
     isShown: {
       immediate: true,
       handler: function handler(newValue) {
-        this.isDialogVisible = newValue; // const that = this;
-        // Vue.nextTick(() => {
-        //   if (!that.$refs.answer) {
-        //     return;
-        //   }
-        //   that.nl2br(that.$refs.answer);
-        // });
+        this.isDialogVisible = newValue;
       }
     },
     answer: {
@@ -1961,6 +1980,43 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         this.question.closes = this.question.closes.slice(0, index).concat(this.question.closes.slice(index + 1));
       }
+    },
+    register: function register() {
+      var _this = this;
+
+      var question = new _models_code_question_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.editedFilePath, this.startIndex, this.endIndex, this.question.correct.text, this.question.correct.score, this.question.correct.comment, this.question.incorrect.comment, this.lessonId);
+      var that = this;
+      question.store(function (response) {
+        console.log(response);
+
+        if (response.status !== 200) {
+          that.$notify.error({
+            message: "問題の登録に失敗しました",
+            duration: 3000
+          });
+          return;
+        }
+
+        var error = false;
+        that.question.closes.forEach(function (close) {
+          var codeQuestionClose = new _models_code_question_close_js__WEBPACK_IMPORTED_MODULE_1__["default"](close.text, close.score, close.comment, question.id);
+          codeQuestionClose.store(function (response) {
+            error = response.status === 200;
+          });
+        });
+
+        if (error) {
+          _this.$notify.error({
+            message: "中間点の登録に失敗しました",
+            duration: 3000
+          });
+        } else {
+          _this.$notify.success({
+            message: "問題を登録しました",
+            duration: 3000
+          });
+        }
+      });
     }
   }
 });
@@ -2100,6 +2156,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 
@@ -2150,6 +2209,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       addQuestionDialogCode: {
         isShown: false
       },
+      sourceCodeEditor: {
+        selectedStartIndex: 0,
+        selectedEndIndex: 0
+      },
       sourceCodeEditorCreatingContextMenu: {
         isShown: false,
         startIndex: 0,
@@ -2168,7 +2231,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return "";
       }
 
-      return this.editedFileText.substring(this.sourceCodeEditorCreatingContextMenu.startIndex, this.sourceCodeEditorCreatingContextMenu.endIndex);
+      return this.editedFileText.substring(this.sourceCodeEditor.selectedStartIndex, this.sourceCodeEditor.selectedEndIndex);
     }
   }),
   methods: {
@@ -2179,8 +2242,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sourceCodeEditorCreatingContextMenu.isShown = true;
       this.sourceCodeEditorCreatingContextMenu.style.left = x + "px";
       this.sourceCodeEditorCreatingContextMenu.style.top = y + "px";
-      this.sourceCodeEditorCreatingContextMenu.startIndex = startIndex;
-      this.sourceCodeEditorCreatingContextMenu.endIndex = endIndex;
+      this.sourceCodeEditor.selectedStartIndex = startIndex;
+      this.sourceCodeEditor.selectedEndIndex = endIndex;
     },
     showAddQuestionDialogCode: function showAddQuestionDialogCode() {
       this.addQuestionDialogCode.isShown = true;
@@ -2780,8 +2843,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _models_question_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../models/question.js */ "./resources/js/models/question.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -2817,7 +2879,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-
+//import Question from "../models/question.js";
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "SourceCodeEditorCreatingContextMenu",
@@ -2844,7 +2906,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])({
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
     filePath: function filePath(state) {
       return state.editedFile ? state.editedFile.path : null;
     },
@@ -2870,130 +2932,137 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     showDialogCode: function showDialogCode() {
       this.$emit("show-dialog-code");
     },
-    storeQuestion: function storeQuestion(trimmingOptions) {
-      var question = new _models_question_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, this.filePath, this.startIndex, this.endIndex, this.answer, this.lessonId);
-      question.store(function (response) {
-        console.log(response);
-      }); // const that = this;
-      // const answer = this.file.text.substring(this.startIndex, this.endIndex);
-      // Question.index(
-      //   { description_id: this.selectedDescription.id },
-      //   response => {
-      //     const index = response.data.length
-      //       ? Math.max(...response.data.map(question => question.index)) + 1
-      //       : 0;
-      //     const question = new Question(
-      //       null,
-      //       index,
-      //       this.selectedDescription.id
-      //     );
-      //     const that = this;
-      //     question.store(response => {
-      //       const lineRegex = /\n/g;
-      //       let lineMatch = lineRegex.exec(answer);
-      //       let lineStartIndex = 0;
-      //       let lineEndIndex = 0;
-      //       let inputButtonIndex = 0;
-      //       while (true) {
-      //         const storeInputButton = function(line) {
-      //           console.log("*************");
-      //           console.log(line);
-      //           console.log("*************");
-      //           const spaceRegex = / /g;
-      //           let spaceMatch = spaceRegex.exec(line);
-      //           let spaceStartIndex = 0;
-      //           const createInputButton = function(startIndex, endIndex) {
-      //             if (lineEndIndex <= lineStartIndex + spaceStartIndex) {
-      //               return;
-      //             }
-      //             const lineNumber =
-      //               that.file.text.substring(0, endIndex).split("\n").length -
-      //               1;
-      //             const inputButton = new InputButton(
-      //               null,
-      //               inputButtonIndex,
-      //               startIndex,
-      //               endIndex,
-      //               lineNumber,
-      //               question.id,
-      //               that.file.text.substring(startIndex, endIndex)
-      //             );
-      //             ++inputButtonIndex;
-      //             question.inputButtons.push(inputButton);
-      //             inputButton.store();
-      //             const text = that.file.text.substring(
-      //               inputButton.startIndex,
-      //               inputButton.endIndex
-      //             );
-      //             // if (text == " ") {
-      //             //   console.log("スペース");
-      //             // } else if (text == "\n") {
-      //             //   console.log("開業");
-      //             // } else {
-      //             //   console.log(text);
-      //             // }
-      //             return inputButton;
-      //           };
-      //           while (true) {
-      //             if (!spaceMatch) {
-      //               const startIndex =
-      //                 that.startIndex + lineStartIndex + spaceStartIndex;
-      //               let endIndex = that.startIndex + lineEndIndex;
-      //               if (startIndex === endIndex) {
-      //                 ++endIndex;
-      //               }
-      //               const inputButton = createInputButton(startIndex, endIndex);
-      //               break;
-      //             }
-      //             const startIndex =
-      //               that.startIndex + lineStartIndex + spaceStartIndex;
-      //             let endIndex =
-      //               that.startIndex + lineStartIndex + spaceMatch.index;
-      //             if (startIndex === endIndex) {
-      //               ++endIndex;
-      //             }
-      //             const inputButton = createInputButton(startIndex, endIndex);
-      //             if (spaceStartIndex !== spaceMatch.index) {
-      //               const startIndex =
-      //                 that.startIndex + lineStartIndex + spaceMatch.index;
-      //               const endIndex =
-      //                 that.startIndex + lineStartIndex + spaceMatch.index + 1;
-      //               const inputButton = createInputButton(startIndex, endIndex);
-      //             }
-      //             spaceStartIndex = spaceMatch.index + 1;
-      //             spaceMatch = spaceRegex.exec(line);
-      //           }
-      //         };
-      //         lineEndIndex = lineMatch ? lineMatch.index : answer.length;
-      //         const line = lineMatch
-      //           ? answer.substring(lineStartIndex, lineMatch.index)
-      //           : answer.substring(lineStartIndex);
-      //         const trimmedLineIndices = this.trim(
-      //           lineStartIndex,
-      //           lineEndIndex,
-      //           line,
-      //           trimmingOptions
-      //         );
-      //         lineStartIndex = trimmedLineIndices.lineStartIndex;
-      //         lineEndIndex = trimmedLineIndices.lineEndIndex;
-      //         const trimmedLine = answer.substring(
-      //           lineStartIndex,
-      //           lineEndIndex
-      //         );
-      //         if (!lineMatch) {
-      //           storeInputButton(trimmedLine);
-      //           break;
-      //         }
-      //         storeInputButton(trimmedLine);
-      //         lineStartIndex = lineMatch.index + 1;
-      //         lineMatch = lineRegex.exec(answer);
-      //       }
-      //     });
-      //   }
-      // );
-
-      this.$emit("hide");
-    },
+    // storeQuestion(trimmingOptions) {
+    //   const question = new Question(
+    //     null,
+    //     this.filePath,
+    //     this.startIndex,
+    //     this.endIndex,
+    //     this.answer,
+    //     this.lessonId
+    //   );
+    //   question.store(response => {
+    //     console.log(response);
+    //   });
+    //   // const that = this;
+    //   // const answer = this.file.text.substring(this.startIndex, this.endIndex);
+    //   // Question.index(
+    //   //   { description_id: this.selectedDescription.id },
+    //   //   response => {
+    //   //     const index = response.data.length
+    //   //       ? Math.max(...response.data.map(question => question.index)) + 1
+    //   //       : 0;
+    //   //     const question = new Question(
+    //   //       null,
+    //   //       index,
+    //   //       this.selectedDescription.id
+    //   //     );
+    //   //     const that = this;
+    //   //     question.store(response => {
+    //   //       const lineRegex = /\n/g;
+    //   //       let lineMatch = lineRegex.exec(answer);
+    //   //       let lineStartIndex = 0;
+    //   //       let lineEndIndex = 0;
+    //   //       let inputButtonIndex = 0;
+    //   //       while (true) {
+    //   //         const storeInputButton = function(line) {
+    //   //           console.log("*************");
+    //   //           console.log(line);
+    //   //           console.log("*************");
+    //   //           const spaceRegex = / /g;
+    //   //           let spaceMatch = spaceRegex.exec(line);
+    //   //           let spaceStartIndex = 0;
+    //   //           const createInputButton = function(startIndex, endIndex) {
+    //   //             if (lineEndIndex <= lineStartIndex + spaceStartIndex) {
+    //   //               return;
+    //   //             }
+    //   //             const lineNumber =
+    //   //               that.file.text.substring(0, endIndex).split("\n").length -
+    //   //               1;
+    //   //             const inputButton = new InputButton(
+    //   //               null,
+    //   //               inputButtonIndex,
+    //   //               startIndex,
+    //   //               endIndex,
+    //   //               lineNumber,
+    //   //               question.id,
+    //   //               that.file.text.substring(startIndex, endIndex)
+    //   //             );
+    //   //             ++inputButtonIndex;
+    //   //             question.inputButtons.push(inputButton);
+    //   //             inputButton.store();
+    //   //             const text = that.file.text.substring(
+    //   //               inputButton.startIndex,
+    //   //               inputButton.endIndex
+    //   //             );
+    //   //             // if (text == " ") {
+    //   //             //   console.log("スペース");
+    //   //             // } else if (text == "\n") {
+    //   //             //   console.log("開業");
+    //   //             // } else {
+    //   //             //   console.log(text);
+    //   //             // }
+    //   //             return inputButton;
+    //   //           };
+    //   //           while (true) {
+    //   //             if (!spaceMatch) {
+    //   //               const startIndex =
+    //   //                 that.startIndex + lineStartIndex + spaceStartIndex;
+    //   //               let endIndex = that.startIndex + lineEndIndex;
+    //   //               if (startIndex === endIndex) {
+    //   //                 ++endIndex;
+    //   //               }
+    //   //               const inputButton = createInputButton(startIndex, endIndex);
+    //   //               break;
+    //   //             }
+    //   //             const startIndex =
+    //   //               that.startIndex + lineStartIndex + spaceStartIndex;
+    //   //             let endIndex =
+    //   //               that.startIndex + lineStartIndex + spaceMatch.index;
+    //   //             if (startIndex === endIndex) {
+    //   //               ++endIndex;
+    //   //             }
+    //   //             const inputButton = createInputButton(startIndex, endIndex);
+    //   //             if (spaceStartIndex !== spaceMatch.index) {
+    //   //               const startIndex =
+    //   //                 that.startIndex + lineStartIndex + spaceMatch.index;
+    //   //               const endIndex =
+    //   //                 that.startIndex + lineStartIndex + spaceMatch.index + 1;
+    //   //               const inputButton = createInputButton(startIndex, endIndex);
+    //   //             }
+    //   //             spaceStartIndex = spaceMatch.index + 1;
+    //   //             spaceMatch = spaceRegex.exec(line);
+    //   //           }
+    //   //         };
+    //   //         lineEndIndex = lineMatch ? lineMatch.index : answer.length;
+    //   //         const line = lineMatch
+    //   //           ? answer.substring(lineStartIndex, lineMatch.index)
+    //   //           : answer.substring(lineStartIndex);
+    //   //         const trimmedLineIndices = this.trim(
+    //   //           lineStartIndex,
+    //   //           lineEndIndex,
+    //   //           line,
+    //   //           trimmingOptions
+    //   //         );
+    //   //         lineStartIndex = trimmedLineIndices.lineStartIndex;
+    //   //         lineEndIndex = trimmedLineIndices.lineEndIndex;
+    //   //         const trimmedLine = answer.substring(
+    //   //           lineStartIndex,
+    //   //           lineEndIndex
+    //   //         );
+    //   //         if (!lineMatch) {
+    //   //           storeInputButton(trimmedLine);
+    //   //           break;
+    //   //         }
+    //   //         storeInputButton(trimmedLine);
+    //   //         lineStartIndex = lineMatch.index + 1;
+    //   //         lineMatch = lineRegex.exec(answer);
+    //   //       }
+    //   //     });
+    //   //   }
+    //   // );
+    //   this.$emit("hide");
+    // },
     trim: function trim(lineStartIndex, lineEndIndex, line, trimmingOptions) {
       if (trimmingOptions.includes(this.trimmingOptions.forward)) {
         var regex = /^( *).*?$/;
@@ -4816,9 +4885,11 @@ var render = function() {
                 "div",
                 { staticClass: "text-center" },
                 [
-                  _c("el-button", { attrs: { type: "primary" } }, [
-                    _vm._v("登録")
-                  ])
+                  _c(
+                    "el-button",
+                    { attrs: { type: "primary" }, on: { click: _vm.register } },
+                    [_vm._v("登録")]
+                  )
                 ],
                 1
               )
@@ -4992,7 +5063,10 @@ var render = function() {
       _c("add-question-dialog-code", {
         attrs: {
           "is-shown": _vm.addQuestionDialogCode.isShown,
-          answer: _vm.questionAnswerCode
+          answer: _vm.questionAnswerCode,
+          "start-index": _vm.sourceCodeEditor.selectedStartIndex,
+          "end-index": _vm.sourceCodeEditor.selectedEndIndex,
+          "lesson-id": _vm.lesson.id
         }
       }),
       _vm._v(" "),
@@ -5007,8 +5081,8 @@ var render = function() {
         ],
         style: _vm.sourceCodeEditorCreatingContextMenu.style,
         attrs: {
-          "start-index": _vm.sourceCodeEditorCreatingContextMenu.startIndex,
-          "end-index": _vm.sourceCodeEditorCreatingContextMenu.endIndex,
+          "start-index": _vm.sourceCodeEditor.selectedStartIndex,
+          "end-index": _vm.sourceCodeEditor.selectedEndIndex,
           "lesson-id": _vm.lesson.id
         },
         on: { "show-dialog-code": _vm.showAddQuestionDialogCode }
@@ -7236,6 +7310,174 @@ new Vue({
 
 /***/ }),
 
+/***/ "./resources/js/models/code_question.js":
+/*!**********************************************!*\
+  !*** ./resources/js/models/code_question.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CodeQuestion; });
+/* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model.js */ "./resources/js/models/model.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var CodeQuestion =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(CodeQuestion, _Model);
+
+  _createClass(CodeQuestion, null, [{
+    key: "baseRoute",
+    value: function baseRoute() {
+      return "code_questions";
+    }
+  }, {
+    key: "index",
+    value: function index(parameters, completion) {
+      return _model_js__WEBPACK_IMPORTED_MODULE_0__["default"].index(CodeQuestion.baseRoute(), parameters, completion);
+    }
+  }]);
+
+  function CodeQuestion(filePath, startIndex, endIndex, text, score, correctComment, incorrectComment, lessonId) {
+    var _this;
+
+    _classCallCheck(this, CodeQuestion);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(CodeQuestion).call(this, CodeQuestion.baseRoute()));
+    _this.filePath = filePath;
+    _this.startIndex = startIndex;
+    _this.endIndex = endIndex;
+    _this.text = text;
+    _this.score = score;
+    _this.correctComment = correctComment;
+    _this.incorrectComment = incorrectComment;
+    _this.lessonId = lessonId;
+    return _this;
+  }
+
+  _createClass(CodeQuestion, [{
+    key: "parameters",
+    value: function parameters() {
+      return {
+        file_path: this.filePath,
+        start_index: this.startIndex,
+        end_index: this.endIndex,
+        text: this.text,
+        score: this.score,
+        correct_comment: this.correctComment,
+        incorrect_comment: this.incorrectComment,
+        lesson_id: this.lessonId
+      };
+    }
+  }]);
+
+  return CodeQuestion;
+}(_model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
+/***/ "./resources/js/models/code_question_close.js":
+/*!****************************************************!*\
+  !*** ./resources/js/models/code_question_close.js ***!
+  \****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CodeQuestionClose; });
+/* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model.js */ "./resources/js/models/model.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var CodeQuestionClose =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(CodeQuestionClose, _Model);
+
+  _createClass(CodeQuestionClose, null, [{
+    key: "baseRoute",
+    value: function baseRoute() {
+      return "code_question_closes";
+    }
+  }, {
+    key: "index",
+    value: function index(parameters, completion) {
+      return _model_js__WEBPACK_IMPORTED_MODULE_0__["default"].index(CodeQuestionClose.baseRoute(), parameters, completion);
+    }
+  }]);
+
+  function CodeQuestionClose(text, score, comment, codeQuestionId) {
+    var _this;
+
+    _classCallCheck(this, CodeQuestionClose);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(CodeQuestionClose).call(this, CodeQuestionClose.baseRoute()));
+    _this.text = text;
+    _this.score = score;
+    _this.comment = comment;
+    _this.codeQuestionId = codeQuestionId;
+    return _this;
+  }
+
+  _createClass(CodeQuestionClose, [{
+    key: "parameters",
+    value: function parameters() {
+      return {
+        text: this.text,
+        score: this.score,
+        comment: this.comment,
+        code_question_id: this.codeQuestionId
+      };
+    }
+  }]);
+
+  return CodeQuestionClose;
+}(_model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
 /***/ "./resources/js/models/file.js":
 /*!*************************************!*\
   !*** ./resources/js/models/file.js ***!
@@ -7642,139 +7884,6 @@ function () {
 
   return Model;
 }();
-
-
-
-/***/ }),
-
-/***/ "./resources/js/models/question.js":
-/*!*****************************************!*\
-  !*** ./resources/js/models/question.js ***!
-  \*****************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Question; });
-/* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model.js */ "./resources/js/models/model.js");
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-
-
-var Question =
-/*#__PURE__*/
-function (_Model) {
-  _inherits(Question, _Model);
-
-  _createClass(Question, null, [{
-    key: "baseRoute",
-    value: function baseRoute() {
-      return "questions";
-    }
-  }, {
-    key: "index",
-    value: function index(parameters, completion) {
-      return _model_js__WEBPACK_IMPORTED_MODULE_0__["default"].index(Question.baseRoute(), parameters, completion);
-    }
-  }]);
-
-  function Question(id, path, startIndex, endIndex, answer, lessonId) {
-    var _this;
-
-    _classCallCheck(this, Question);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Question).call(this, Question.baseRoute()));
-    _this.id = id;
-    _this.path = path;
-    _this.startIndex = startIndex;
-    _this.endIndex = endIndex;
-    _this.answer = answer;
-    _this.input = "";
-    _this.lessonId = lessonId;
-    return _this;
-  }
-
-  _createClass(Question, [{
-    key: "parameters",
-    value: function parameters() {
-      return {
-        path: this.path,
-        start_index: this.startIndex,
-        end_index: this.endIndex,
-        answer: this.answer,
-        input: this.input,
-        lesson_id: this.lessonId
-      };
-    }
-  }, {
-    key: "path",
-    get: function get() {
-      return this._path;
-    },
-    set: function set(value) {
-      this._path = value;
-    }
-  }, {
-    key: "startIndex",
-    get: function get() {
-      return this._startIndex;
-    },
-    set: function set(value) {
-      this._startIndex = value;
-    }
-  }, {
-    key: "endIndex",
-    get: function get() {
-      return this._endIndex;
-    },
-    set: function set(value) {
-      this._endIndex = value;
-    }
-  }, {
-    key: "answer",
-    get: function get() {
-      return this._answer;
-    },
-    set: function set(value) {
-      this._answer = value;
-    }
-  }, {
-    key: "input",
-    get: function get() {
-      return this._input;
-    },
-    set: function set(value) {
-      this._input = value;
-    }
-  }, {
-    key: "lessonId",
-    get: function get() {
-      return this._lessonId;
-    },
-    set: function set(value) {
-      this._lessonId = value;
-    }
-  }]);
-
-  return Question;
-}(_model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
 

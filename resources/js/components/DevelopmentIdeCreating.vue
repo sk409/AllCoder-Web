@@ -20,11 +20,14 @@
     <add-question-dialog-code
       :is-shown="addQuestionDialogCode.isShown"
       :answer="questionAnswerCode"
+      :start-index="sourceCodeEditor.selectedStartIndex"
+      :end-index="sourceCodeEditor.selectedEndIndex"
+      :lesson-id="lesson.id"
     ></add-question-dialog-code>
     <source-code-editor-creating-context-menu
       v-show="sourceCodeEditorCreatingContextMenu.isShown"
-      :start-index="sourceCodeEditorCreatingContextMenu.startIndex"
-      :end-index="sourceCodeEditorCreatingContextMenu.endIndex"
+      :start-index="sourceCodeEditor.selectedStartIndex"
+      :end-index="sourceCodeEditor.selectedEndIndex"
       :lesson-id="lesson.id"
       :style="sourceCodeEditorCreatingContextMenu.style"
       @show-dialog-code="showAddQuestionDialogCode"
@@ -84,6 +87,10 @@ export default {
       addQuestionDialogCode: {
         isShown: false
       },
+      sourceCodeEditor: {
+        selectedStartIndex: 0,
+        selectedEndIndex: 0
+      },
       sourceCodeEditorCreatingContextMenu: {
         isShown: false,
         startIndex: 0,
@@ -103,8 +110,8 @@ export default {
         return "";
       }
       return this.editedFileText.substring(
-        this.sourceCodeEditorCreatingContextMenu.startIndex,
-        this.sourceCodeEditorCreatingContextMenu.endIndex
+        this.sourceCodeEditor.selectedStartIndex,
+        this.sourceCodeEditor.selectedEndIndex
       );
     }
   },
@@ -116,8 +123,8 @@ export default {
       this.sourceCodeEditorCreatingContextMenu.isShown = true;
       this.sourceCodeEditorCreatingContextMenu.style.left = x + "px";
       this.sourceCodeEditorCreatingContextMenu.style.top = y + "px";
-      this.sourceCodeEditorCreatingContextMenu.startIndex = startIndex;
-      this.sourceCodeEditorCreatingContextMenu.endIndex = endIndex;
+      this.sourceCodeEditor.selectedStartIndex = startIndex;
+      this.sourceCodeEditor.selectedEndIndex = endIndex;
     },
     showAddQuestionDialogCode() {
       this.addQuestionDialogCode.isShown = true;

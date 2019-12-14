@@ -20,6 +20,8 @@
 
 namespace App\Http\Controllers;
 
+use App\CodeQuestion;
+use App\CodeQuestionClose;
 use App\Lesson;
 use App\Material;
 use App\Path;
@@ -142,12 +144,15 @@ class DevelopmentController extends Controller
         $user = User::find($request->user_id);
         $material = Material::find($request->material_id);
         $lesson = Lesson::find($request->lesson_id);
+        $questions = CodeQuestion::where("lesson_id", $lesson->id)->get()->all();
+        foreach ($questions as $question) {
+            $question->closes = CodeQuestionClose::where("code_question_id", $question->id)->get()->all();
+        }
         // $composeDirectoryPath = Path::purchasedLessonWeb(
         //     $request->user_id,
         //     $request->material_id,
         //     $request->lesson_id
         // );
-        $mode = "learning";
         $lessonDirectoryPathPurchased = Path::purchasedLesson($user->id, $material->id, $lesson->id, "");
         $infoFilePath = Path::append($lessonDirectoryPathPurchased, "info.json");
         $info = json_decode(file_get_contents($infoFilePath));
@@ -202,10 +207,11 @@ class DevelopmentController extends Controller
             "consolePort" => $consolePort,
             "hostPorts" => $hostPorts,
             "containerPorts" => $containerPorts,
+            "info" => $info,
             "user" => $user,
             "material" => $material,
             "lesson" => $lesson,
-            "info" => $info
+            "questions" => $questions
         ]);
     }
 

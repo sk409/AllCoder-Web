@@ -85,15 +85,15 @@ class Path
         return Path::purchasedLessonMobile($userId, $materialId, $lessonId, Path::append("options", $path));
     }
 
-    public static function docker($path): string
-    {
-        return Path::append(resource_path("docker"), $path);
-    }
+    // public static function docker($path): string
+    // {
+    //     return Path::append(resource_path("docker"), $path);
+    // }
 
-    public static function dockerDevelopment($path = ""): string
-    {
-        return Path::docker(Path::append("development", $path));
-    }
+    // public static function dockerDevelopment($path = ""): string
+    // {
+    //     return Path::docker(Path::append("development", $path));
+    // }
 
     // // TODO: 修正
     // public static function preview($path): string

@@ -2010,7 +2010,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 
@@ -2042,6 +2041,10 @@ __webpack_require__.r(__webpack_exports__);
       required: true
     },
     containerPorts: {
+      type: Array,
+      required: true
+    },
+    questions: {
       type: Array,
       required: true
     }
@@ -2265,14 +2268,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "SourceCodeEditorLearning",
   props: {
     mode: {
-      type: String,
-      required: true
-    },
-    text: {
       type: String,
       required: true
     },
@@ -2285,6 +2285,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       isInputDialogVisible: false,
       isCommentDialogVieible: false,
+      text: "",
       answer: "",
       enteredAnswer: "",
       selectedQuqestion: null,
@@ -2294,18 +2295,34 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   mounted: function mounted() {
-    this.convertToQuestionButton();
-    this.nl2br(this.$refs.editor);
-    this.highlight();
+    var _this = this;
+
+    this.$store.subscribe(function (mutation, state) {
+      if (mutation.type === "setEditedFile") {
+        var targetQuestions = _this.questions.filter(function (question) {
+          return question.file_path === state.editedFile.path;
+        });
+
+        console.log(targetQuestions);
+        _this.text = state.editedFile.text;
+        _this.$refs.editor.innerHTML = "";
+
+        _this.convertToQuestionButton(targetQuestions);
+
+        _this.nl2br(_this.$refs.editor);
+
+        _this.highlight();
+      }
+    });
   },
   methods: {
-    convertToQuestionButton: function convertToQuestionButton() {
-      var _this = this;
+    convertToQuestionButton: function convertToQuestionButton(questions) {
+      var _this2 = this;
 
       var startIndex = 0;
-      this.questions.forEach(function (question) {
+      questions.forEach(function (question) {
         if (question.startIndex !== 0) {
-          _this.$refs.editor.appendChild(document.createTextNode(_this.text.substring(startIndex, question.startIndex)));
+          _this2.$refs.editor.appendChild(document.createTextNode(_this2.text.substring(startIndex, question.start_index)));
         }
 
         var questionButton = document.createElement("span");
@@ -2315,7 +2332,7 @@ __webpack_require__.r(__webpack_exports__);
         //   question.endIndex
         // );
 
-        var that = _this;
+        var that = _this2;
 
         questionButton.onclick = function () {
           that.isInputDialogVisible = true;
@@ -2323,9 +2340,9 @@ __webpack_require__.r(__webpack_exports__);
           that.selectedQuestionButton = questionButton;
         };
 
-        _this.$refs.editor.appendChild(questionButton);
+        _this2.$refs.editor.appendChild(questionButton);
 
-        startIndex = question.endIndex;
+        startIndex = question.end_index;
       });
 
       if (startIndex !== this.text.length) {
@@ -2395,7 +2412,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     checkAnswer: function checkAnswer() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.isInputDialogVisible = false;
 
@@ -2405,22 +2422,22 @@ __webpack_require__.r(__webpack_exports__);
         return;
       }
 
-      if (this.enteredAnswer === this.selectedQuqestion.answer.text) {
-        var textNode = document.createTextNode(this.selectedQuqestion.answer.text);
+      if (this.enteredAnswer === this.selectedQuqestion.text) {
+        var textNode = document.createTextNode(this.selectedQuqestion.text);
         this.$refs.editor.insertBefore(textNode, this.selectedQuestionButton);
         this.selectedQuestionButton.remove();
         this.highlight();
         this.commentTitle = "正解";
-        this.commentText = this.selectedQuqestion.answer.comment;
+        this.commentText = this.selectedQuqestion.correct_comment;
       } else {
-        console.log(this.selectedQuqestion.close);
-        var close = this.selectedQuqestion.close.filter(function (c) {
-          return _this2.enteredAnswer === c.text;
+        //console.log(this.selectedQuqestion.close);
+        var close = this.selectedQuqestion.closes.filter(function (c) {
+          return _this3.enteredAnswer === c.text;
         });
 
         if (close.length === 0) {
           this.commentTitle = "不正解";
-          this.commentText = this.selectedQuqestion.incorrectComment;
+          this.commentText = this.selectedQuqestion.incorrect_comment;
         } else {
           this.commentTitle = "惜しい";
           this.commentText = close[0].comment;
@@ -3950,22 +3967,7 @@ var render = function() {
                 attrs: {
                   id: "source-code-editor-learning",
                   mode: "learning",
-                  text: "<h1>HelloWorld</h1>\\n<h2>HelloWorld</h2>",
-                  questions: [
-                    {
-                      startIndex: 0,
-                      endIndex: 4,
-                      answer: {
-                        text: "<h1>",
-                        score: 10,
-                        comment: "正解です!!\\nよくできました"
-                      },
-                      close: [
-                        { text: "<h2>", comment: "惜しい!もう少し大きいやつ!" }
-                      ],
-                      incorrectComment: "不正解です。。。"
-                    }
-                  ]
+                  questions: _vm.questions
                 }
               }),
               _vm._v(" "),
@@ -4082,8 +4084,9 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { ref: "editor" },
     [
+      _c("div", { ref: "editor" }),
+      _vm._v(" "),
       _c(
         "el-dialog",
         {

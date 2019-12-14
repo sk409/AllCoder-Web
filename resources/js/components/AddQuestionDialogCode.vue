@@ -47,7 +47,7 @@
         </div>
         <el-divider class="mt-3 mb-4"></el-divider>
         <div class="text-center">
-          <el-button type="primary">登録</el-button>
+          <el-button type="primary" @click="register">登録</el-button>
         </div>
       </el-form>
     </el-dialog>
@@ -55,6 +55,9 @@
 </template>
 
 <script>
+import CodeQuestion from "../models/code_question.js";
+import CodeQuestionClose from "../models/code_question_close.js";
+import { mapGetters } from "vuex";
 export default {
   name: "AddQuestionDialogCode",
   props: {
@@ -64,6 +67,18 @@ export default {
     },
     answer: {
       type: String,
+      required: true
+    },
+    startIndex: {
+      type: Number,
+      required: true
+    },
+    endIndex: {
+      type: Number,
+      required: true
+    },
+    lessonId: {
+      type: Number,
       required: true
     }
   },
@@ -84,18 +99,14 @@ export default {
       }
     };
   },
+  computed: {
+    ...mapGetters(["editedFilePath"])
+  },
   watch: {
     isShown: {
       immediate: true,
       handler(newValue) {
         this.isDialogVisible = newValue;
-        // const that = this;
-        // Vue.nextTick(() => {
-        //   if (!that.$refs.answer) {
-        //     return;
-        //   }
-        //   that.nl2br(that.$refs.answer);
-        // });
       }
     },
     answer: {
@@ -120,6 +131,52 @@ export default {
           .slice(0, index)
           .concat(this.question.closes.slice(index + 1));
       }
+    },
+    register() {
+      const question = new CodeQuestion(
+        this.editedFilePath,
+        this.startIndex,
+        this.endIndex,
+        this.question.correct.text,
+        this.question.correct.score,
+        this.question.correct.comment,
+        this.question.incorrect.comment,
+        this.lessonId
+      );
+      const that = this;
+      question.store(response => {
+        console.log(response);
+        if (response.status !== 200) {
+          that.$notify.error({
+            message: "問題の登録に失敗しました",
+            duration: 3000
+          });
+          return;
+        }
+        let error = false;
+        that.question.closes.forEach(close => {
+          const codeQuestionClose = new CodeQuestionClose(
+            close.text,
+            close.score,
+            close.comment,
+            question.id
+          );
+          codeQuestionClose.store(response => {
+            error = response.status === 200;
+          });
+        });
+        if (error) {
+          this.$notify.error({
+            message: "中間点の登録に失敗しました",
+            duration: 3000
+          });
+        } else {
+          this.$notify.success({
+            message: "問題を登録しました",
+            duration: 3000
+          });
+        }
+      });
     }
   }
 };

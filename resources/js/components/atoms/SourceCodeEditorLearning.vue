@@ -1,5 +1,6 @@
 <template>
-  <div ref="editor">
+  <div>
+    <div ref="editor"></div>
     <el-dialog :visible.sync="isInputDialogVisible" @closed="closedInputDialog">
       <textarea v-model="enteredAnswer" class="w-100 h-50" placeholder="答えを入力してください"></textarea>
       <div class="text-center">
@@ -24,10 +25,6 @@ export default {
       type: String,
       required: true
     },
-    text: {
-      type: String,
-      required: true
-    },
     questions: {
       type: Array,
       required: true
@@ -37,6 +34,7 @@ export default {
     return {
       isInputDialogVisible: false,
       isCommentDialogVieible: false,
+      text: "",
       answer: "",
       enteredAnswer: "",
       selectedQuqestion: null,
@@ -46,18 +44,28 @@ export default {
     };
   },
   mounted() {
-    this.convertToQuestionButton();
-    this.nl2br(this.$refs.editor);
-    this.highlight();
+    this.$store.subscribe((mutation, state) => {
+      if (mutation.type === "setEditedFile") {
+        const targetQuestions = this.questions.filter(
+          question => question.file_path === state.editedFile.path
+        );
+        console.log(targetQuestions);
+        this.text = state.editedFile.text;
+        this.$refs.editor.innerHTML = "";
+        this.convertToQuestionButton(targetQuestions);
+        this.nl2br(this.$refs.editor);
+        this.highlight();
+      }
+    });
   },
   methods: {
-    convertToQuestionButton() {
+    convertToQuestionButton(questions) {
       let startIndex = 0;
-      this.questions.forEach(question => {
+      questions.forEach(question => {
         if (question.startIndex !== 0) {
           this.$refs.editor.appendChild(
             document.createTextNode(
-              this.text.substring(startIndex, question.startIndex)
+              this.text.substring(startIndex, question.start_index)
             )
           );
         }
@@ -75,7 +83,7 @@ export default {
           that.selectedQuestionButton = questionButton;
         };
         this.$refs.editor.appendChild(questionButton);
-        startIndex = question.endIndex;
+        startIndex = question.end_index;
       });
       if (startIndex !== this.text.length) {
         this.$refs.editor.appendChild(
@@ -146,23 +154,21 @@ export default {
         this.enteredAnswer = "";
         return;
       }
-      if (this.enteredAnswer === this.selectedQuqestion.answer.text) {
-        const textNode = document.createTextNode(
-          this.selectedQuqestion.answer.text
-        );
+      if (this.enteredAnswer === this.selectedQuqestion.text) {
+        const textNode = document.createTextNode(this.selectedQuqestion.text);
         this.$refs.editor.insertBefore(textNode, this.selectedQuestionButton);
         this.selectedQuestionButton.remove();
         this.highlight();
         this.commentTitle = "正解";
-        this.commentText = this.selectedQuqestion.answer.comment;
+        this.commentText = this.selectedQuqestion.correct_comment;
       } else {
-        console.log(this.selectedQuqestion.close);
-        const close = this.selectedQuqestion.close.filter(
+        //console.log(this.selectedQuqestion.close);
+        const close = this.selectedQuqestion.closes.filter(
           c => this.enteredAnswer === c.text
         );
         if (close.length === 0) {
           this.commentTitle = "不正解";
-          this.commentText = this.selectedQuqestion.incorrectComment;
+          this.commentText = this.selectedQuqestion.incorrect_comment;
         } else {
           this.commentTitle = "惜しい";
           this.commentText = close[0].comment;

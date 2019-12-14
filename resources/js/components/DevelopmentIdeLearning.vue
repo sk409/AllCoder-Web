@@ -13,8 +13,7 @@
         <source-code-editor-learning
           id="source-code-editor-learning"
           mode="learning"
-          text="<h1>HelloWorld</h1>\n<h2>HelloWorld</h2>"
-          :questions="[{startIndex: 0, endIndex: 4, answer: {text: '<h1>', score: 10, comment: '正解です!!\\nよくできました'}, close: [{text: '<h2>', comment: '惜しい!もう少し大きいやつ!'}], incorrectComment: '不正解です。。。'}]"
+          :questions="questions"
         ></source-code-editor-learning>
         <development-ide-console :console-port="consolePort"></development-ide-console>
       </div>
@@ -55,6 +54,10 @@ export default {
       required: true
     },
     containerPorts: {
+      type: Array,
+      required: true
+    },
+    questions: {
       type: Array,
       required: true
     }

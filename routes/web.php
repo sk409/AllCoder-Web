@@ -62,4 +62,7 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::put("lesson_ratings", "LessonRatingsController@update")->name("lesson_ratings.update");
 
     Route::post("malware_scan", "MalwareScanController@scan")->name("malware_scan.scan");
+
+    Route::resource("code_questions", "CodeQuestionController");
+    Route::resource("code_question_closes", "CodeQuestionCloseController");
 });
