@@ -18,6 +18,9 @@
 </template>
 
 <script>
+import CodeQuestion from "../../models/code_question";
+import PHPSyntaxhilighter from "../../syntaxhilighters/php_syntaxhilighter.js";
+import { mapGetters } from "vuex";
 export default {
   name: "SourceCodeEditorLearning",
   props: {
@@ -37,28 +40,35 @@ export default {
       text: "",
       answer: "",
       enteredAnswer: "",
-      selectedQuqestion: null,
+      selectedQuestion: null,
       selectedQuestionButton: null,
       commentTitle: "",
-      commentText: ""
+      commentText: "",
+      syntaxhilighter: new PHPSyntaxhilighter()
     };
+  },
+  computed: {
+    ...mapGetters(["editedFileText", "editedFilePath"])
   },
   mounted() {
     this.$store.subscribe((mutation, state) => {
       if (mutation.type === "setEditedFile") {
-        const targetQuestions = this.questions.filter(
-          question => question.file_path === state.editedFile.path
-        );
-        console.log(targetQuestions);
-        this.text = state.editedFile.text;
-        this.$refs.editor.innerHTML = "";
-        this.convertToQuestionButton(targetQuestions);
-        this.nl2br(this.$refs.editor);
-        this.highlight();
+        this.setupEditor();
       }
     });
   },
   methods: {
+    setupEditor() {
+      const targetQuestions = this.questions.filter(
+        question =>
+          !question.answered && question.file_path === this.editedFilePath
+      );
+      this.text = this.editedFileText;
+      this.$refs.editor.innerHTML = "";
+      this.convertToQuestionButton(targetQuestions);
+      this.nl2br(this.$refs.editor);
+      this.highlight();
+    },
     convertToQuestionButton(questions) {
       let startIndex = 0;
       questions.forEach(question => {
@@ -72,14 +82,10 @@ export default {
         const questionButton = document.createElement("span");
         questionButton.textContent = "?";
         questionButton.style.width = "1rem";
-        // this.answer = this.text.substring(
-        //   question.startIndex,
-        //   question.endIndex
-        // );
         const that = this;
         questionButton.onclick = function() {
           that.isInputDialogVisible = true;
-          that.selectedQuqestion = question;
+          that.selectedQuestion = question;
           that.selectedQuestionButton = questionButton;
         };
         this.$refs.editor.appendChild(questionButton);
@@ -92,6 +98,7 @@ export default {
       }
     },
     highlight() {
+      const that = this;
       function split(textNode) {
         const color = function(color, match) {
           const startIndex = match.index;
@@ -134,10 +141,14 @@ export default {
             split(node);
           });
         };
-        const regex = new RegExp(/<.+?>/g);
-        let match = regex.exec(textNode.textContent);
-        if (match) {
-          color("blue", match);
+        // const regex = new RegExp(/<.+?>/g);
+        // let match = regex.exec(textNode.textContent);
+        // if (match) {
+        //   color("blue", match);
+        // }
+        const result = that.syntaxhilighter.check(textNode.textContent);
+        if (result) {
+          color(result.color, result.match);
         }
       }
       Array.from(this.$refs.editor.childNodes).forEach(childNode => {
@@ -154,21 +165,38 @@ export default {
         this.enteredAnswer = "";
         return;
       }
-      if (this.enteredAnswer === this.selectedQuqestion.text) {
-        const textNode = document.createTextNode(this.selectedQuqestion.text);
+      if (this.enteredAnswer === this.selectedQuestion.text) {
+        const textNode = document.createTextNode(this.selectedQuestion.text);
         this.$refs.editor.insertBefore(textNode, this.selectedQuestionButton);
         this.selectedQuestionButton.remove();
         this.highlight();
         this.commentTitle = "正解";
-        this.commentText = this.selectedQuqestion.correct_comment;
+        this.commentText = this.selectedQuestion.correct_comment;
+        const question = new CodeQuestion(
+          this.selectedQuestion.file_path,
+          this.selectedQuestion.start_index,
+          this.selectedQuestion.end_index,
+          this.selectedQuestion.text,
+          this.selectedQuestion.score,
+          this.selectedQuestion.correct_comment,
+          this.selectedQuestion.incorrect_comment,
+          this.selectedQuestion.lesson_id,
+          true
+        );
+        question.id = this.selectedQuestion.id;
+        this.selectedQuestion.answered = true;
+        const that = this;
+        question.update(response => {
+          that.setupEditor();
+        });
       } else {
-        //console.log(this.selectedQuqestion.close);
-        const close = this.selectedQuqestion.closes.filter(
+        //console.log(this.selectedQuestion.close);
+        const close = this.selectedQuestion.closes.filter(
           c => this.enteredAnswer === c.text
         );
         if (close.length === 0) {
           this.commentTitle = "不正解";
-          this.commentText = this.selectedQuqestion.incorrect_comment;
+          this.commentText = this.selectedQuestion.incorrect_comment;
         } else {
           this.commentTitle = "惜しい";
           this.commentText = close[0].comment;

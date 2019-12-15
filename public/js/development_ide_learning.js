@@ -2250,6 +2250,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _models_code_question__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../models/code_question */ "./resources/js/models/code_question.js");
+/* harmony import */ var _syntaxhilighters_php_syntaxhilighter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../syntaxhilighters/php_syntaxhilighter.js */ "./resources/js/syntaxhilighters/php_syntaxhilighter.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -2269,6 +2278,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "SourceCodeEditorLearning",
   props: {
@@ -2288,59 +2300,57 @@ __webpack_require__.r(__webpack_exports__);
       text: "",
       answer: "",
       enteredAnswer: "",
-      selectedQuqestion: null,
+      selectedQuestion: null,
       selectedQuestionButton: null,
       commentTitle: "",
-      commentText: ""
+      commentText: "",
+      syntaxhilighter: new _syntaxhilighters_php_syntaxhilighter_js__WEBPACK_IMPORTED_MODULE_1__["default"]()
     };
   },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])(["editedFileText", "editedFilePath"])),
   mounted: function mounted() {
     var _this = this;
 
     this.$store.subscribe(function (mutation, state) {
       if (mutation.type === "setEditedFile") {
-        var targetQuestions = _this.questions.filter(function (question) {
-          return question.file_path === state.editedFile.path;
-        });
-
-        console.log(targetQuestions);
-        _this.text = state.editedFile.text;
-        _this.$refs.editor.innerHTML = "";
-
-        _this.convertToQuestionButton(targetQuestions);
-
-        _this.nl2br(_this.$refs.editor);
-
-        _this.highlight();
+        _this.setupEditor();
       }
     });
   },
   methods: {
-    convertToQuestionButton: function convertToQuestionButton(questions) {
+    setupEditor: function setupEditor() {
       var _this2 = this;
+
+      var targetQuestions = this.questions.filter(function (question) {
+        return !question.answered && question.file_path === _this2.editedFilePath;
+      });
+      this.text = this.editedFileText;
+      this.$refs.editor.innerHTML = "";
+      this.convertToQuestionButton(targetQuestions);
+      this.nl2br(this.$refs.editor);
+      this.highlight();
+    },
+    convertToQuestionButton: function convertToQuestionButton(questions) {
+      var _this3 = this;
 
       var startIndex = 0;
       questions.forEach(function (question) {
         if (question.startIndex !== 0) {
-          _this2.$refs.editor.appendChild(document.createTextNode(_this2.text.substring(startIndex, question.start_index)));
+          _this3.$refs.editor.appendChild(document.createTextNode(_this3.text.substring(startIndex, question.start_index)));
         }
 
         var questionButton = document.createElement("span");
         questionButton.textContent = "?";
-        questionButton.style.width = "1rem"; // this.answer = this.text.substring(
-        //   question.startIndex,
-        //   question.endIndex
-        // );
-
-        var that = _this2;
+        questionButton.style.width = "1rem";
+        var that = _this3;
 
         questionButton.onclick = function () {
           that.isInputDialogVisible = true;
-          that.selectedQuqestion = question;
+          that.selectedQuestion = question;
           that.selectedQuestionButton = questionButton;
         };
 
-        _this2.$refs.editor.appendChild(questionButton);
+        _this3.$refs.editor.appendChild(questionButton);
 
         startIndex = question.end_index;
       });
@@ -2350,6 +2360,8 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     highlight: function highlight() {
+      var that = this;
+
       function split(textNode) {
         var color = function color(_color, match) {
           var startIndex = match.index;
@@ -2393,13 +2405,17 @@ __webpack_require__.r(__webpack_exports__);
 
             split(node);
           });
-        };
+        }; // const regex = new RegExp(/<.+?>/g);
+        // let match = regex.exec(textNode.textContent);
+        // if (match) {
+        //   color("blue", match);
+        // }
 
-        var regex = new RegExp(/<.+?>/g);
-        var match = regex.exec(textNode.textContent);
 
-        if (match) {
-          color("blue", match);
+        var result = that.syntaxhilighter.check(textNode.textContent);
+
+        if (result) {
+          color(result.color, result.match);
         }
       }
 
@@ -2412,7 +2428,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     checkAnswer: function checkAnswer() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.isInputDialogVisible = false;
 
@@ -2422,22 +2438,29 @@ __webpack_require__.r(__webpack_exports__);
         return;
       }
 
-      if (this.enteredAnswer === this.selectedQuqestion.text) {
-        var textNode = document.createTextNode(this.selectedQuqestion.text);
+      if (this.enteredAnswer === this.selectedQuestion.text) {
+        var textNode = document.createTextNode(this.selectedQuestion.text);
         this.$refs.editor.insertBefore(textNode, this.selectedQuestionButton);
         this.selectedQuestionButton.remove();
         this.highlight();
         this.commentTitle = "正解";
-        this.commentText = this.selectedQuqestion.correct_comment;
+        this.commentText = this.selectedQuestion.correct_comment;
+        var question = new _models_code_question__WEBPACK_IMPORTED_MODULE_0__["default"](this.selectedQuestion.file_path, this.selectedQuestion.start_index, this.selectedQuestion.end_index, this.selectedQuestion.text, this.selectedQuestion.score, this.selectedQuestion.correct_comment, this.selectedQuestion.incorrect_comment, this.selectedQuestion.lesson_id, true);
+        question.id = this.selectedQuestion.id;
+        this.selectedQuestion.answered = true;
+        var that = this;
+        question.update(function (response) {
+          that.setupEditor();
+        });
       } else {
-        //console.log(this.selectedQuqestion.close);
-        var close = this.selectedQuqestion.closes.filter(function (c) {
-          return _this3.enteredAnswer === c.text;
+        //console.log(this.selectedQuestion.close);
+        var close = this.selectedQuestion.closes.filter(function (c) {
+          return _this4.enteredAnswer === c.text;
         });
 
         if (close.length === 0) {
           this.commentTitle = "不正解";
-          this.commentText = this.selectedQuqestion.incorrect_comment;
+          this.commentText = this.selectedQuestion.incorrect_comment;
         } else {
           this.commentTitle = "惜しい";
           this.commentText = close[0].comment;
@@ -5966,6 +5989,97 @@ new Vue({
 
 /***/ }),
 
+/***/ "./resources/js/models/code_question.js":
+/*!**********************************************!*\
+  !*** ./resources/js/models/code_question.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CodeQuestion; });
+/* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model.js */ "./resources/js/models/model.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var CodeQuestion =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(CodeQuestion, _Model);
+
+  _createClass(CodeQuestion, null, [{
+    key: "baseRoute",
+    value: function baseRoute() {
+      return "code_questions";
+    }
+  }, {
+    key: "index",
+    value: function index(parameters, completion) {
+      return _model_js__WEBPACK_IMPORTED_MODULE_0__["default"].index(CodeQuestion.baseRoute(), parameters, completion);
+    }
+  }]);
+
+  function CodeQuestion(filePath, startIndex, endIndex, text, score, correctComment, incorrectComment, lessonId, answered) {
+    var _this;
+
+    _classCallCheck(this, CodeQuestion);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(CodeQuestion).call(this, CodeQuestion.baseRoute()));
+    _this.filePath = filePath;
+    _this.startIndex = startIndex;
+    _this.endIndex = endIndex;
+    _this.text = text;
+    _this.score = score;
+    _this.correctComment = correctComment;
+    _this.incorrectComment = incorrectComment;
+    _this.lessonId = lessonId;
+    _this.answered = answered;
+    return _this;
+  }
+
+  _createClass(CodeQuestion, [{
+    key: "parameters",
+    value: function parameters() {
+      return {
+        id: this.id,
+        file_path: this.filePath,
+        start_index: this.startIndex,
+        end_index: this.endIndex,
+        text: this.text,
+        score: this.score,
+        correct_comment: this.correctComment,
+        incorrect_comment: this.incorrectComment,
+        lesson_id: this.lessonId,
+        answered: this.answered
+      };
+    }
+  }]);
+
+  return CodeQuestion;
+}(_model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
 /***/ "./resources/js/models/file.js":
 /*!*************************************!*\
   !*** ./resources/js/models/file.js ***!
@@ -6459,6 +6573,130 @@ Vue.use(Vuex);
     }
   }
 }));
+
+/***/ }),
+
+/***/ "./resources/js/syntaxhilighters/php_syntaxhilighter.js":
+/*!**************************************************************!*\
+  !*** ./resources/js/syntaxhilighters/php_syntaxhilighter.js ***!
+  \**************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return PHPSyntaxhilighter; });
+/* harmony import */ var _syntaxhilighter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./syntaxhilighter.js */ "./resources/js/syntaxhilighters/syntaxhilighter.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var PHPSyntaxhilighter =
+/*#__PURE__*/
+function (_Syntaxhilighter) {
+  _inherits(PHPSyntaxhilighter, _Syntaxhilighter);
+
+  function PHPSyntaxhilighter() {
+    _classCallCheck(this, PHPSyntaxhilighter);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(PHPSyntaxhilighter).apply(this, arguments));
+  }
+
+  _createClass(PHPSyntaxhilighter, [{
+    key: "check",
+    value: function check(text) {
+      var phpRegex = new RegExp(/<\?php/);
+      var result = this.exec(phpRegex, text, "rgb(86, 156, 214)");
+
+      if (result) {
+        return result;
+      }
+
+      var reservedWords = ["echo"];
+      var reservedWordRegex = new RegExp(reservedWords.join("|"));
+      result = this.exec(reservedWordRegex, text, "rgb(219, 219, 169)");
+
+      if (result) {
+        return result;
+      }
+
+      var stringRegex = new RegExp(/".*?"/);
+      result = this.exec(stringRegex, text, "rgb(206, 145, 120)");
+
+      if (result) {
+        return result;
+      }
+
+      return null;
+    }
+  }]);
+
+  return PHPSyntaxhilighter;
+}(_syntaxhilighter_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
+/***/ "./resources/js/syntaxhilighters/syntaxhilighter.js":
+/*!**********************************************************!*\
+  !*** ./resources/js/syntaxhilighters/syntaxhilighter.js ***!
+  \**********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Syntaxhilighter; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Syntaxhilighter =
+/*#__PURE__*/
+function () {
+  function Syntaxhilighter() {
+    _classCallCheck(this, Syntaxhilighter);
+  }
+
+  _createClass(Syntaxhilighter, [{
+    key: "exec",
+    value: function exec(regex, text, color) {
+      var match = regex.exec(text);
+
+      if (match) {
+        return {
+          color: color,
+          match: match
+        };
+      }
+
+      return null;
+    }
+  }]);
+
+  return Syntaxhilighter;
+}();
+
+
 
 /***/ }),
 

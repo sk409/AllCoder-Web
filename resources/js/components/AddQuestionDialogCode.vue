@@ -141,7 +141,8 @@ export default {
         this.question.correct.score,
         this.question.correct.comment,
         this.question.incorrect.comment,
-        this.lessonId
+        this.lessonId,
+        false
       );
       const that = this;
       question.store(response => {

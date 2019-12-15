@@ -1984,7 +1984,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     register: function register() {
       var _this = this;
 
-      var question = new _models_code_question_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.editedFilePath, this.startIndex, this.endIndex, this.question.correct.text, this.question.correct.score, this.question.correct.comment, this.question.incorrect.comment, this.lessonId);
+      var question = new _models_code_question_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.editedFilePath, this.startIndex, this.endIndex, this.question.correct.text, this.question.correct.score, this.question.correct.comment, this.question.incorrect.comment, this.lessonId, false);
       var that = this;
       question.store(function (response) {
         console.log(response);
@@ -7358,7 +7358,7 @@ function (_Model) {
     }
   }]);
 
-  function CodeQuestion(filePath, startIndex, endIndex, text, score, correctComment, incorrectComment, lessonId) {
+  function CodeQuestion(filePath, startIndex, endIndex, text, score, correctComment, incorrectComment, lessonId, answered) {
     var _this;
 
     _classCallCheck(this, CodeQuestion);
@@ -7372,6 +7372,7 @@ function (_Model) {
     _this.correctComment = correctComment;
     _this.incorrectComment = incorrectComment;
     _this.lessonId = lessonId;
+    _this.answered = answered;
     return _this;
   }
 
@@ -7379,6 +7380,7 @@ function (_Model) {
     key: "parameters",
     value: function parameters() {
       return {
+        id: this.id,
         file_path: this.filePath,
         start_index: this.startIndex,
         end_index: this.endIndex,
@@ -7386,7 +7388,8 @@ function (_Model) {
         score: this.score,
         correct_comment: this.correctComment,
         incorrect_comment: this.incorrectComment,
-        lesson_id: this.lessonId
+        lesson_id: this.lessonId,
+        answered: this.answered
       };
     }
   }]);

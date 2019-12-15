@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CodeQuestion extends Model
 {
-    protected $fillable = ["file_path", "start_index", "end_index", "text", "score", "correct_comment", "incorrect_comment", "lesson_id"];
+    protected $fillable = ["file_path", "start_index", "end_index", "text", "score", "correct_comment", "incorrect_comment", "lesson_id", "answered"];
 
     public function closes()
     {
