@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\CodeQuestion;
 use App\Lesson;
 use App\Material;
 use App\Path;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use stdClass;
 
 class MaterialPurchaseController extends Controller
@@ -61,29 +61,51 @@ class MaterialPurchaseController extends Controller
             // TODO: ClamAVを無効化
             //exec("docker container exec -it --user root $dockerContainerId clamd");
             exec("docker container exec -itd $dockerContainerId gotty -w -p $lesson->console_port bash");
-            $questionFileNames = glob(Path::lessonQuestion($lesson->id, "*.json"));
+            // $questionFileNames = glob(Path::lessonQuestion($lesson->id, "*.json"));
             //
-            foreach ($questionFileNames as $questionFileName) {
-                $obj = json_decode(file_get_contents($questionFileName));
-                usort($obj->questions, function ($a, $b) {
-                    return $a->startIndex - $b->endIndex;
-                });
+            // foreach ($questionFileNames as $questionFileName) {
+            //     $obj = json_decode(file_get_contents($questionFileName));
+            //     usort($obj->questions, function ($a, $b) {
+            //         return $a->startIndex - $b->endIndex;
+            //     });
+            //     $outputs = [];
+            //     exec("docker container exec -it $dockerContainerId cat $obj->path", $outputs);
+            //     $text = implode("\n", $outputs);
+            //     $newText = "";
+            //     $seek = 0;
+            //     usort($obj->questions, function ($a, $b) {
+            //         $a->startIndex - $b->startIndex;
+            //     });
+            //     foreach ($obj->questions as $question) {
+            //         $newText .= substr($text, $seek, $question->startIndex);
+            //         $seek = $question->endIndex;
+            //     }
+            //     $newText .= substr($text, $seek, strlen($text));
+            //     $tmpFilePath = storage_path(uniqid());
+            //     file_put_contents($tmpFilePath, $newText);
+            //     exec("docker container cp $tmpFilePath $dockerContainerId:$obj->path");
+            //     unlink($tmpFilePath);
+            // }
+            $groups = CodeQuestion::where("lesson_id", $lesson->id)
+                ->get()
+                ->groupBy("file_path")
+                ->sortBy("start_index")
+                ->all();
+            foreach ($groups as $filePath => $group) {
                 $outputs = [];
-                exec("docker container exec -it $dockerContainerId cat $obj->path", $outputs);
+                exec("docker container exec -it $dockerContainerId cat $filePath", $outputs);
                 $text = implode("\n", $outputs);
-                $newText = "";
                 $seek = 0;
-                usort($obj->questions, function ($a, $b) {
-                    $a->startIndex - $b->startIndex;
-                });
-                foreach ($obj->questions as $question) {
-                    $newText .= substr($text, $seek, $question->startIndex);
-                    $seek = $question->endIndex;
+                $newText = "";
+                $questions = $group->all();
+                foreach ($questions as $question) {
+                    $newText .= substr($text, $seek, $question->start_index - $seek);
+                    $seek = $question->end_index;
                 }
-                $newText .= substr($text, $seek, strlen($text));
+                $newText .= substr($text, $seek, strlen($text) - $seek);
                 $tmpFilePath = storage_path(uniqid());
                 file_put_contents($tmpFilePath, $newText);
-                exec("docker container cp $tmpFilePath $dockerContainerId:$obj->path");
+                exec("docker container cp $tmpFilePath $dockerContainerId:$filePath");
                 unlink($tmpFilePath);
             }
             // $tarFilePathPurchased = Path::append($lessonDirectoryPathPurchased, "container.tar");

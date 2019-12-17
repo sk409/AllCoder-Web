@@ -2324,25 +2324,48 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var targetQuestions = this.questions.filter(function (question) {
         return !question.answered && question.file_path === _this2.editedFilePath;
       });
-      this.text = this.editedFileText;
+      this.restoreText();
       this.$refs.editor.innerHTML = "";
-      this.convertToQuestionButton(targetQuestions);
+      this.setTextAndQuestionButton(targetQuestions);
       this.nl2br(this.$refs.editor);
       this.highlight();
     },
-    convertToQuestionButton: function convertToQuestionButton(questions) {
+    restoreText: function restoreText() {
       var _this3 = this;
+
+      var targetQuestions = this.questions.filter(function (question) {
+        return question.file_path === _this3.editedFilePath;
+      });
+
+      if (targetQuestions.length === 0) {
+        this.text = this.editedFileText;
+        return;
+      }
+
+      this.text = "";
+      var startIndex = 0;
+      var offset = 0;
+      targetQuestions.forEach(function (question) {
+        _this3.text += _this3.editedFileText.substr(startIndex, question.start_index - offset - startIndex);
+        _this3.text += question.text;
+        startIndex = question.start_index - offset;
+        offset += question.text.length;
+      });
+      this.text += this.editedFileText.substr(startIndex);
+    },
+    setTextAndQuestionButton: function setTextAndQuestionButton(questions) {
+      var _this4 = this;
 
       var startIndex = 0;
       questions.forEach(function (question) {
         if (question.startIndex !== 0) {
-          _this3.$refs.editor.appendChild(document.createTextNode(_this3.text.substring(startIndex, question.start_index)));
+          _this4.$refs.editor.appendChild(document.createTextNode(_this4.text.substring(startIndex, question.start_index)));
         }
 
         var questionButton = document.createElement("span");
         questionButton.textContent = "?";
         questionButton.style.width = "1rem";
-        var that = _this3;
+        var that = _this4;
 
         questionButton.onclick = function () {
           that.isInputDialogVisible = true;
@@ -2350,7 +2373,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           that.selectedQuestionButton = questionButton;
         };
 
-        _this3.$refs.editor.appendChild(questionButton);
+        _this4.$refs.editor.appendChild(questionButton);
 
         startIndex = question.end_index;
       });
@@ -2428,7 +2451,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     checkAnswer: function checkAnswer() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.isInputDialogVisible = false;
 
@@ -2455,7 +2478,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else {
         //console.log(this.selectedQuestion.close);
         var close = this.selectedQuestion.closes.filter(function (c) {
-          return _this4.enteredAnswer === c.text;
+          return _this5.enteredAnswer === c.text;
         });
 
         if (close.length === 0) {

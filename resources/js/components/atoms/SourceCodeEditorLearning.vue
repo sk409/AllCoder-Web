@@ -63,13 +63,35 @@ export default {
         question =>
           !question.answered && question.file_path === this.editedFilePath
       );
-      this.text = this.editedFileText;
+      this.restoreText();
       this.$refs.editor.innerHTML = "";
-      this.convertToQuestionButton(targetQuestions);
+      this.setTextAndQuestionButton(targetQuestions);
       this.nl2br(this.$refs.editor);
       this.highlight();
     },
-    convertToQuestionButton(questions) {
+    restoreText() {
+      const targetQuestions = this.questions.filter(
+        question => question.file_path === this.editedFilePath
+      );
+      if (targetQuestions.length === 0) {
+        this.text = this.editedFileText;
+        return;
+      }
+      this.text = "";
+      let startIndex = 0;
+      let offset = 0;
+      targetQuestions.forEach(question => {
+        this.text += this.editedFileText.substr(
+          startIndex,
+          question.start_index - offset - startIndex
+        );
+        this.text += question.text;
+        startIndex = question.start_index - offset;
+        offset += question.text.length;
+      });
+      this.text += this.editedFileText.substr(startIndex);
+    },
+    setTextAndQuestionButton(questions) {
       let startIndex = 0;
       questions.forEach(question => {
         if (question.startIndex !== 0) {
