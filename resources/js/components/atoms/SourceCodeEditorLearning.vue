@@ -20,7 +20,7 @@
 <script>
 import CodeQuestion from "../../models/code_question";
 import PHPSyntaxhilighter from "../../syntaxhilighters/php_syntaxhilighter.js";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "SourceCodeEditorLearning",
   props: {
@@ -58,6 +58,7 @@ export default {
     });
   },
   methods: {
+    ...mapActions(["setEditedFileText", "updateEditedFile"]),
     setupEditor() {
       const targetQuestions = this.questions.filter(
         question =>
@@ -209,7 +210,9 @@ export default {
         this.selectedQuestion.answered = true;
         const that = this;
         question.update(response => {
-          that.setupEditor();
+          this.setupEditor();
+          this.setEditedFileText(this.text);
+          this.updateEditedFile();
         });
       } else {
         //console.log(this.selectedQuestion.close);

@@ -2317,7 +2317,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     });
   },
-  methods: {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])(["setEditedFileText", "updateEditedFile"]), {
     setupEditor: function setupEditor() {
       var _this2 = this;
 
@@ -2473,7 +2473,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.selectedQuestion.answered = true;
         var that = this;
         question.update(function (response) {
-          that.setupEditor();
+          _this5.setupEditor();
+
+          _this5.setEditedFileText(_this5.text);
+
+          _this5.updateEditedFile();
         });
       } else {
         //console.log(this.selectedQuestion.close);
@@ -2499,7 +2503,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$refs.comment.textContent = this.commentText;
       this.nl2br(this.$refs.comment);
     }
-  }
+  })
 });
 
 /***/ }),
