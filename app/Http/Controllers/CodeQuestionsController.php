@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\CodeQuestion;
 use Illuminate\Http\Request;
 
-class CodeQuestionController extends Controller
+class CodeQuestionsController extends Controller
 {
     public function store(Request $request)
     {
@@ -19,7 +19,6 @@ class CodeQuestionController extends Controller
             "correct_comment" => "required|max:512",
             "incorrect_comment" => "required|max:512",
             "lesson_id" => "required",
-            "answered" => "required",
         ]);
         $codeQuestion = CodeQuestion::create($request->all());
         return $codeQuestion->id;

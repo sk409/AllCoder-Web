@@ -133,6 +133,7 @@ export default {
       }
     },
     register() {
+      this.isDialogVisible = false;
       const question = new CodeQuestion(
         this.editedFilePath,
         this.startIndex,

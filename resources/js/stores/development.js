@@ -70,7 +70,12 @@ export default new Vuex.Store({
             state.editedFile.text = text;
         },
         updateEditedFile(state) {
-            state.editedFile.update();
+            // console.log("#########################");
+            // state.editedFile.text += "\n\n\n";
+            // console.log(state.editedFile.text + "abc");
+            state.editedFile.update(response => {
+                // console.log(response.data + "abc");
+            });
         }
     },
 })

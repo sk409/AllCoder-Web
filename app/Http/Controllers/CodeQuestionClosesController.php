@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\CodeQuestionClose;
 use Illuminate\Http\Request;
 
-class CodeQuestionCloseController extends Controller
+class CodeQuestionClosesController extends Controller
 {
     public function store(Request $request)
     {

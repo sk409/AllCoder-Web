@@ -453,13 +453,13 @@ new Vue({
 
         if (response.status === 200) {
           that.$notify({
-            message: "購入に成功しました",
+            message: "ダウンロードに成功しました",
             type: "success",
             duration: 0
           });
         } else {
           that.$notify.error({
-            message: "購入に失敗しました",
+            message: "ダウンロードに失敗しました",
             duration: 1500
           });
         }
@@ -477,7 +477,7 @@ new Vue({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/js/material_purchase_show.js */"./resources/js/material_purchase_show.js");
+module.exports = __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/js/material_purchase_show.js */"./resources/js/material_purchase_show.js");
 
 
 /***/ })

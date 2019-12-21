@@ -2,12 +2,12 @@
 
 namespace App;
 
+use App\ChatRoom;
 use App\Lesson;
 use App\Material;
 use App\MaterialComment;
 use App\LessonComment;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -74,5 +74,10 @@ class User extends Authenticatable
     public function completedLessons()
     {
         return $this->belongsToMany(Lesson::class, "completions")->withPivot(["material_id"]);
+    }
+
+    public function chatRooms()
+    {
+        return $this->belongsToMany(ChatRoom::class);
     }
 }

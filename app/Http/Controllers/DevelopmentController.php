@@ -20,8 +20,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\CodeQuestion;
+use App\CodeQuestionAnswer;
 use App\CodeQuestionClose;
+use App\Error;
 use App\Lesson;
 use App\Material;
 use App\Path;
@@ -74,6 +77,9 @@ class DevelopmentController extends Controller
     public function creating(int $id)
     {
         $lesson = Lesson::find($id);
+        if (Auth::user()->id !== $lesson->user->id) {
+            Error::notFound();
+        }
         $mode = "creating";
         //         if (is_null($lesson->docker_container_id)) {
         //             // $dockerImageName = uniqid();
@@ -142,11 +148,33 @@ class DevelopmentController extends Controller
             "lesson_id" => "required",
         ]);
         $user = User::find($request->user_id);
+        if ($user->id !== Auth::user()->id) {
+            Error::notFound();
+        }
         $material = Material::find($request->material_id);
+        $purchased = count($user->purchases()->where("material_id", $material->id)->get()->all());
+        if (!$purchased) {
+            Error::notFound();
+        }
         $lesson = Lesson::find($request->lesson_id);
-        $questions = CodeQuestion::where("lesson_id", $lesson->id)->get()->all();
+        $includes = false;
+        foreach ($material->lessons()->get()->all() as $l) {
+            if ($lesson->id === $l->id) {
+                $includes = true;
+                break;
+            }
+        }
+        if (!$includes) {
+            Error::notFound();
+        }
+        $questions = CodeQuestion::where("lesson_id", $lesson->id)->orderBy("start_index")->get()->all();
         foreach ($questions as $question) {
             $question->closes = CodeQuestionClose::where("code_question_id", $question->id)->get()->all();
+            $answers = CodeQuestionAnswer::where("user_id", $user->id)
+                ->where("material_id", $material->id)
+                ->where("lesson_id", $lesson->id)
+                ->where("code_question_id", $question->id)->get()->all();
+            $question->answer = empty($answers) ? null : $answers[0];
         }
         // $composeDirectoryPath = Path::purchasedLessonWeb(
         //     $request->user_id,

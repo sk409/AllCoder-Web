@@ -1,5 +1,5 @@
 <template>
-  <div id="development-ide">
+  <div id="development-ide" @click="onclick">
     <development-ide-header
       :title="title"
       :url="urlReading"
@@ -14,10 +14,28 @@
           id="source-code-editor-learning"
           mode="learning"
           :questions="questions"
+          :user-id="userId"
+          :material-id="materialId"
+          :lesson-id="lessonId"
+          @show-context-menu="showContextMenu"
         ></source-code-editor-learning>
         <development-ide-console :console-port="consolePort"></development-ide-console>
       </div>
     </div>
+    <source-code-editor-learning-context-menu
+      v-show="contextMenu.isShown"
+      :style="contextMenu.style"
+      class="context-menu"
+      @show-question-list="showQuestionList"
+    ></source-code-editor-learning-context-menu>
+    <el-dialog :visible.sync="questionList.isShown">
+      <div v-for="filePath in filePaths" :key="filePath" class="border p-2">
+        <div>
+          <el-button type="primary" @click="openFile(filePath)">開く</el-button>
+          <span class="ml-2">{{filePath}}</span>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -25,10 +43,12 @@
 import axios from "axios";
 import DevelopmentIdeConsole from "./DevelopmentIdeConsole.vue";
 import DevelopmentIdeHeader from "./DevelopmentIdeHeader.vue";
+import File from "../models/file.js";
 import FileTree from "./molecules/FileTree.vue";
-import SourceCodeEditorLearning from "./atoms/SourceCodeEditorLearning.vue";
+import SourceCodeEditorLearning from "./SourceCodeEditorLearning.vue";
+import SourceCodeEditorLearningContextMenu from "./SourceCodeEditorLearningContextMenu.vue";
 import store from "../stores/development.js";
-import { mapMutations } from "vuex";
+import { mapActions, mapMutations } from "vuex";
 
 export default {
   name: "DevelopmentIde",
@@ -60,18 +80,85 @@ export default {
     questions: {
       type: Array,
       required: true
+    },
+    userId: {
+      type: Number,
+      required: true
+    },
+    materialId: {
+      type: Number,
+      required: true
+    },
+    lessonId: {
+      type: Number,
+      required: true
     }
   },
   components: {
     DevelopmentIdeConsole,
     DevelopmentIdeHeader,
     FileTree,
-    SourceCodeEditorLearning
+    SourceCodeEditorLearning,
+    SourceCodeEditorLearningContextMenu
+  },
+  data() {
+    return {
+      contextMenu: {
+        isShown: false,
+        style: {
+          left: 0,
+          top: 0
+        }
+      },
+      questionList: {
+        isShown: false
+      }
+    };
+  },
+  computed: {
+    filePaths() {
+      return this.questions.reduce((previous, current) => {
+        const notFound = -1;
+        const index = previous.findIndex(path => path === current.file_path);
+        if (index === notFound) {
+          previous.push(current.file_path);
+        }
+        return previous;
+      }, []);
+    }
+  },
+  methods: {
+    ...mapActions(["setEditedFile"]),
+    onclick() {
+      this.contextMenu.isShown = false;
+    },
+    openFile(path) {
+      const parameters = {
+        docker_container_id: this.info.docker_container_id,
+        path
+      };
+      const that = this;
+      File.index(parameters, response => {
+        that.setEditedFile(response.data);
+      });
+    },
+    showContextMenu(x, y) {
+      this.contextMenu.isShown = true;
+      this.contextMenu.style.left = x + "px";
+      this.contextMenu.style.top = y + "px";
+    },
+    showQuestionList() {
+      this.questionList.isShown = true;
+    }
   }
 };
 </script>
 
 <style scoped>
+.context-menu {
+  position: absolute;
+}
+
 #development-ide {
   height: 100%;
   overflow: hidden;

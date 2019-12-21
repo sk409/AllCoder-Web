@@ -87,22 +87,30 @@ class MaterialPurchaseController extends Controller
             //     unlink($tmpFilePath);
             // }
             $groups = CodeQuestion::where("lesson_id", $lesson->id)
+                ->orderBy("start_index")
                 ->get()
                 ->groupBy("file_path")
-                ->sortBy("start_index")
                 ->all();
             foreach ($groups as $filePath => $group) {
                 $outputs = [];
                 exec("docker container exec -it $dockerContainerId cat $filePath", $outputs);
                 $text = implode("\n", $outputs);
+                // echo $text;
                 $seek = 0;
                 $newText = "";
                 $questions = $group->all();
                 foreach ($questions as $question) {
                     $newText .= substr($text, $seek, $question->start_index - $seek);
+                    //echo $newText;
                     $seek = $question->end_index;
                 }
-                $newText .= substr($text, $seek, strlen($text) - $seek);
+                if ($seek < strlen($text)) {
+                    $newText .= substr($text, $seek, strlen($text) - $seek);
+                }
+                // if ($newText[strlen($newText) - 1] === "\n") {
+                //     // cpコマンドでは最後の改行が無視されるっぽい
+                //     $newText .= "\n";
+                // }
                 $tmpFilePath = storage_path(uniqid());
                 file_put_contents($tmpFilePath, $newText);
                 exec("docker container cp $tmpFilePath $dockerContainerId:$filePath");

@@ -111,7 +111,7 @@ new Vue({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/js/welcome.js */"./resources/js/welcome.js");
+module.exports = __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/js/welcome.js */"./resources/js/welcome.js");
 
 
 /***/ })

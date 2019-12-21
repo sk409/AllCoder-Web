@@ -26,12 +26,12 @@
             <div id="material-price" class="mb-2">{{Helper::toAmountFormat($material->price)}}</div>
             <div class="text-right">
                 @if(1 === count(Auth::user()->purchases->where("id", $material->id)->all()))
-                <button type="button" class="btn btn-success" disabled>購入済み</button>
+                <button type="button" class="btn btn-success" disabled>ダウンロード済み</button>
                 @elseif(Auth::user()->id === $material->user->id)
                 <a href="{{route("materials.edit", ["material"=>$material->id])}}" class="btn btn-success">編集する</a>
                 @else
                 <button type="button" class="btn btn-primary"
-                    v-on:click="onClickPurchaseButton('{{route("material_purchase.purchase", $material->id)}}', {{Auth::user()->id}})">購入</button>
+                    v-on:click="onClickPurchaseButton('{{route("material_purchase.purchase", $material->id)}}', {{Auth::user()->id}})">ダウンロード</button>
                 @endif
             </div>
         </div>

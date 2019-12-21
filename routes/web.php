@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,6 +24,9 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::get("/dashboard/created_materials", "DashboardController@createdMaterials")->name("dashboard.created_materials");
     Route::get('/dashboard/purchased_materials', 'DashboardController@purchasedMaterials')->name('dashboard.purchased_materials');
     Route::get("/dashboard/lessons", "DashboardController@lessons")->name("dashboard.lessons");
+    Route::get("/dashboard/followings", "DashboardController@followings")->name("dashboard.following");
+    Route::get("/dashboard/followers", "DashboardController@followers")->name("dashboard.follower");
+    Route::get("/dashboard/chat_rooms", "DashboardController@chatRooms")->name("dashboard.chat_rooms");
 
     //Route::resource("lessons", "LessonsController");
     Route::get("lessons", "LessonsController@index")->name("lessons.index");
@@ -63,6 +69,9 @@ Route::group(["middleware" => ["auth"]], function () {
 
     Route::post("malware_scan", "MalwareScanController@scan")->name("malware_scan.scan");
 
-    Route::resource("code_questions", "CodeQuestionController");
-    Route::resource("code_question_closes", "CodeQuestionCloseController");
+    Route::resource("code_questions", "CodeQuestionsController");
+    Route::resource("code_question_closes", "CodeQuestionClosesController");
+    Route::resource('code_question_answers', 'CodeQuestionAnswersController');
+
+    Route::get("users/{userId}", "UsersController@show");
 });

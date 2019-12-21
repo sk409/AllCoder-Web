@@ -46,24 +46,17 @@ class FilesController extends Controller
 
     public function update(Request $request)
     {
-        // return $request->all();
-        // $request->validate([
-        //     "path" => "required",
-        //     "text" => "required",
-        //     "lesson_id" => "required"
-        // ]);
         $request->validate([
             "docker_container_id" => "required",
         ]);
         $tmpFilePath = storage_path(uniqid());
-        file_put_contents($tmpFilePath, $request->text);
+        $text = $request->text;
+        // if ($text[strlen($text) - 1] === "\n") {
+        //     // cpでは最後の改行は無視されるっぽい
+        //     $text .= "\n";
+        // }
+        file_put_contents($tmpFilePath, $text);
         exec("docker container cp $tmpFilePath $request->docker_container_id:$request->path");
         unlink($tmpFilePath);
-        //\Illuminate\Support\Facades\File::put($request->path, $request->text, true);
     }
-
-    // public function destroy(Request $request, int $id)
-    // {
-    //     File::destroy($id);
-    // }
 }

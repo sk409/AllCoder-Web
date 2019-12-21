@@ -9,7 +9,7 @@ export default class CodeQuestion extends Model {
         return Model.index(CodeQuestion.baseRoute(), parameters, completion);
     }
 
-    constructor(filePath, startIndex, endIndex, text, score, correctComment, incorrectComment, lessonId, answered) {
+    constructor(filePath, startIndex, endIndex, text, score, correctComment, incorrectComment, lessonId) {
         super(CodeQuestion.baseRoute());
         this.filePath = filePath;
         this.startIndex = startIndex;
@@ -19,7 +19,6 @@ export default class CodeQuestion extends Model {
         this.correctComment = correctComment;
         this.incorrectComment = incorrectComment;
         this.lessonId = lessonId;
-        this.answered = answered;
     }
 
     parameters() {
@@ -33,7 +32,6 @@ export default class CodeQuestion extends Model {
             correct_comment: this.correctComment,
             incorrect_comment: this.incorrectComment,
             lesson_id: this.lessonId,
-            answered: this.answered,
         };
     }
 

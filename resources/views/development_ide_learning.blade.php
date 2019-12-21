@@ -13,7 +13,8 @@
     <development-ide-learning title="{{$title}}" :info="{{json_encode($info)}}"
         url-reading="{{route("development.reading", ["user_id" => $user->id, "material_id" => $material->id, "lesson_id" => $lesson->id])}}"
         :console-port="{{$consolePort}}" :host-ports="{{json_encode($hostPorts)}}"
-        :container-ports="{{json_encode($containerPorts)}}" :questions="{{json_encode($questions)}}">
+        :container-ports="{{json_encode($containerPorts)}}" :questions="{{json_encode($questions)}}"
+        :user-id="{{$user->id}}" :material-id="{{$material->id}}" :lesson-id="{{$lesson->id}}">
     </development-ide-learning>
 </div>
 @endsection

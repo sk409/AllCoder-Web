@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
-use Auth;
 use App\Lesson;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -44,6 +44,30 @@ class DashboardController extends Controller
         return view('dashboard_lessons', [
             "user" => $user, "lessons" => $lessons,
             "activeIndex" => 3,
+        ]);
+    }
+
+    public function followings(): Renderable
+    {
+        return view("dashboard_followings", [
+            "user" => Auth::user(),
+            "activeIndex" => 4,
+        ]);
+    }
+
+    public function followers(): Renderable
+    {
+        return view("dashboard_followers", [
+            "user" => Auth::user(),
+            "activeIndex" => 5,
+        ]);
+    }
+
+    public function chatRooms(): Renderable
+    {
+        return view("dashboard_chat_rooms", [
+            "user" => Auth::user(),
+            "activeIndex" => 6,
         ]);
     }
 }

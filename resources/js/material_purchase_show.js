@@ -19,13 +19,13 @@ new Vue({
                 that.loading = false;
                 if (response.status === 200) {
                     that.$notify({
-                        message: "購入に成功しました",
+                        message: "ダウンロードに成功しました",
                         type: "success",
                         duration: 0
                     })
                 } else {
                     that.$notify.error({
-                        message: "購入に失敗しました",
+                        message: "ダウンロードに失敗しました",
                         duration: 1500
                     })
                 }

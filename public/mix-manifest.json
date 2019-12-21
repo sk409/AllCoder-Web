@@ -9,7 +9,10 @@
     "/css/material_show.css": "/css/material_show.css",
     "/css/welcome.css": "/css/welcome.css",
     "/css/material_purchase_show.css": "/css/material_purchase_show.css",
+    "/js/dashboard_chat_rooms.js": "/js/dashboard_chat_rooms.js",
     "/js/dashboard_created_materials.js": "/js/dashboard_created_materials.js",
+    "/js/dashboard_followers.js": "/js/dashboard_followers.js",
+    "/js/dashboard_followings.js": "/js/dashboard_followings.js",
     "/js/dashboard_lessons.js": "/js/dashboard_lessons.js",
     "/js/dashboard_purchased_materials.js": "/js/dashboard_purchased_materials.js",
     "/js/development_ide_creating.js": "/js/development_ide_creating.js",
@@ -22,5 +25,6 @@
     "/js/material_edit.js": "/js/material_edit.js",
     "/js/material_purchase_show.js": "/js/material_purchase_show.js",
     "/js/material_show.js": "/js/material_show.js",
+    "/js/user_show.js": "/js/user_show.js",
     "/js/welcome.js": "/js/welcome.js"
 }

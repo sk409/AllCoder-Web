@@ -23,7 +23,6 @@ class CreateCodeQuestionsTable extends Migration
             $table->smallInteger("score")->unsigned();
             $table->string("incorrect_comment", 512)->default("");
             $table->bigInteger("lesson_id")->unsigned();
-            $table->boolean("answered");
             $table->foreign("lesson_id")->references("id")->on("lessons");
             $table->timestamps();
         });
