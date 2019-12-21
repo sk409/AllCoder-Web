@@ -5,11 +5,14 @@
 @endsection
 
 @section("dashboard-content")
-<div class="mx-auto">
-    <div>
-        <span>チャットルーム一覧</span>
-        <el-button type="primary">新規作成</el-button>
+<div class="mx-auto w-75">
+    <div class="d-flex">
+        <div>チャットルーム一覧</div>
+        <div class="ml-auto">
+            <el-button type="primary" v-on:click="transition('{{route("chat_rooms.create")}}')">新規作成</el-button>
+        </div>
     </div>
-    <el-divider class="m-1"></el-divider>
+    <el-divider class="m-1">
+    </el-divider>
 </div>
 @endsection

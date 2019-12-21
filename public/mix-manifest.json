@@ -9,6 +9,7 @@
     "/css/material_show.css": "/css/material_show.css",
     "/css/welcome.css": "/css/welcome.css",
     "/css/material_purchase_show.css": "/css/material_purchase_show.css",
+    "/js/chat_room_create.js": "/js/chat_room_create.js",
     "/js/dashboard_chat_rooms.js": "/js/dashboard_chat_rooms.js",
     "/js/dashboard_created_materials.js": "/js/dashboard_created_materials.js",
     "/js/dashboard_followers.js": "/js/dashboard_followers.js",
