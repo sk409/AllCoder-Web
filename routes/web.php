@@ -14,13 +14,14 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get("/", "WelcomeController@welcome")->name("welcome.welcome");
+// Route::get("/", "WelcomeController@welcome")->name("welcome.welcome");
 
 
 Auth::routes();
 
 Route::group(["middleware" => ["auth"]], function () {
 
+    Route::get('/', 'DashboardController@purchasedMaterials');
     Route::get("/dashboard/created_materials", "DashboardController@createdMaterials")->name("dashboard.created_materials");
     Route::get('/dashboard/purchased_materials', 'DashboardController@purchasedMaterials')->name('dashboard.purchased_materials');
     Route::get("/dashboard/lessons", "DashboardController@lessons")->name("dashboard.lessons");
@@ -73,7 +74,8 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::resource("code_question_closes", "CodeQuestionClosesController");
     Route::resource('code_question_answers', 'CodeQuestionAnswersController');
 
-    Route::get("users/{userId}", "UsersController@show");
+    Route::get("users/{userId}", "UsersController@show")->name("users.show");
 
     Route::resource("chat_rooms", "ChatRoomsController");
+    Route::resource("chat_messages", "ChatMessagesController");
 });

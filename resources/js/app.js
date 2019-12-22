@@ -7,6 +7,7 @@ import isString from "./mixin/is_string.js";
 import locale from 'element-ui/lib/locale';
 import lang from 'element-ui/lib/locale/lang/ja';
 import nl2br from "./mixin/nl2br.js";
+import Vuex from "vuex";
 
 locale.use(lang)
 
@@ -16,6 +17,7 @@ window.Vuex = require("vuex");
 
 Vue.use(require("mavon-editor"));
 Vue.use(ElementUI);
+Vue.use(Vuex);
 
 Vue.mixin(htmlescape);
 Vue.mixin(isString);
@@ -26,3 +28,11 @@ require("mavon-editor/dist/css/index.css");
 axios.defaults.headers.common = {
     "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
 }
+
+Vue.prototype.count = (string, target) => {
+    return string.split(target).length - 1;
+}
+
+// const app = new Vue({
+//     el: "#app"
+// })

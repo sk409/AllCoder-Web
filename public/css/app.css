@@ -11381,3 +11381,34 @@ body {
   height: 2rem;
 }
 
+.fill {
+  -webkit-box-flex: 1;
+          flex: 1 1 100%;
+}
+
+.link {
+  color: #4089f2;
+}
+
+.link:hover {
+  color: #4a93fc;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.border-collapse {
+  border-collapse: collapse;
+}
+
+.bg-d2 {
+  background: #60666d;
+}
+
+.bg-d3 {
+  background: #565c63;
+}
+
+.resize-none {
+  resize: none;
+}
+

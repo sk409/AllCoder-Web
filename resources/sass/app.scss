@@ -33,3 +33,33 @@ body {
     width: 2rem;
     height: 2rem;
 }
+
+.fill {
+    flex: 1 1 100%;
+}
+
+.link {
+    color: rgb(64, 137, 242);
+}
+
+.link:hover {
+    color: rgb(74, 147, 252);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.border-collapse {
+    border-collapse: collapse;
+}
+
+.bg-d2 {
+    background: rgb(96, 102, 109);
+}
+
+.bg-d3 {
+    background: rgb(86, 92, 99);
+}
+
+.resize-none {
+    resize: none;
+}

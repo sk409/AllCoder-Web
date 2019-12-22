@@ -6,7 +6,6 @@
 
 @section("app-content")
 <div id="user-show">
-    @include("components.header", ["profileImagePath" => $user->profile_image_path])
     <div>
         <div>
             <span>教材一覧</span>

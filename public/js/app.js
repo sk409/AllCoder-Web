@@ -9812,7 +9812,7 @@ for (var i = 0; i < DOMIterables.length; i++) {
 
 /***/ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/element-ui/lib/theme-chalk/index.css":
 /*!*********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader??ref--14-1!./node_modules/postcss-loader/src??ref--14-2!./node_modules/element-ui/lib/theme-chalk/index.css ***!
+  !*** ./node_modules/css-loader??ref--15-1!./node_modules/postcss-loader/src??ref--15-2!./node_modules/element-ui/lib/theme-chalk/index.css ***!
   \*********************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -9832,7 +9832,7 @@ exports.push([module.i, "@charset \"UTF-8\";.el-pagination--small .arrow.disable
 
 /***/ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/mavon-editor/dist/css/index.css":
 /*!****************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader??ref--14-1!./node_modules/postcss-loader/src??ref--14-2!./node_modules/mavon-editor/dist/css/index.css ***!
+  !*** ./node_modules/css-loader??ref--15-1!./node_modules/postcss-loader/src??ref--15-2!./node_modules/mavon-editor/dist/css/index.css ***!
   \****************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -62359,7 +62359,7 @@ module.exports = "/fonts/vendor/element-ui/lib/theme-chalk/element-icons.woff?53
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader??ref--14-1!../../../postcss-loader/src??ref--14-2!./index.css */ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/element-ui/lib/theme-chalk/index.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--15-1!../../../postcss-loader/src??ref--15-2!./index.css */ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/element-ui/lib/theme-chalk/index.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -94522,7 +94522,7 @@ return jQuery;
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../css-loader??ref--14-1!../../../postcss-loader/src??ref--14-2!./index.css */ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/mavon-editor/dist/css/index.css");
+var content = __webpack_require__(/*! !../../../css-loader??ref--15-1!../../../postcss-loader/src??ref--15-2!./index.css */ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/mavon-editor/dist/css/index.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -113098,6 +113098,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! element-ui/lib/locale/lang/ja */ "./node_modules/element-ui/lib/locale/lang/ja.js");
 /* harmony import */ var element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(element_ui_lib_locale_lang_ja__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var _mixin_nl2br_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./mixin/nl2br.js */ "./resources/js/mixin/nl2br.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+
 
 
 
@@ -113112,6 +113114,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 window.Vuex = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 Vue.use(__webpack_require__(/*! mavon-editor */ "./node_modules/mavon-editor/dist/mavon-editor.js"));
 Vue.use(element_ui__WEBPACK_IMPORTED_MODULE_2___default.a);
+Vue.use(vuex__WEBPACK_IMPORTED_MODULE_9__["default"]);
 Vue.mixin(_mixin_htmlescape_js__WEBPACK_IMPORTED_MODULE_4__["default"]);
 Vue.mixin(_mixin_is_string_js__WEBPACK_IMPORTED_MODULE_5___default.a);
 Vue.mixin(_mixin_nl2br_js__WEBPACK_IMPORTED_MODULE_8__["default"]);
@@ -113121,6 +113124,12 @@ __webpack_require__(/*! mavon-editor/dist/css/index.css */ "./node_modules/mavon
 axios.defaults.headers.common = {
   "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
 };
+
+Vue.prototype.count = function (string, target) {
+  return string.split(target).length - 1;
+}; // const app = new Vue({
+//     el: "#app"
+// })
 
 /***/ }),
 
@@ -117260,6 +117269,17 @@ function nl2br(target) {
 
 /***/ }),
 
+/***/ "./resources/sass/dashboard_chat_rooms.scss":
+/*!**************************************************!*\
+  !*** ./resources/sass/dashboard_chat_rooms.scss ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
 /***/ "./resources/sass/dashboard_lessons.scss":
 /*!***********************************************!*\
   !*** ./resources/sass/dashboard_lessons.scss ***!
@@ -117338,9 +117358,9 @@ function nl2br(target) {
 /***/ }),
 
 /***/ 0:
-/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** multi ./resources/js/app.js ./resources/sass/app.scss ./resources/sass/development_ide.scss ./resources/sass/dashboard.scss ./resources/sass/dashboard_lessons.scss ./resources/sass/materials/create.scss ./resources/sass/materials/edit.scss ./resources/sass/material_show.scss ./resources/sass/welcome.scss ./resources/sass/material_purchase_show.scss ***!
-  \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** multi ./resources/js/app.js ./resources/sass/app.scss ./resources/sass/development_ide.scss ./resources/sass/dashboard.scss ./resources/sass/dashboard_lessons.scss ./resources/sass/dashboard_chat_rooms.scss ./resources/sass/materials/create.scss ./resources/sass/materials/edit.scss ./resources/sass/material_show.scss ./resources/sass/welcome.scss ./resources/sass/material_purchase_show.scss ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -117349,6 +117369,7 @@ __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resour
 __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/sass/development_ide.scss */"./resources/sass/development_ide.scss");
 __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/sass/dashboard.scss */"./resources/sass/dashboard.scss");
 __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/sass/dashboard_lessons.scss */"./resources/sass/dashboard_lessons.scss");
+__webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/sass/dashboard_chat_rooms.scss */"./resources/sass/dashboard_chat_rooms.scss");
 __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/sass/materials/create.scss */"./resources/sass/materials/create.scss");
 __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/sass/materials/edit.scss */"./resources/sass/materials/edit.scss");
 __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/sass/material_show.scss */"./resources/sass/material_show.scss");

@@ -23,7 +23,12 @@
 </head>
 
 <body>
-    @yield('app-content')
+    <div id="app" class="d-flex flex-column h-100">
+        @include("components.header", ["profileImagePath" => $user->profile_image_path])
+        <div class="fill">
+            @yield('app-content')
+        </div>
+    </div>
 </body>
 
 </html>

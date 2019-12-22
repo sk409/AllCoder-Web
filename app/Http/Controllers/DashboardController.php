@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Lesson;
+use App\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Facades\Auth;
 
@@ -65,8 +66,9 @@ class DashboardController extends Controller
 
     public function chatRooms(): Renderable
     {
+        $user = User::find(Auth::user()->id);
         return view("dashboard_chat_rooms", [
-            "user" => Auth::user(),
+            "user" => $user,
             "activeIndex" => 6,
         ]);
     }

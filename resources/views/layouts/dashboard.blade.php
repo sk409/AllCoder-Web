@@ -6,9 +6,6 @@
 
 @section('app-content')
 <div id="dashboard" class="h-100">
-    <div>
-        @include("components.header", ["profileImagePath" => $user->profile_image_path])
-    </div>
     <el-container class="h-100">
         <el-aside class="h-100">
             <el-menu class="text-center h-100" default-active="{{$activeIndex}}" background-color="#545c64"

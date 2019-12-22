@@ -25,7 +25,33 @@ class ChatRoomsController extends Controller
     {
         $request->validate([
             "name" => "required|max:128",
+            "user_id" => "required",
         ]);
-        ChatRoom::create($request->all());
+        $chatRoom = ChatRoom::create($request->all());
+        $user = User::find($request->user_id);
+        $user->chatRooms()->attach($chatRoom->id);
+    }
+
+    public function show(int $id)
+    {
+        $chatRoom = ChatRoom::find($id);
+        if (is_null($chatRoom)) {
+            Error::notFound();
+        }
+        $user = User::find(Auth::user()->id);
+        $attended = false;
+        foreach ($user->chatRooms->all() as $c) {
+            if ($chatRoom->id === $c->id) {
+                $attended = true;
+                break;
+            }
+        }
+        if (!$attended) {
+            Error::notFound();
+        }
+        return view("chat_room_show", [
+            "user" => $user,
+            "chatRoom" => $chatRoom,
+        ]);
     }
 }
