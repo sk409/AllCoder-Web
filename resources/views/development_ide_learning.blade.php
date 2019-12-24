@@ -14,7 +14,8 @@
         url-reading="{{route("development.reading", ["user_id" => $user->id, "material_id" => $material->id, "lesson_id" => $lesson->id])}}"
         :console-port="{{$consolePort}}" :host-ports="{{json_encode($hostPorts)}}"
         :container-ports="{{json_encode($containerPorts)}}" :questions="{{json_encode($questions)}}"
-        :user-id="{{$user->id}}" :material-id="{{$material->id}}" :lesson-id="{{$lesson->id}}">
+        :user-id="{{$user->id}}" :material-id="{{$material->id}}" :lesson-id="{{$lesson->id}}"
+        file-path="{{$filePath ? $filePath : ''}}">
     </development-ide-learning>
 </div>
 @endsection

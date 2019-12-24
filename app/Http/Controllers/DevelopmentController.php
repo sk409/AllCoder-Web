@@ -140,7 +140,7 @@ class DevelopmentController extends Controller
         ]);
     }
 
-    public function learning(Request $request): Renderable
+    public function learning(Request $request)
     {
         $request->validate([
             "user_id" => "required",
@@ -148,14 +148,18 @@ class DevelopmentController extends Controller
             "lesson_id" => "required",
         ]);
         $user = User::find($request->user_id);
-        if ($user->id !== Auth::user()->id) {
-            Error::notFound();
-        }
+        $readOnly = $user->id !== Auth::user()->id;
+        // if ($user->id !== Auth::user()->id) {
+        //     Error::notFound();
+        // }
         $material = Material::find($request->material_id);
-        $purchased = count($user->purchases()->where("material_id", $material->id)->get()->all());
-        if (!$purchased) {
-            Error::notFound();
-        }
+        //***********************************/
+        // TODO: 買ってない人を考慮する
+        //$purchased = count($user->purchases()->where("material_id", $material->id)->get()->all());
+        // if (!$purchased) {
+        //     Error::notFound();
+        // }
+        //***********************************/
         $lesson = Lesson::find($request->lesson_id);
         $includes = false;
         foreach ($material->lessons()->get()->all() as $l) {
@@ -176,41 +180,9 @@ class DevelopmentController extends Controller
                 ->where("code_question_id", $question->id)->get()->all();
             $question->answer = empty($answers) ? null : $answers[0];
         }
-        // $composeDirectoryPath = Path::purchasedLessonWeb(
-        //     $request->user_id,
-        //     $request->material_id,
-        //     $request->lesson_id
-        // );
         $lessonDirectoryPathPurchased = Path::purchasedLesson($user->id, $material->id, $lesson->id, "");
         $infoFilePath = Path::append($lessonDirectoryPathPurchased, "info.json");
         $info = json_decode(file_get_contents($infoFilePath));
-        //         if (is_null($info->docker_container_id)) {
-        //             $containerTarFilePath = Path::append($lessonDirectoryPathPurchased, "container.tar");
-        //             $dockerImageName = uniqid();
-        //             exec("cat $containerTarFilePath | docker image import - $dockerImageName");
-        //             $dockerDirectoryPath = Path::append($lessonDirectoryPathPurchased, "docker");
-        //             $dockerfilePath = Path::append($dockerDirectoryPath, "Dockerfile");
-        //             $dockerfileText = <<<EOM
-        // FROM $dockerImageName
-        // USER $info->user_name
-        // EOM;
-        //             file_put_contents($dockerfilePath, $dockerfileText);
-        //             $dockerImageName2 = uniqid();
-        //             exec("docker image build -t $dockerImageName2 $dockerDirectoryPath");
-        //             $portString = "";
-        //             foreach ($info->ports as $port) {
-        //                 $portString .= "-p $port ";
-        //             }
-        //             $outputs = [];
-        //             exec("docker container run -d $portString $dockerImageName2 /sbin/init", $outputs);
-        //             $containerID = $outputs[0];
-        //             // TODO: MySQLが選択されている場合にだけ実行する
-        //             exec("docker container exec -it $containerID find /var/lib/mysql -type f -exec touch {} \;");
-        //             exec("docker container exec -it --user root $containerID clamd");
-        //             exec("docker container exec -itd $containerID gotty -w -p $info->console_port bash");
-        //         } else {
-        //             $containerID = $info->docker_container_id;
-        //         }
         $outputs = [];
         exec("docker container port $info->docker_container_id $info->console_port", $outputs);
         preg_match("/[0-9]+:([0-9]+)/u", $outputs[0], $consolePortMatches);
@@ -224,11 +196,7 @@ class DevelopmentController extends Controller
             $hostPorts[] = $portMatches[1];
             $containerPorts[] = $containerPort;
         }
-        // $info->docker_container_id = $containerID;
-        // file_put_contents($infoFilePath, json_encode($info));
         exec("docker container exec -it $info->docker_container_id find /var/lib/mysql -type f -exec touch {} \;");
-        // TODO: ClamAVを無効化
-        //exec("docker container exec -it --user root $dockerContainerId clamd");
         exec("docker container exec -itd $info->docker_container_id gotty -w -p $info->console_port bash");
         return view("development_ide_learning", [
             "title" => $info->title,
@@ -239,7 +207,8 @@ class DevelopmentController extends Controller
             "user" => $user,
             "material" => $material,
             "lesson" => $lesson,
-            "questions" => $questions
+            "questions" => $questions,
+            "filePath" => $request->file_path
         ]);
     }
 

@@ -31,9 +31,8 @@
             <div v-if="messages">
                 <div v-for="message in messages" :key="message.id" class="d-flex mb-3">
                     <span v-if="!isIncomingMessage(message)" class="mr-3" v-text="message.user.name"></span>
-                    <span v-text="message.text"
-                        :class="{'incoming': isIncomingMessage(message), 'outgoing': !isIncomingMessage(message)}"
-                        class="message">
+                    <span :class="{'incoming': isIncomingMessage(message), 'outgoing': !isIncomingMessage(message)}"
+                        class="message" v-html="parseText(message.text, message.user)">
                     </span>
                     <span v-if="isIncomingMessage(message)" class="ml-3" v-text="message.user.name"></span>
                 </div>

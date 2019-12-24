@@ -77,6 +77,15 @@ new Vue({
                 this.messages.push(chatMessage);
                 this.text = "";
             });
+        },
+        parseText(text, user) {
+            const regex = /@{([0-9]+):([0-9]+):(.+)}/g
+            let match = regex.exec(text);
+            while (match) {
+                text = text.substring(0, match.index) + `<a href="/development/learning?user_id=${user.id}&material_id=${match[1]}&lesson_id=${match[2]}&file_path=${match[3]}" target="_blank">OK</a>` + text.substring(match.index + match[0].length);
+                match = regex.exec(text);
+            }
+            return text;
         }
     }
 });

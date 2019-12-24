@@ -2142,6 +2142,17 @@ new Vue({
 
         _this3.text = "";
       });
+    },
+    parseText: function parseText(text, user) {
+      var regex = /@{([0-9]+):([0-9]+):(.+)}/g;
+      var match = regex.exec(text);
+
+      while (match) {
+        text = text.substring(0, match.index) + "<a href=\"/development/learning?user_id=".concat(user.id, "&material_id=").concat(match[1], "&lesson_id=").concat(match[2], "&file_path=").concat(match[3], "\" target=\"_blank\">OK</a>") + text.substring(match.index + match[0].length);
+        match = regex.exec(text);
+      }
+
+      return text;
     }
   }
 });

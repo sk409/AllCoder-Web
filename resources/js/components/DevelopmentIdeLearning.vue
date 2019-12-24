@@ -92,6 +92,10 @@ export default {
     lessonId: {
       type: Number,
       required: true
+    },
+    filePath: {
+      type: String,
+      default: ""
     }
   },
   components: {
@@ -125,6 +129,11 @@ export default {
         }
         return previous;
       }, []);
+    }
+  },
+  mounted() {
+    if (this.filePath !== "") {
+      this.openFile(this.filePath);
     }
   },
   methods: {

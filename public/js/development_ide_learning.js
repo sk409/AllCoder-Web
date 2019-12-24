@@ -2087,6 +2087,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     lessonId: {
       type: Number,
       required: true
+    },
+    filePath: {
+      type: String,
+      "default": ""
     }
   },
   components: {
@@ -2124,6 +2128,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
         return previous;
       }, []);
+    }
+  },
+  mounted: function mounted() {
+    if (this.filePath !== "") {
+      this.openFile(this.filePath);
     }
   },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_8__["mapActions"])(["setEditedFile"]), {
