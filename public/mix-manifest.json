@@ -10,6 +10,7 @@
     "/css/material_show.css": "/css/material_show.css",
     "/css/welcome.css": "/css/welcome.css",
     "/css/material_purchase_show.css": "/css/material_purchase_show.css",
+    "/css/chat_room_show.css": "/css/chat_room_show.css",
     "/js/chat_room_create.js": "/js/chat_room_create.js",
     "/js/chat_room_show.js": "/js/chat_room_show.js",
     "/js/dashboard_chat_rooms.js": "/js/dashboard_chat_rooms.js",

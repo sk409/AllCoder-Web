@@ -23,11 +23,17 @@
 </head>
 
 <body>
-    <div id="app" class="d-flex flex-column h-100">
+    <div id="app" class="h-100">
+        @if(isset($__header) && isset($user))
         @include("components.header", ["profileImagePath" => $user->profile_image_path])
-        <div class="fill">
+        <div id="app-content">
             @yield('app-content')
         </div>
+        @else
+        <div class="h-100">
+            @yield('app-content')
+        </div>
+        @endif
     </div>
 </body>
 

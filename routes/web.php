@@ -74,6 +74,7 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::resource("code_question_closes", "CodeQuestionClosesController");
     Route::resource('code_question_answers', 'CodeQuestionAnswersController');
 
+    Route::get("users", "UsersController@index")->name("users.index");
     Route::get("users/{userId}", "UsersController@show")->name("users.show");
 
     Route::resource("chat_rooms", "ChatRoomsController");

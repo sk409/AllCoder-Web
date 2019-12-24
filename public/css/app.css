@@ -11369,6 +11369,7 @@ body {
 
 #header {
   background: #373C42;
+  height: 8%;
 }
 
 #header-logo {
@@ -11379,6 +11380,10 @@ body {
 #header-user-profile-image {
   width: 2rem;
   height: 2rem;
+}
+
+#app-content {
+  height: 92%;
 }
 
 .fill {

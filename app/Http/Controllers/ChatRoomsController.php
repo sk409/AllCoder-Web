@@ -50,6 +50,7 @@ class ChatRoomsController extends Controller
             Error::notFound();
         }
         return view("chat_room_show", [
+            "__header" => "",
             "user" => $user,
             "chatRoom" => $chatRoom,
         ]);

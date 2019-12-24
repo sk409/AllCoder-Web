@@ -1,0 +1,27 @@
+.messages {
+  height: 90%;
+  overflow: scroll;
+}
+
+.message-composer {
+  height: 10%;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+          align-items: center;
+  padding: 1rem;
+}
+
+.message {
+  padding: 1rem;
+}
+
+.incoming {
+  background: lightgray;
+  margin-left: auto;
+}
+
+.outgoing {
+  background: lightblue;
+}
+

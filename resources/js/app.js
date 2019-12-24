@@ -9,6 +9,17 @@ import lang from 'element-ui/lib/locale/lang/ja';
 import nl2br from "./mixin/nl2br.js";
 import Vuex from "vuex";
 
+// import Echo from "laravel-echo";
+// window.Pusher = require("pusher-js");
+// window.Echo = new Echo({
+//     broadcaster: "pusher",
+//     key: process.env.MIX_PUSHER_APP_KEY,
+//     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+//     // encrypted: true
+//     wsHost: window.location.hostname,
+//     wsPort: 6001
+// });
+
 locale.use(lang)
 
 
@@ -23,6 +34,7 @@ Vue.mixin(htmlescape);
 Vue.mixin(isString);
 Vue.mixin(nl2br);
 
+//require("./bootstrap");
 require("mavon-editor/dist/css/index.css");
 
 axios.defaults.headers.common = {

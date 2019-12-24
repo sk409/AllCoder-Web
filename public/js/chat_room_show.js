@@ -2056,20 +2056,64 @@ process.umask = function() { return 0; };
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_chat_message_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./models/chat_message.js */ "./resources/js/models/chat_message.js");
+/* harmony import */ var _models_user_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./models/user.js */ "./resources/js/models/user.js");
+
 
 new Vue({
   el: "#chat-room-show",
   data: {
-    message: ""
+    text: "",
+    user: null,
+    room: null,
+    messages: []
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    this.user = JSON.parse(document.getElementById("__user").textContent);
+    this.room = JSON.parse(document.getElementById("__room").textContent);
+    this.messages = JSON.parse(document.getElementById("__messages").textContent);
+    var users = JSON.parse(document.getElementById("__users").textContent);
+    users.forEach(function (user, index) {
+      _this.messages[index].user = user;
+    });
+    window.Echo.channel("home").listen("NewChatMessage", function (e) {
+      console.log(_this.user);
+      var message = e.chatMessage;
+
+      if (message.user_id === _this.user.id) {
+        return;
+      }
+
+      _models_user_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
+        "id": message.user_id
+      }, function (response) {
+        message.user = response.data[0];
+
+        _this.messages.push(message);
+      });
+    });
+  },
+  watch: {
+    messages: function messages() {
+      var _this2 = this;
+
+      this.$nextTick(function () {
+        _this2.$refs.messages.scrollTop = _this2.$refs.messages.scrollHeight;
+      });
+    }
   },
   methods: {
+    isIncomingMessage: function isIncomingMessage(message) {
+      return message.user.id !== this.user.id;
+    },
     growMessageBox: function growMessageBox(e) {
       if (!e.isComposing) {
         var messageBox = this.$refs.messageBox;
         ++messageBox.rows;
 
         if (messageBox.selectionStart !== messageBox.selectionEnd) {
-          var selectedText = this.message.substring(messageBox.selectionStart, messageBox.selectionEnd);
+          var selectedText = this.text.substring(messageBox.selectionStart, messageBox.selectionEnd);
           messageBox.rows -= this.count(selectedText, "\n");
         }
       }
@@ -2078,21 +2122,25 @@ new Vue({
       var messageBox = this.$refs.messageBox;
 
       if (messageBox.selectionStart === messageBox.selectionEnd) {
-        var c = this.message[messageBox.selectionStart - 1];
+        var c = this.text[messageBox.selectionStart - 1];
 
         if (c === "\n") {
           --messageBox.rows;
         }
       } else {
-        var selectedText = this.message.substring(messageBox.selectionStart, messageBox.selectionEnd);
-        console.log(this.count(selectedText, "\n"));
+        var selectedText = this.text.substring(messageBox.selectionStart, messageBox.selectionEnd);
         messageBox.rows -= this.count(selectedText, "\n");
       }
     },
     submitMessage: function submitMessage(userId, chatRoomId) {
-      var chatMessage = new _models_chat_message_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.message, userId, chatRoomId);
+      var _this3 = this;
+
+      var chatMessage = new _models_chat_message_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.text, userId, chatRoomId);
+      chatMessage.user = this.user;
       chatMessage.store(function (response) {
-        console.log(response);
+        _this3.messages.push(chatMessage);
+
+        _this3.text = "";
       });
     }
   }
@@ -2343,6 +2391,92 @@ function () {
 
   return Model;
 }();
+
+
+
+/***/ }),
+
+/***/ "./resources/js/models/user.js":
+/*!*************************************!*\
+  !*** ./resources/js/models/user.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return User; });
+/* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model.js */ "./resources/js/models/model.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var User =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(User, _Model);
+
+  _createClass(User, null, [{
+    key: "baseRoute",
+    value: function baseRoute() {
+      return "users";
+    }
+  }, {
+    key: "index",
+    value: function index(parameters, completion) {
+      return _model_js__WEBPACK_IMPORTED_MODULE_0__["default"].index(User.baseRoute(), parameters, completion);
+    }
+  }]);
+
+  function User(name, password, bio_text, profile_image_path, email, email_verified_at, remember_token) {
+    var _this;
+
+    _classCallCheck(this, User);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(User).call(this, User.baseRoute()));
+    _this.name = name;
+    _this.password = password;
+    _this.bio_text = bio_text;
+    _this.profile_image_path = profile_image_path;
+    _this.email = email;
+    _this.email_verified_at = email_verified_at;
+    _this.remember_token = remember_token;
+    return _this;
+  }
+
+  _createClass(User, [{
+    key: "parameters",
+    value: function parameters() {
+      return {
+        name: this.name,
+        password: this.password,
+        bio_text: this.bio_text,
+        profile_image_path: this.profile_image_path,
+        email: this.email,
+        email_verified_at: this.email_verified_at,
+        remember_token: this.remember_token
+      };
+    }
+  }]);
+
+  return User;
+}(_model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
 
