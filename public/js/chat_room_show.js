@@ -2058,14 +2058,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_chat_message_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./models/chat_message.js */ "./resources/js/models/chat_message.js");
 /* harmony import */ var _models_invitation_request_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./models/invitation_request.js */ "./resources/js/models/invitation_request.js");
 /* harmony import */ var _models_user_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./models/user.js */ "./resources/js/models/user.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_3__);
+
 
 
 
 new Vue({
   el: "#chat-room-show",
   data: {
+    appendingMaterialLinkDialog: {
+      isVisible: false,
+      material: null,
+      lesson: null,
+      filePath: "",
+      step: 1
+    },
     invitationDialog: {
       isVisible: false
+    },
+    messageComposer: {
+      menu: {
+        isVisible: false
+      }
     },
     messages: [],
     room: null,
@@ -2186,8 +2201,38 @@ new Vue({
         }
       });
     },
+    selectMaterial: function selectMaterial(material) {
+      var _this5 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_3___default.a.get("/lesson_material?material_id=" + material.id).then(function (response) {
+        material.lessons = response.data;
+        _this5.appendingMaterialLinkDialog.material = material;
+        _this5.appendingMaterialLinkDialog.step = 2;
+      });
+    },
+    selectLesson: function selectLesson(lesson) {
+      this.appendingMaterialLinkDialog.lesson = lesson;
+      this.appendingMaterialLinkDialog.step = 3;
+    },
+    appendMaterialLink: function appendMaterialLink() {
+      this.text += "@{".concat(this.appendingMaterialLinkDialog.material.id, ":").concat(this.appendingMaterialLinkDialog.lesson.id, ":").concat(this.appendingMaterialLinkDialog.filePath, "}");
+      this.appendingMaterialLinkDialog.material = null;
+      this.appendingMaterialLinkDialog.lesson = null;
+      this.appendingMaterialLinkDialog.filePath = "";
+      this.appendingMaterialLinkDialog.step = 1;
+      this.appendingMaterialLinkDialog.isVisible = false;
+    },
+    closeAppendingMaterialLinkDialog: function closeAppendingMaterialLinkDialog() {
+      this.messageComposer.menu.isVisible = false;
+    },
+    showAppendingMaterialLinkDialog: function showAppendingMaterialLinkDialog() {
+      this.appendingMaterialLinkDialog.isVisible = true;
+    },
     showInvitationDialog: function showInvitationDialog() {
       this.invitationDialog.isVisible = true;
+    },
+    toggleMessageComposerMenu: function toggleMessageComposerMenu() {
+      this.messageComposer.menu.isVisible = !this.messageComposer.menu.isVisible;
     }
   }
 });

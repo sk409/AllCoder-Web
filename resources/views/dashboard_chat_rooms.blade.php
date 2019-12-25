@@ -24,7 +24,7 @@
         </div>
         <el-divider class="mt-2 mb-4"></el-divider>
     </div>
-    <div class="d-flex">
+    <div class="d-flex align-items-center">
         <div>チャットルーム一覧</div>
         <div class="ml-auto">
             <el-button type="primary" v-on:click="transition('{{route("chat_rooms.create")}}')">新規作成</el-button>

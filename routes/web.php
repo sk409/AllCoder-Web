@@ -87,4 +87,6 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::delete("invitation_requests/{id}", "InvitationRequestsController@destory")->name("invitation_requests.destory");
 
     Route::post("chat_room_user", "ChatRoomUserController@store")->name("chat_room_user.store");
+
+    Route::get("lesson_material", "LessonMaterialController@index")->name("lesson_material.index");
 });

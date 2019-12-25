@@ -47,6 +47,14 @@
             </div>
         </div>
         <div class="message-composer">
+            <div v-show="messageComposer.menu.isVisible" v-cloak class="message-composer-menu">
+                <div class="btn btn-light" v-on:click="showAppendingMaterialLinkDialog">教材へのリンクを追加</div>
+                <el-divider class="my-2"></el-divider>
+            </div>
+            <div v-on:click="toggleMessageComposerMenu">
+                ...
+            </div>
+            <el-divider direction="vertical" class="mx-2"></el-divider>
             <textarea ref="messageBox" v-model="text" class="resize-none w-100" rows="1"
                 placeholder="Enterで改行、Shift+Enterで送信します" v-on:keydown.enter="growMessageBox"
                 v-on:keydown.delete="shrinkMessageBox"
@@ -55,6 +63,38 @@
             </el-button>
         </div>
     </div>
+    <el-dialog :visible.sync="appendingMaterialLinkDialog.isVisible" v-cloak
+        v-on:close="closeAppendingMaterialLinkDialog">
+        <el-steps :active="appendingMaterialLinkDialog.step" align-center class="mb-3">
+            <el-step title="教材"></el-step>
+            <el-step title="レッスン"></el-step>
+            <el-step title="ファイル"></el-step>
+        </el-steps>
+        <div v-if="appendingMaterialLinkDialog.step === 1">
+            <div class="fs-4 text-center">教材を選択してください</div>
+            @foreach($user->purchases as $material)
+            <div class="fs-4 link" v-on:click="selectMaterial({{json_encode($material)}})">{{$material->title}}</div>
+            <el-divider class="my-2"></el-divider>
+            @endforeach
+        </div>
+        <div v-else-if="appendingMaterialLinkDialog.step == 2">
+            <div class="fs-4 text-center">レッスンを選択してください</div>
+            <div v-for="lesson in appendingMaterialLinkDialog.material.lessons" :key="lesson.id">
+                <div class="fs-4 link" v-on:click="selectLesson(lesson)" v-text="lesson.title">
+                </div>
+                <el-divider class="my-2"></el-divider>
+            </div>
+        </div>
+        <div v-else>
+            <div class="fs-4 text-center">ファイルを選択してください</div>
+            <div class="mt-3 d-flex align-items-center">
+                <el-input v-model="appendingMaterialLinkDialog.filePath" class="fill"></el-input>
+                <div class="text-center">
+                    <el-button type="primary" class="ml-3" v-on:click="appendMaterialLink()">選択</el-button>
+                </div>
+            </div>
+        </div>
+    </el-dialog>
     <el-dialog :visible.sync="invitationDialog.isVisible" v-cloak>
         <el-tabs type="card">
             <el-tab-pane label="フォロー">

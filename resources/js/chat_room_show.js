@@ -1,12 +1,25 @@
 import ChatMessage from "./models/chat_message.js";
 import InvitationRequest from "./models/invitation_request.js";
 import User from "./models/user.js";
+import Axios from "axios";
 
 new Vue({
     el: "#chat-room-show",
     data: {
+        appendingMaterialLinkDialog: {
+            isVisible: false,
+            material: null,
+            lesson: null,
+            filePath: "",
+            step: 1
+        },
         invitationDialog: {
             isVisible: false,
+        },
+        messageComposer: {
+            menu: {
+                isVisible: false,
+            }
         },
         messages: [],
         room: null,
@@ -114,8 +127,36 @@ new Vue({
                 }
             })
         },
+        selectMaterial(material) {
+            Axios.get("/lesson_material?material_id=" + material.id).then(response => {
+                material.lessons = response.data;
+                this.appendingMaterialLinkDialog.material = material;
+                this.appendingMaterialLinkDialog.step = 2;
+            });
+        },
+        selectLesson(lesson) {
+            this.appendingMaterialLinkDialog.lesson = lesson;
+            this.appendingMaterialLinkDialog.step = 3;
+        },
+        appendMaterialLink() {
+            this.text += `@{${this.appendingMaterialLinkDialog.material.id}:${this.appendingMaterialLinkDialog.lesson.id}:${this.appendingMaterialLinkDialog.filePath}}`;
+            this.appendingMaterialLinkDialog.material = null;
+            this.appendingMaterialLinkDialog.lesson = null;
+            this.appendingMaterialLinkDialog.filePath = "";
+            this.appendingMaterialLinkDialog.step = 1;
+            this.appendingMaterialLinkDialog.isVisible = false;
+        },
+        closeAppendingMaterialLinkDialog() {
+            this.messageComposer.menu.isVisible = false;
+        },
+        showAppendingMaterialLinkDialog() {
+            this.appendingMaterialLinkDialog.isVisible = true;
+        },
         showInvitationDialog() {
             this.invitationDialog.isVisible = true;
+        },
+        toggleMessageComposerMenu() {
+            this.messageComposer.menu.isVisible = !this.messageComposer.menu.isVisible;
         }
     }
 });

@@ -12,6 +12,19 @@
   -webkit-box-align: center;
           align-items: center;
   padding: 1rem;
+  position: relative;
+}
+
+.message-composer-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-transform: translate(0, -100%);
+          transform: translate(0, -100%);
+  border: 1px solid lightgray;
+  margin-left: 0.5rem;
+  padding: 0.5rem;
+  background: white;
 }
 
 .message {
