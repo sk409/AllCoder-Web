@@ -3,6 +3,7 @@
 namespace App;
 
 use App\ChatRoom;
+use App\InvitationRequest;
 use App\Lesson;
 use App\Material;
 use App\MaterialComment;
@@ -79,5 +80,20 @@ class User extends Authenticatable
     public function chatRooms()
     {
         return $this->belongsToMany(ChatRoom::class);
+    }
+
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, "followings", "following_user_id", "follower_user_id");
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, "followers", "follower_user_id", "following_user_id");
+    }
+
+    public function receivedInvitationRequests()
+    {
+        return $this->hasMany(InvitationRequest::class, "receiver_user_id");
     }
 }

@@ -8,8 +8,6 @@
 <script src="{{asset("js/material_purchase_show.js")}}" defer></script>
 @endsection
 
-@include("components.navbar")
-
 @section("app-content")
 <div v-loading.fullscreen.lock="loading" element-loading-text="Loading..."
     element-loading-background="rgba(0, 0, 0, 0.8)" id="material-purchase-show" class="container pb-5">

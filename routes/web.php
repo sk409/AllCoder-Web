@@ -79,4 +79,12 @@ Route::group(["middleware" => ["auth"]], function () {
 
     Route::resource("chat_rooms", "ChatRoomsController");
     Route::resource("chat_messages", "ChatMessagesController");
+
+    Route::post("followers", "FollowersController@store")->name("followers.store");
+
+    Route::get("invitation_requests", "InvitationRequestsController@index")->name("invitation_requests.index");
+    Route::post("invitation_requests", "InvitationRequestsController@store")->name("inviation_requests.store");
+    Route::delete("invitation_requests/{id}", "InvitationRequestsController@destory")->name("invitation_requests.destory");
+
+    Route::post("chat_room_user", "ChatRoomUserController@store")->name("chat_room_user.store");
 });

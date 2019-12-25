@@ -44,4 +44,5 @@ mix.js("resources/js/app.js", "public/js")
     .sass("resources/sass/material_show.scss", "public/css")
     .sass("resources/sass/welcome.scss", "public/css")
     .sass("resources/sass/material_purchase_show.scss", "public/css")
-    .sass("resources/sass/chat_room_show.scss", "public/css");
+    .sass("resources/sass/chat_room_show.scss", "public/css")
+    .sass("resources/sass/user_show.scss", "public/css");

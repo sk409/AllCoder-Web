@@ -1,13 +1,17 @@
 import ChatMessage from "./models/chat_message.js";
+import InvitationRequest from "./models/invitation_request.js";
 import User from "./models/user.js";
 
 new Vue({
     el: "#chat-room-show",
     data: {
+        invitationDialog: {
+            isVisible: false,
+        },
+        messages: [],
+        room: null,
         text: "",
         user: null,
-        room: null,
-        messages: [],
     },
     mounted() {
         this.user = JSON.parse(document.getElementById("__user").textContent);
@@ -34,6 +38,9 @@ new Vue({
     watch: {
         messages() {
             this.$nextTick(() => {
+                if (!this.$refs.messages) {
+                    return;
+                }
                 this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
             });
         }
@@ -76,16 +83,39 @@ new Vue({
             chatMessage.store(response => {
                 this.messages.push(chatMessage);
                 this.text = "";
+                this.$refs.messageBox.rows = 1;
             });
         },
         parseText(text, user) {
             const regex = /@{([0-9]+):([0-9]+):(.+)}/g
             let match = regex.exec(text);
             while (match) {
-                text = text.substring(0, match.index) + `<a href="/development/learning?user_id=${user.id}&material_id=${match[1]}&lesson_id=${match[2]}&file_path=${match[3]}" target="_blank">OK</a>` + text.substring(match.index + match[0].length);
+                text = `<pre>${text.substring(0, match.index)}</pre>` + `<a href="/development/learning?user_id=${user.id}&material_id=${match[1]}&lesson_id=${match[2]}&file_path=${match[3]}" target="_blank">OK</a>` + `<pre>${text.substring(match.index + match[0].length)}</pre>`;
                 match = regex.exec(text);
             }
             return text;
+        },
+        invite(e, receiverUserId) {
+            const invitationRequest = new InvitationRequest(this.user.id, receiverUserId, this.room.id);
+            invitationRequest.store(response => {
+                if (response.status === 200) {
+                    this.$notify.success({
+                        message: "招待しました",
+                        duration: 3000,
+                    });
+                    e.target.textContent = "招待済み";
+                    e.target.setAttribute("disabled", "disabled");
+                    e.target.classList.add("is-disabled");
+                } else {
+                    this.$notify.error({
+                        message: "招待に失敗しました",
+                        duration: 3000,
+                    });
+                }
+            })
+        },
+        showInvitationDialog() {
+            this.invitationDialog.isVisible = true;
         }
     }
 });

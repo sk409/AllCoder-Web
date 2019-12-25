@@ -8,8 +8,6 @@
 <script src="{{asset("js/material_show.js")}}" defer></script>
 @endsection
 
-@include("components.navbar")
-
 @section("app-content")
 <div id="material-show" class="container pb-5">
     <div id="material-thumbnail-and-details" class="d-flex mt-4">

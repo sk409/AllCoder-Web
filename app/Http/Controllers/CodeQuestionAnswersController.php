@@ -17,6 +17,7 @@ class CodeQuestionAnswersController extends Controller
 
     public function store(Request $request)
     {
+        // protected $fillable = ["text", "user_id", "material_id", "lesson_id", "code_question_id"];
         // return $request->all();
         $request->validate([
             "text" => "required|max:512",

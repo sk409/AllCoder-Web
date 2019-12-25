@@ -1839,6 +1839,8 @@ module.exports = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_chat_room_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../models/chat_room.js */ "./resources/js/models/chat_room.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
 //
 //
 //
@@ -1851,9 +1853,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ChatRoomCreate",
   props: {
+    user: {
+      type: Object,
+      required: true
+    },
     redirectUrl: {
       type: String,
       required: true
@@ -1889,10 +1896,27 @@ __webpack_require__.r(__webpack_exports__);
         var chatRoom = new _models_chat_room_js__WEBPACK_IMPORTED_MODULE_0__["default"](_this.form.name);
         chatRoom.store(function (response) {
           if (response.status !== 200) {
+            _this.$notify.error({
+              message: "チャットルームを作成できませんでした",
+              duration: 3000
+            });
+
             return;
           }
 
-          location.href = _this.redirectUrl;
+          axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/chat_room_user", {
+            user_id: _this.user.id,
+            chat_room_id: chatRoom.id
+          }).then(function (response) {
+            if (response.status === 200) {
+              location.href = _this.redirectUrl;
+            } else {
+              _this.$notify.error({
+                message: "新しく作成したチャットルームに参加できませんでした",
+                duration: 3000
+              });
+            }
+          });
         });
       });
     }
@@ -2625,7 +2649,7 @@ function () {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/js/chat_room_create.js */"./resources/js/chat_room_create.js");
+module.exports = __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/js/chat_room_create.js */"./resources/js/chat_room_create.js");
 
 
 /***/ })

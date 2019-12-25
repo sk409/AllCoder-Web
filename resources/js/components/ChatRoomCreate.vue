@@ -11,9 +11,14 @@
 
 <script>
 import ChatRoom from "../models/chat_room.js";
+import Axios from "axios";
 export default {
   name: "ChatRoomCreate",
   props: {
+    user: {
+      type: Object,
+      required: true
+    },
     redirectUrl: {
       type: String,
       required: true
@@ -49,9 +54,25 @@ export default {
         const chatRoom = new ChatRoom(this.form.name);
         chatRoom.store(response => {
           if (response.status !== 200) {
+            this.$notify.error({
+              message: "チャットルームを作成できませんでした",
+              duration: 3000
+            });
             return;
           }
-          location.href = this.redirectUrl;
+          Axios.post("/chat_room_user", {
+            user_id: this.user.id,
+            chat_room_id: chatRoom.id
+          }).then(response => {
+            if (response.status === 200) {
+              location.href = this.redirectUrl;
+            } else {
+              this.$notify.error({
+                message: "新しく作成したチャットルームに参加できませんでした",
+                duration: 3000
+              });
+            }
+          });
         });
       });
     }

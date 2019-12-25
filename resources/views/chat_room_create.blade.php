@@ -9,7 +9,8 @@
     @include("components.header", ["profileImagePath"=>$user->profile_image_path])
     <el-card class="w-75 mx-auto mt-5">
         <div slot="header">チャットルーム作成</div>
-        <chat-room-create redirect-url="{{route("dashboard.chat_rooms")}}"></chat-room-create>
+        <chat-room-create :user="{{json_encode($user)}}" redirect-url="{{route("dashboard.chat_rooms")}}">
+        </chat-room-create>
     </el-card>
 </div>
 @endsection

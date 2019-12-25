@@ -1,5 +1,9 @@
 @extends("layouts.dashboard")
 
+@section("links")
+<link rel="stylesheet" href="{{asset("css/dashboard.css")}}">
+@endsection
+
 @section("scripts")
 <script src="{{asset("js/dashboard_purchased_materials.js")}}" defer></script>
 @endsection

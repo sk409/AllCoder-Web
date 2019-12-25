@@ -10,6 +10,15 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatRoomsController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        return Controller::narrowDownFromConditions(
+            $request->all(),
+            "App\ChatRoom"
+        );
+    }
+
     public function create()
     {
         $user = User::find(Auth::user()->id);
@@ -23,13 +32,11 @@ class ChatRoomsController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            "name" => "required|max:128",
-            "user_id" => "required",
-        ]);
+        // $request->validate([
+        //     "name" => "required|max:128",
+        // ]);
         $chatRoom = ChatRoom::create($request->all());
-        $user = User::find($request->user_id);
-        $user->chatRooms()->attach($chatRoom->id);
+        return $chatRoom->id;
     }
 
     public function show(int $id)

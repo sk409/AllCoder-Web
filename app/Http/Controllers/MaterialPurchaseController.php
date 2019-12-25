@@ -6,6 +6,7 @@ use App\CodeQuestion;
 use App\Lesson;
 use App\Material;
 use App\Path;
+use Auth;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -20,6 +21,8 @@ class MaterialPurchaseController extends Controller
             $lesson->rating = Lesson::rating($lesson);
         }
         return view("material_purchase_show", [
+            "__header" => "",
+            "user" => Auth::user(),
             "material" => $material
         ]);
     }

@@ -2283,9 +2283,9 @@
             "dev": true
         },
         "collect.js": {
-            "version": "4.19.0",
-            "resolved": "https://registry.npmjs.org/collect.js/-/collect.js-4.19.0.tgz",
-            "integrity": "sha512-Lx+/nCsOD5/Bk+H5uerRJ415W6oXU0G2+VSmm2j76yzXfqxvcop5Jqx22iW+AtcxVWRrodz6YV9LCM443BPIvA==",
+            "version": "4.18.9",
+            "resolved": "https://registry.npmjs.org/collect.js/-/collect.js-4.18.9.tgz",
+            "integrity": "sha512-/ocqUYqJFIRZo9mmY6NkdV/VGJnheSKhQ2OQm8X8r9AbxPoShQtvzyYHRQ057XuB9U9rywBfwYEBhnlSq8uQxA==",
             "dev": true
         },
         "collection-visit": {
@@ -6708,9 +6708,9 @@
             }
         },
         "node-releases": {
-            "version": "1.1.44",
-            "resolved": "https://registry.npmjs.org/node-releases/-/node-releases-1.1.44.tgz",
-            "integrity": "sha512-NwbdvJyR7nrcGrXvKAvzc5raj/NkoJudkarh2yIpJ4t0NH4aqjUDz/486P+ynIW5eokKOfzGNRdYoLfBlomruw==",
+            "version": "1.1.43",
+            "resolved": "https://registry.npmjs.org/node-releases/-/node-releases-1.1.43.tgz",
+            "integrity": "sha512-Rmfnj52WNhvr83MvuAWHEqXVoZXCcDQssSOffU4n4XOL9sPrP61mSZ88g25NqmABDvH7PiAlFCzoSCSdzA293w==",
             "dev": true,
             "requires": {
                 "semver": "^6.3.0"

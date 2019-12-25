@@ -56,6 +56,8 @@ class MaterialsController extends Controller
         $material = Material::find($id);
         $material->rating = Material::rating($material);
         return view("material_show", [
+            "__header" => "",
+            "user" => Auth::user(),
             "material" => $material
         ]);
     }

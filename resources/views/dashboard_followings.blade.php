@@ -1,31 +1,47 @@
 @extends("layouts.dashboard")
 
+@section("links")
+<link rel="stylesheet" href="{{asset("css/dashboard.css")}}">
+@endsection
+
 @section("scripts")
 <script src="{{asset("js/dashboard_followings.js")}}" defer></script>
 @endsection
 
 @section("dashboard-content")
-{{-- <div class="d-flex align-items-center">
-    <div>
-        全{{count($materials)}}件
-</div>
-<el-button type="primary" class="ml-auto" v-on:click="transition('{{route("materials.create")}}')">新規作成</el-button>
-</div>
-<el-divider></el-divider>
-@foreach($materials as $material)
-<el-card class="w-75 mx-auto mb-3">
-    <div slot="header">
-        <span>{{$material->title}}</span><span></span>
-    </div>
-    <div>
-        <el-collapse v-model="expandedNames" class="mb-3">
-            <el-collapse-item title="概要" name="{{$material->id}}">{{$material->description}}</el-collapse-item>
-        </el-collapse>
-        <div class="text-center">
-            <el-button type="primary"
-                v-on:click="transition('{{route("materials.edit", ["material" => $material->id])}}')">編集</el-button>
+<div class="w-75 mx-auto">
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            フォローしているユーザ一覧
+        </div>
+        <div>
+            <el-button type="primary" v-on:click="showUserSearchDialog">検索</el-button>
         </div>
     </div>
-</el-card>
-@endforeach --}}
+    <el-divider class="my-2"></el-divider>
+    <div>
+        @foreach($user->followings as $following)
+        <div>
+            <img class="w-4 h-4"
+                src="{{$following->profile_image_path ? $following->profile_image_path : asset('storage/no-image.png')}}">
+            <a class="ml-1 fs-4" href="{{route("users.show", ["id" => $following->id])}}">{{$following->name}}</a>
+        </div>
+        <el-divider class="my-2"></el-divider>
+        @endforeach
+    </div>
+    <el-dialog :visible.sync="userSearchDialog.isVisible">
+        <div class="d-flex align-items-center">
+            <el-input v-model="userSearchDialog.username" class="fill"></el-input>
+            <el-button type="primary" v-on:click="searchUser" class="ml-3">検索</el-button>
+        </div>
+        <el-divider class="my-2"></el-divider>
+        <div v-for="user in userSearchDialog.users" :key="user.id">
+            <div class="d-flex align-items-center">
+                <img class="w-4 h-4"
+                    :src="user.profile_image_path ? user.profile_image_path : '{{asset("storage/no-image.png")}}'">
+                <a class="ml-1 fs-4" :href="'/users/' + user.id" v-text="user.name"></a>
+            </div>
+        </div>
+    </el-dialog>
+</div>
 @endsection

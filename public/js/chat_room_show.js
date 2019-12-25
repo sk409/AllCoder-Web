@@ -2056,16 +2056,21 @@ process.umask = function() { return 0; };
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_chat_message_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./models/chat_message.js */ "./resources/js/models/chat_message.js");
-/* harmony import */ var _models_user_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./models/user.js */ "./resources/js/models/user.js");
+/* harmony import */ var _models_invitation_request_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./models/invitation_request.js */ "./resources/js/models/invitation_request.js");
+/* harmony import */ var _models_user_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./models/user.js */ "./resources/js/models/user.js");
+
 
 
 new Vue({
   el: "#chat-room-show",
   data: {
-    text: "",
-    user: null,
+    invitationDialog: {
+      isVisible: false
+    },
+    messages: [],
     room: null,
-    messages: []
+    text: "",
+    user: null
   },
   mounted: function mounted() {
     var _this = this;
@@ -2085,7 +2090,7 @@ new Vue({
         return;
       }
 
-      _models_user_js__WEBPACK_IMPORTED_MODULE_1__["default"].index({
+      _models_user_js__WEBPACK_IMPORTED_MODULE_2__["default"].index({
         "id": message.user_id
       }, function (response) {
         message.user = response.data[0];
@@ -2099,6 +2104,10 @@ new Vue({
       var _this2 = this;
 
       this.$nextTick(function () {
+        if (!_this2.$refs.messages) {
+          return;
+        }
+
         _this2.$refs.messages.scrollTop = _this2.$refs.messages.scrollHeight;
       });
     }
@@ -2141,6 +2150,7 @@ new Vue({
         _this3.messages.push(chatMessage);
 
         _this3.text = "";
+        _this3.$refs.messageBox.rows = 1;
       });
     },
     parseText: function parseText(text, user) {
@@ -2148,11 +2158,36 @@ new Vue({
       var match = regex.exec(text);
 
       while (match) {
-        text = text.substring(0, match.index) + "<a href=\"/development/learning?user_id=".concat(user.id, "&material_id=").concat(match[1], "&lesson_id=").concat(match[2], "&file_path=").concat(match[3], "\" target=\"_blank\">OK</a>") + text.substring(match.index + match[0].length);
+        text = "<pre>".concat(text.substring(0, match.index), "</pre>") + "<a href=\"/development/learning?user_id=".concat(user.id, "&material_id=").concat(match[1], "&lesson_id=").concat(match[2], "&file_path=").concat(match[3], "\" target=\"_blank\">OK</a>") + "<pre>".concat(text.substring(match.index + match[0].length), "</pre>");
         match = regex.exec(text);
       }
 
       return text;
+    },
+    invite: function invite(e, receiverUserId) {
+      var _this4 = this;
+
+      var invitationRequest = new _models_invitation_request_js__WEBPACK_IMPORTED_MODULE_1__["default"](this.user.id, receiverUserId, this.room.id);
+      invitationRequest.store(function (response) {
+        if (response.status === 200) {
+          _this4.$notify.success({
+            message: "招待しました",
+            duration: 3000
+          });
+
+          e.target.textContent = "招待済み";
+          e.target.setAttribute("disabled", "disabled");
+          e.target.classList.add("is-disabled");
+        } else {
+          _this4.$notify.error({
+            message: "招待に失敗しました",
+            duration: 3000
+          });
+        }
+      });
+    },
+    showInvitationDialog: function showInvitationDialog() {
+      this.invitationDialog.isVisible = true;
     }
   }
 });
@@ -2231,6 +2266,84 @@ function (_Model) {
   }]);
 
   return ChatMessage;
+}(_model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
+/***/ "./resources/js/models/invitation_request.js":
+/*!***************************************************!*\
+  !*** ./resources/js/models/invitation_request.js ***!
+  \***************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return InvitationRequest; });
+/* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model.js */ "./resources/js/models/model.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var InvitationRequest =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(InvitationRequest, _Model);
+
+  _createClass(InvitationRequest, null, [{
+    key: "baseRoute",
+    value: function baseRoute() {
+      return "invitation_requests";
+    }
+  }, {
+    key: "index",
+    value: function index(parameters, completion) {
+      return _model_js__WEBPACK_IMPORTED_MODULE_0__["default"].index(InvitationRequest.baseRoute(), parameters, completion);
+    }
+  }]);
+
+  function InvitationRequest(senderUserId, receiverUserId, chatRoomId) {
+    var _this;
+
+    _classCallCheck(this, InvitationRequest);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(InvitationRequest).call(this, InvitationRequest.baseRoute()));
+    _this.senderUserId = senderUserId;
+    _this.receiverUserId = receiverUserId;
+    _this.chatRoomId = chatRoomId;
+    return _this;
+  }
+
+  _createClass(InvitationRequest, [{
+    key: "parameters",
+    value: function parameters() {
+      return {
+        "sender_user_id": this.senderUserId,
+        "receiver_user_id": this.receiverUserId,
+        "chat_room_id": this.chatRoomId
+      };
+    }
+  }]);
+
+  return InvitationRequest;
 }(_model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
@@ -2500,7 +2613,7 @@ function (_Model) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/kobayashimasato/Documents/Apps/Web/ProMark/resources/js/chat_room_show.js */"./resources/js/chat_room_show.js");
+module.exports = __webpack_require__(/*! /Users/kobayashimasato/Apps/Web/ProMark/resources/js/chat_room_show.js */"./resources/js/chat_room_show.js");
 
 
 /***/ })
