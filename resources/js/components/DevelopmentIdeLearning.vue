@@ -148,7 +148,9 @@ export default {
       };
       const that = this;
       File.index(parameters, response => {
-        that.setEditedFile(response.data);
+        that.setEditedFile(
+          new File(path, response.data.text, that.info.docker_container_id)
+        );
       });
     },
     showContextMenu(x, y) {

@@ -28,6 +28,11 @@
                         チャットルーム
                     </div>
                 </el-menu-item>
+                <el-menu-item index="7">
+                    <div v-on:click="transition('{{route("dashboard.review")}}')">
+                        復習
+                    </div>
+                </el-menu-item>
             </el-menu>
         </el-aside>
         <el-main>

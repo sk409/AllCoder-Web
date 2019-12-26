@@ -28,6 +28,7 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::get("/dashboard/followings", "DashboardController@followings")->name("dashboard.following");
     Route::get("/dashboard/followers", "DashboardController@followers")->name("dashboard.follower");
     Route::get("/dashboard/chat_rooms", "DashboardController@chatRooms")->name("dashboard.chat_rooms");
+    Route::get("/dashboard/review", "DashboardController@review")->name("dashboard.review");
 
     //Route::resource("lessons", "LessonsController");
     Route::get("lessons", "LessonsController@index")->name("lessons.index");
@@ -89,4 +90,10 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::post("chat_room_user", "ChatRoomUserController@store")->name("chat_room_user.store");
 
     Route::get("lesson_material", "LessonMaterialController@index")->name("lesson_material.index");
+
+    Route::get("learning_results", "LearningResultsController@index")->name("learning_results.index");
+    Route::post("learning_results", "LearningResultsController@store")->name("learning_resutls.store");
+    Route::put("learning_results/{id}", "LearningResultsController@update")->name("learning_results.update");
+
+    Route::get("review", "ReviewController@review")->name("review.review");
 });

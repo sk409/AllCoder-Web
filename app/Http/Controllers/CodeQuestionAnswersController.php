@@ -26,4 +26,13 @@ class CodeQuestionAnswersController extends Controller
         ]);
         CodeQuestionAnswer::create($request->all());
     }
+
+    public function update(Request $request, int $id)
+    {
+        $codeQuestionAnswer = CodeQuestionAnswer::find($id);
+        if (is_null($codeQuestionAnswer)) {
+            return;
+        }
+        $codeQuestionAnswer->save($request->all());
+    }
 }

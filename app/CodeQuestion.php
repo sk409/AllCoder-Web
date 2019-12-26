@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\CodeQuestionAnswer;
 use App\CodeQuestionClose;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,5 +13,10 @@ class CodeQuestion extends Model
     public function closes()
     {
         return $this->hasMany(CodeQuestionClose::class);
+    }
+
+    public function answers()
+    {
+        return $this->hasMany(CodeQuestionAnswer::class);
     }
 }

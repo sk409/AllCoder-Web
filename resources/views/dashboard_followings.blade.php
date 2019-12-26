@@ -31,8 +31,8 @@
     </div>
     <el-dialog :visible.sync="userSearchDialog.isVisible">
         <div class="d-flex align-items-center">
-            <el-input v-model="userSearchDialog.username" class="fill"></el-input>
-            <el-button type="primary" v-on:click="searchUser" class="ml-3">検索</el-button>
+            <el-input v-model="userSearchDialog.username" placeholder="ユーザ名を入力してください" class="fill"></el-input>
+            <el-button type="primary" class="ml-3" v-on:click="searchUser">検索</el-button>
         </div>
         <el-divider class="my-2"></el-divider>
         <div v-for="user in userSearchDialog.users" :key="user.id">

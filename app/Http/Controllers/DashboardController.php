@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\CodeQuestion;
+use App\LearningResult;
 use App\Lesson;
+use App\Material;
 use App\User;
+use DateTime;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Facades\Auth;
+use stdClass;
 
 class DashboardController extends Controller
 {
@@ -76,6 +81,48 @@ class DashboardController extends Controller
             "__header" => "",
             "user" => $user,
             "activeIndex" => 6,
+        ]);
+    }
+
+    public function review(): Renderable
+    {
+        $user = User::find(Auth::user()->id);
+        $learningResults = LearningResult::where("user_id", $user->id)->get()->all();
+        $review = [];
+        foreach ($learningResults as $learningResult) {
+            $interval = [1, 7, 16, 35];
+            $index = min(count($interval) - 1, $learningResult->count);
+            $optimalInteval = $interval[$index] * $learningResult->evaluation;
+            $updatedAt = new DateTime($learningResult->update_at);
+            //$now = new DateTime();
+            ////////////////
+            $now = new DateTime("2030-12-20 12:20:23");
+            ////////////////
+            $days = $updatedAt->diff($now)->days;
+            if ($optimalInteval <= $days) {
+                if (!array_key_exists($learningResult->material_id, $review)) {
+                    $r = new stdClass;
+                    $r->material = Material::find($learningResult->material_id);
+                    $r->lessons = [];
+                    $review[$learningResult->material_id] = $r;
+                }
+                $r = $review[$learningResult->material_id];
+                if (!array_key_exists($learningResult->lesson_id, $r->lessons)) {
+                    $lesson = new stdClass;
+                    $lesson->object = Lesson::find($learningResult->lesson_id);
+                    $lesson->codeQuestions = [];
+                    $r->lessons[$learningResult->lesson_id] = $lesson;
+                }
+                $lesson = $r->lessons[$learningResult->lesson_id];
+                $codeQuestion = CodeQuestion::find($learningResult->code_question_id);
+                $lesson->codeQuestions[$codeQuestion->file_path][] = $codeQuestion;
+            }
+        }
+        return view("dashboard_review", [
+            "__header" => "",
+            "user" => $user,
+            "review" => $review,
+            "activeIndex" => 7,
         ]);
     }
 }

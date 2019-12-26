@@ -9,4 +9,9 @@ class Error
     {
         abort("404");
     }
+
+    public static function badRequest()
+    {
+        abort(400);
+    }
 }

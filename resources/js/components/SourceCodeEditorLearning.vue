@@ -9,6 +9,13 @@
     </el-dialog>
     <el-dialog :visible.sync="isCommentDialogVieible" @opened="openCommentDialog">
       <div ref="comment"></div>
+      <el-divider class="my-2"></el-divider>
+      <div v-show="isCorrect">
+        <el-button type="danger" @click="newLearningResult(1)">分からなかった</el-button>
+        <el-button type="warning" @click="newLearningResult(2)">難しい</el-button>
+        <el-button type="primary" @click="newLearningResult(3)">できた</el-button>
+        <el-button type="success" @click="newLearningResult(4)">余裕</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -16,6 +23,7 @@
 <script>
 import CodeQuestion from "../models/code_question";
 import CodeQuestionAnswer from "../models/code_question_answer.js";
+import LearningResult from "../models/learning_result.js";
 import PHPSyntaxhilighter from "../syntaxhilighters/php_syntaxhilighter.js";
 import { mapActions, mapGetters } from "vuex";
 export default {
@@ -44,6 +52,7 @@ export default {
   },
   data() {
     return {
+      isCorrect: false,
       isInputDialogVisible: false,
       isCommentDialogVieible: false,
       text: "",
@@ -234,7 +243,7 @@ export default {
       if (this.selectedQuestion.answer) {
         answer.id = this.selectedQuestion.id;
         answer.update(response => {
-          //   console.log(response);
+          console.log(response);
         });
       } else {
         answer.store(response => {
@@ -268,6 +277,7 @@ export default {
         this.$refs.editor.insertBefore(textNode, this.selectedQuestionButton);
         this.selectedQuestionButton.remove();
         this.highlight();
+        this.isCorrect = true;
         this.commentTitle = "正解";
         this.commentText = this.selectedQuestion.correct_comment;
         this.setEditedFileText(this.editorText());
@@ -275,6 +285,7 @@ export default {
         this.updateEditedFile();
         this.setupEditor();
       } else {
+        this.isCorrect = false;
         //console.log(this.selectedQuestion.close);
         const close = this.selectedQuestion.closes.filter(
           c => this.enteredAnswer === c.text
@@ -295,6 +306,67 @@ export default {
     openCommentDialog() {
       this.$refs.comment.textContent = this.commentText;
       this.nl2br(this.$refs.comment);
+    },
+    newLearningResult(evaluation) {
+      this.isCommentDialogVieible = false;
+      LearningResult.index(
+        {
+          user_id: this.userId,
+          material_id: this.materialId,
+          lesson_id: this.lessonId,
+          code_question_id: this.selectedQuestion.id
+        },
+        response => {
+          // console.log(response);
+          if (response.data.length !== 0) {
+            const data = response.data[0];
+            const learningResult = new LearningResult(
+              evaluation,
+              data.count + 1,
+              data.user_id,
+              data.material_id,
+              data.lesson_id,
+              data.code_question_id
+            );
+            learningResult.id = data.id;
+            learningResult.update(response => {
+              if (response.status === 200) {
+                this.$notify.success({
+                  message: "学習結果を更新しました",
+                  duration: 3000
+                });
+              } else {
+                this.$notify.error({
+                  message: "学習結果の更新に失敗しました",
+                  duration: 3000
+                });
+              }
+            });
+          } else {
+            const learningResult = new LearningResult(
+              evaluation,
+              1,
+              this.userId,
+              this.materialId,
+              this.lessonId,
+              this.selectedQuestion.id
+            );
+            learningResult.store(response => {
+              if (response.status === 200) {
+                this.$notify.success({
+                  message: "学習結果を保存しました",
+                  duration: 3000
+                });
+              } else {
+                this.$notify.error({
+                  message: "学習結果の保存に失敗しました",
+                  duration: 3000
+                });
+              }
+            });
+          }
+        }
+      );
     },
     showContextMenu(e) {
       this.$emit("show-context-menu", e.pageX, e.pageY);

@@ -3,7 +3,7 @@
 }
 
 #material-thumbnail-image {
-  width: 30%;
+  width: 10rem;
   height: 100%;
   -o-object-fit: contain;
      object-fit: contain;

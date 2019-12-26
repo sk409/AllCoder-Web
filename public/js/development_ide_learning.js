@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 17);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -2146,7 +2146,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };
       var that = this;
       _models_file_js__WEBPACK_IMPORTED_MODULE_3__["default"].index(parameters, function (response) {
-        that.setEditedFile(response.data);
+        that.setEditedFile(new _models_file_js__WEBPACK_IMPORTED_MODULE_3__["default"](path, response.data.text, that.info.docker_container_id));
       });
     },
     showContextMenu: function showContextMenu(x, y) {
@@ -2173,8 +2173,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_code_question__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../models/code_question */ "./resources/js/models/code_question.js");
 /* harmony import */ var _models_code_question_answer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/code_question_answer.js */ "./resources/js/models/code_question_answer.js");
-/* harmony import */ var _syntaxhilighters_php_syntaxhilighter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../syntaxhilighters/php_syntaxhilighter.js */ "./resources/js/syntaxhilighters/php_syntaxhilighter.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _models_learning_result_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/learning_result.js */ "./resources/js/models/learning_result.js");
+/* harmony import */ var _syntaxhilighters_php_syntaxhilighter_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../syntaxhilighters/php_syntaxhilighter.js */ "./resources/js/syntaxhilighters/php_syntaxhilighter.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -2196,6 +2197,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -2226,6 +2235,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
+      isCorrect: false,
       isInputDialogVisible: false,
       isCommentDialogVieible: false,
       text: "",
@@ -2235,10 +2245,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       selectedQuestionButton: null,
       commentTitle: "",
       commentText: "",
-      syntaxhilighter: new _syntaxhilighters_php_syntaxhilighter_js__WEBPACK_IMPORTED_MODULE_2__["default"]()
+      syntaxhilighter: new _syntaxhilighters_php_syntaxhilighter_js__WEBPACK_IMPORTED_MODULE_3__["default"]()
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_3__["mapGetters"])(["editedFileText", "editedFilePath"])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapGetters"])(["editedFileText", "editedFilePath"])),
   mounted: function mounted() {
     var _this = this;
 
@@ -2250,7 +2260,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     });
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_3__["mapActions"])(["setEditedFileText", "updateEditedFile"]), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapActions"])(["setEditedFileText", "updateEditedFile"]), {
     targetQuestions: function targetQuestions() {
       var _this2 = this;
 
@@ -2415,7 +2425,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (this.selectedQuestion.answer) {
         answer.id = this.selectedQuestion.id;
-        answer.update(function (response) {//   console.log(response);
+        answer.update(function (response) {
+          console.log(response);
         });
       } else {
         answer.store(function (response) {
@@ -2452,6 +2463,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.$refs.editor.insertBefore(textNode, this.selectedQuestionButton);
         this.selectedQuestionButton.remove();
         this.highlight();
+        this.isCorrect = true;
         this.commentTitle = "正解";
         this.commentText = this.selectedQuestion.correct_comment;
         this.setEditedFileText(this.editorText()); // console.log(this.editorText() + "abc");
@@ -2459,7 +2471,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.updateEditedFile();
         this.setupEditor();
       } else {
-        //console.log(this.selectedQuestion.close);
+        this.isCorrect = false; //console.log(this.selectedQuestion.close);
+
         var close = this.selectedQuestion.closes.filter(function (c) {
           return _this6.enteredAnswer === c.text;
         });
@@ -2481,6 +2494,53 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     openCommentDialog: function openCommentDialog() {
       this.$refs.comment.textContent = this.commentText;
       this.nl2br(this.$refs.comment);
+    },
+    newLearningResult: function newLearningResult(evaluation) {
+      var _this7 = this;
+
+      this.isCommentDialogVieible = false;
+      _models_learning_result_js__WEBPACK_IMPORTED_MODULE_2__["default"].index({
+        user_id: this.userId,
+        material_id: this.materialId,
+        lesson_id: this.lessonId,
+        code_question_id: this.selectedQuestion.id
+      }, function (response) {
+        // console.log(response);
+        if (response.data.length !== 0) {
+          var data = response.data[0];
+          var learningResult = new _models_learning_result_js__WEBPACK_IMPORTED_MODULE_2__["default"](evaluation, data.count + 1, data.user_id, data.material_id, data.lesson_id, data.code_question_id);
+          learningResult.id = data.id;
+          learningResult.update(function (response) {
+            if (response.status === 200) {
+              _this7.$notify.success({
+                message: "学習結果を更新しました",
+                duration: 3000
+              });
+            } else {
+              _this7.$notify.error({
+                message: "学習結果の更新に失敗しました",
+                duration: 3000
+              });
+            }
+          });
+        } else {
+          var _learningResult = new _models_learning_result_js__WEBPACK_IMPORTED_MODULE_2__["default"](evaluation, 1, _this7.userId, _this7.materialId, _this7.lessonId, _this7.selectedQuestion.id);
+
+          _learningResult.store(function (response) {
+            if (response.status === 200) {
+              _this7.$notify.success({
+                message: "学習結果を保存しました",
+                duration: 3000
+              });
+            } else {
+              _this7.$notify.error({
+                message: "学習結果の保存に失敗しました",
+                duration: 3000
+              });
+            }
+          });
+        }
+      });
     },
     showContextMenu: function showContextMenu(e) {
       this.$emit("show-context-menu", e.pageX, e.pageY);
@@ -4384,7 +4444,80 @@ var render = function() {
             opened: _vm.openCommentDialog
           }
         },
-        [_c("div", { ref: "comment" })]
+        [
+          _c("div", { ref: "comment" }),
+          _vm._v(" "),
+          _c("el-divider", { staticClass: "my-2" }),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.isCorrect,
+                  expression: "isCorrect"
+                }
+              ]
+            },
+            [
+              _c(
+                "el-button",
+                {
+                  attrs: { type: "danger" },
+                  on: {
+                    click: function($event) {
+                      return _vm.newLearningResult(1)
+                    }
+                  }
+                },
+                [_vm._v("分からなかった")]
+              ),
+              _vm._v(" "),
+              _c(
+                "el-button",
+                {
+                  attrs: { type: "warning" },
+                  on: {
+                    click: function($event) {
+                      return _vm.newLearningResult(2)
+                    }
+                  }
+                },
+                [_vm._v("難しい")]
+              ),
+              _vm._v(" "),
+              _c(
+                "el-button",
+                {
+                  attrs: { type: "primary" },
+                  on: {
+                    click: function($event) {
+                      return _vm.newLearningResult(3)
+                    }
+                  }
+                },
+                [_vm._v("できた")]
+              ),
+              _vm._v(" "),
+              _c(
+                "el-button",
+                {
+                  attrs: { type: "success" },
+                  on: {
+                    click: function($event) {
+                      return _vm.newLearningResult(4)
+                    }
+                  }
+                },
+                [_vm._v("余裕")]
+              )
+            ],
+            1
+          )
+        ],
+        1
       )
     ],
     1
@@ -6834,6 +6967,91 @@ function (_Model) {
 
 /***/ }),
 
+/***/ "./resources/js/models/learning_result.js":
+/*!************************************************!*\
+  !*** ./resources/js/models/learning_result.js ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LearningResult; });
+/* harmony import */ var _model_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model.js */ "./resources/js/models/model.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var LearningResult =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(LearningResult, _Model);
+
+  _createClass(LearningResult, null, [{
+    key: "baseRoute",
+    value: function baseRoute() {
+      return "learning_results";
+    }
+  }, {
+    key: "index",
+    value: function index(parameters, completion) {
+      return _model_js__WEBPACK_IMPORTED_MODULE_0__["default"].index(LearningResult.baseRoute(), parameters, completion);
+    }
+  }]);
+
+  function LearningResult(evaluation, count, userId, materialId, lessonId, codeQuestionId) {
+    var _this;
+
+    _classCallCheck(this, LearningResult);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(LearningResult).call(this, LearningResult.baseRoute()));
+    _this.evaluation = evaluation;
+    _this.count = count;
+    _this.userId = userId;
+    _this.materialId = materialId;
+    _this.lessonId = lessonId;
+    _this.codeQuestionId = codeQuestionId;
+    return _this;
+  }
+
+  _createClass(LearningResult, [{
+    key: "parameters",
+    value: function parameters() {
+      return {
+        id: this.id,
+        evaluation: this.evaluation,
+        count: this.count,
+        user_id: this.userId,
+        material_id: this.materialId,
+        lesson_id: this.lessonId,
+        code_question_id: this.codeQuestionId
+      };
+    }
+  }]);
+
+  return LearningResult;
+}(_model_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
 /***/ "./resources/js/models/model.js":
 /*!**************************************!*\
   !*** ./resources/js/models/model.js ***!
@@ -7216,7 +7434,7 @@ function () {
 
 /***/ }),
 
-/***/ 16:
+/***/ 17:
 /*!********************************************************!*\
   !*** multi ./resources/js/development_ide_learning.js ***!
   \********************************************************/

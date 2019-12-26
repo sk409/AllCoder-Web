@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\CodeQuestion;
 use App\Folder;
 use App\LessonComment;
 use App\LessonPort;
@@ -74,5 +75,10 @@ class Lesson extends Model
     public function ports()
     {
         return $this->hasMany(LessonPort::class);
+    }
+
+    public function codeQuestions()
+    {
+        return $this->hasMany(CodeQuestion::class);
     }
 }
