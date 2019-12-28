@@ -92,14 +92,14 @@ class DashboardController extends Controller
         foreach ($learningResults as $learningResult) {
             $interval = [1, 7, 16, 35];
             $index = min(count($interval) - 1, $learningResult->count);
-            $optimalInteval = $interval[$index] * $learningResult->evaluation;
+            $optimalInteval = $interval[$index] * ($learningResult->evaluation - 1);
             $updatedAt = new DateTime($learningResult->update_at);
             //$now = new DateTime();
             ////////////////
             $now = new DateTime("2030-12-20 12:20:23");
             ////////////////
             $days = $updatedAt->diff($now)->days;
-            if ($optimalInteval <= $days) {
+            if ($optimalInteval <= $days || $learningResult->evaluation == 1) {
                 if (!array_key_exists($learningResult->material_id, $review)) {
                     $r = new stdClass;
                     $r->material = Material::find($learningResult->material_id);
