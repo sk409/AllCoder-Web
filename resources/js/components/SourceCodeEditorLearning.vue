@@ -1,6 +1,6 @@
 <template>
   <div @contextmenu.stop.prevent="showContextMenu">
-    <div ref="editor"></div>
+    <div ref="editor" class="w-100 h-100" style="overflow:scroll;"></div>
     <el-dialog :visible.sync="isInputDialogVisible" @closed="closedInputDialog">
       <textarea v-model="enteredAnswer" class="w-100 h-50" placeholder="答えを入力してください"></textarea>
       <div class="text-center">
@@ -26,9 +26,15 @@ import CodeQuestionAnswer from "../models/code_question_answer.js";
 import LearningResult from "../models/learning_result.js";
 import PHPSyntaxhilighter from "../syntaxhilighters/php_syntaxhilighter.js";
 import { mapActions, mapGetters } from "vuex";
+
+const questionButtons = [];
 export default {
   name: "SourceCodeEditorLearning",
   props: {
+    activeQuestionIds: {
+      type: Array,
+      required: true
+    },
     mode: {
       type: String,
       required: true
@@ -67,24 +73,41 @@ export default {
   },
   computed: {
     ...mapGetters(["editedFileText", "editedFilePath"])
-    // answeredQuestions() {
-    //     const targetQuestions = this.targetQuestions;
-    //     return this.questions.filter(
-    //         question => !targetQuestions.includes(question)
-    //     );
-    // }
   },
   mounted() {
     this.$store.subscribe((mutation, state) => {
       if (mutation.type === "setEditedFile") {
-        // const targetQuestions = this.targetQuestions();
         this.setupEditor();
-        //console.log(this.editorText() + "abc");
       }
     });
   },
+  watch: {
+    activeQuestionIds() {
+      this.activateQuestionButtons();
+    }
+  },
   methods: {
     ...mapActions(["setEditedFileText", "updateEditedFile"]),
+    activateQuestionButtons() {
+      let minY = 0;
+      questionButtons.forEach(questionButton => {
+        const index = this.activeQuestionIds.findIndex(
+          activeQuestionId => activeQuestionId == questionButton.questionId
+        );
+        const notFound = -1;
+        if (index === notFound) {
+          questionButton.classList.remove("active-question");
+        } else {
+          minY = questionButton.getBoundingClientRect().top;
+          questionButton.classList.add("active-question");
+        }
+      });
+      this.scrollTo(minY);
+    },
+    scrollTo(y) {
+      this.$refs.editor.scrollTop = 2000;
+      //console.log(this.$refs.editor.scrollTop);
+    },
     targetQuestions() {
       return this.questions.filter(
         question =>
@@ -96,8 +119,6 @@ export default {
       let result = "";
       let seek = 0;
       this.targetQuestions().forEach(targetQuestion => {
-        // console.log("@@@@@@@@@@@@@");
-        // console.log(targetQuestion.text);
         result += this.text.substr(seek, targetQuestion.start_index - seek);
         seek = targetQuestion.end_index;
       });
@@ -106,13 +127,13 @@ export default {
     },
     setupEditor() {
       this.restoreText();
+      //this.text = this.text.replace(/ /g, "\u00a0");
       this.$refs.editor.innerHTML = "";
       this.setTextAndQuestionButton(this.targetQuestions());
       this.nl2br(this.$refs.editor);
       this.highlight();
     },
     restoreText() {
-      // console.log(this.editedFileText);
       const targetQuestions = this.targetQuestions();
       if (targetQuestions.length === 0) {
         this.text = this.editedFileText;
@@ -122,20 +143,15 @@ export default {
       let startIndex = 0;
       let offset = 0;
       targetQuestions.forEach(question => {
-        // if (question.text == 'echo "OK6";') {
-        //     this.text += "\n";
-        // }
         this.text += this.editedFileText.substring(
           startIndex,
           question.start_index - offset
         );
         this.text += question.text;
-        // console.log(this.text);
         startIndex = question.start_index - offset;
         offset += question.text.length;
       });
       this.text += this.editedFileText.substr(startIndex);
-      //console.log(this.text);
     },
     setTextAndQuestionButton(questions) {
       let startIndex = 0;
@@ -148,8 +164,10 @@ export default {
           );
         }
         const questionButton = document.createElement("span");
+        questionButtons.push(questionButton);
         questionButton.textContent = "?";
-        questionButton.style.width = "1rem";
+        questionButton.classList.add("question-button");
+        questionButton.questionId = question.id;
         const that = this;
         questionButton.onclick = function() {
           that.isInputDialogVisible = true;
@@ -159,6 +177,7 @@ export default {
         this.$refs.editor.appendChild(questionButton);
         startIndex = question.end_index;
       });
+      this.activateQuestionButtons();
       if (startIndex !== this.text.length) {
         this.$refs.editor.appendChild(
           document.createTextNode(this.text.substring(startIndex))
@@ -209,11 +228,6 @@ export default {
             split(node);
           });
         };
-        // const regex = new RegExp(/<.+?>/g);
-        // let match = regex.exec(textNode.textContent);
-        // if (match) {
-        //   color("blue", match);
-        // }
         const result = that.syntaxhilighter.check(textNode.textContent);
         if (result) {
           color(result.color, result.match);
@@ -243,15 +257,13 @@ export default {
       if (this.selectedQuestion.answer) {
         answer.id = this.selectedQuestion.id;
         answer.update(response => {
-          console.log(response);
+          // console.log(response);
         });
       } else {
         answer.store(response => {
-          console.log(response);
+          // console.log(response);
         });
       }
-      //this.$set(this.selectedQuestion, "answer", answer);
-      // this.selectedQuestion.answer = answer;
       const selectedQuestionIndex = this.questions.findIndex(
         question => question.id === this.selectedQuestion.id
       );
@@ -259,19 +271,6 @@ export default {
       if (selectedQuestionIndex !== notFound) {
         this.questions[selectedQuestionIndex].answer = answer;
       }
-      // this.questions.forEach(question => {
-      //     console.log("==============");
-      //     console.log(question.answer);
-      //     if (question.answer) {
-      //         console.log(question.answer.text);
-      //         console.log(question.text);
-      //         console.log(
-      //             !question.answer ||
-      //                 (question.answer.text !== question.text &&
-      //                     question.file_path === this.editedFilePath)
-      //         );
-      //     }
-      // });
       if (this.enteredAnswer === this.selectedQuestion.text) {
         const textNode = document.createTextNode(this.selectedQuestion.text);
         this.$refs.editor.insertBefore(textNode, this.selectedQuestionButton);
@@ -280,13 +279,12 @@ export default {
         this.isCorrect = true;
         this.commentTitle = "正解";
         this.commentText = this.selectedQuestion.correct_comment;
+        //console.log(this.editorText());
         this.setEditedFileText(this.editorText());
-        // console.log(this.editorText() + "abc");
         this.updateEditedFile();
         this.setupEditor();
       } else {
         this.isCorrect = false;
-        //console.log(this.selectedQuestion.close);
         const close = this.selectedQuestion.closes.filter(
           c => this.enteredAnswer === c.text
         );
@@ -317,7 +315,6 @@ export default {
           code_question_id: this.selectedQuestion.id
         },
         response => {
-          // console.log(response);
           if (response.data.length !== 0) {
             const data = response.data[0];
             const learningResult = new LearningResult(
@@ -375,4 +372,34 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  box-shadow: inset 0 0 6px rgb(100, 100, 100);
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(150, 150, 150);
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+</style>
+
+<style>
+.question-button {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid rgb(240, 240, 240);
+  cursor: pointer;
+}
+
+.question-button:hover,
+.active-question {
+  border-color: #67c23a;
+}
+</style>

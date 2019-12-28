@@ -5,5 +5,6 @@
 @endsection
 
 <div id="development-writing">
-    <development-writing lesson-id="{{$lesson->id}}"></development-writing>
+    <development-writing lesson-id="{{$lesson->id}}" :questions="{{json_encode($lesson->codeQuestions->all())}}">
+    </development-writing>
 </div>

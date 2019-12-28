@@ -88,10 +88,11 @@
         <div v-else>
             <div class="fs-4 text-center">ファイルを選択してください</div>
             <div class="mt-3 d-flex align-items-center">
-                <el-input v-model="appendingMaterialLinkDialog.filePath" class="fill"></el-input>
-                <div class="text-center">
+                {{-- <el-input v-model="appendingMaterialLinkDialog.filePath" class="fill"></el-input> --}}
+                <el-tree :props="treeProps" :load="fetchChildFiles" lazy v-on:node-click="fileTreeNodeClick"></el-tree>
+                {{-- <div class="text-center">
                     <el-button type="primary" class="ml-3" v-on:click="appendMaterialLink()">選択</el-button>
-                </div>
+                </div> --}}
             </div>
         </div>
     </el-dialog>

@@ -9,6 +9,7 @@
       <div class="col-7">
         <div class="shadow p-3">
           <form method="post" enctype="multipart/form-data" :action="action">
+            <input type="hidden" name="price" value="0" />
             <input name="_method" type="hidden" :value="method" />
             <input type="hidden" name="_token" :value="csrf" />
             <input type="hidden" name="user_id" :value="material.user.id" />
@@ -32,7 +33,7 @@
               </label>
             </div>
             <div class>
-              <label class="material-form-label">
+              <!-- <label class="material-form-label">
                 <span class="material-form-label-text">価格:</span>
                 <input
                   class="material-form-control"
@@ -41,7 +42,7 @@
                   v-model="material.price"
                   required
                 />
-              </label>
+              </label>-->
             </div>
             <div class>
               <label class="material-form-label">

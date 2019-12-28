@@ -7,10 +7,10 @@ new Vue({
     el: "#chat-room-show",
     data: {
         appendingMaterialLinkDialog: {
-            isVisible: false,
-            material: null,
-            lesson: null,
             filePath: "",
+            isVisible: false,
+            lesson: null,
+            material: null,
             step: 1
         },
         invitationDialog: {
@@ -24,6 +24,11 @@ new Vue({
         messages: [],
         room: null,
         text: "",
+        treeProps: {
+            label: "name",
+            children: "children",
+            isLeaf: "leaf"
+        },
         user: null,
     },
     mounted() {
@@ -103,7 +108,7 @@ new Vue({
             const regex = /@{([0-9]+):([0-9]+):(.+)}/g
             let match = regex.exec(text);
             while (match) {
-                text = `<pre>${text.substring(0, match.index)}</pre>` + `<a href="/development/learning?user_id=${user.id}&material_id=${match[1]}&lesson_id=${match[2]}&file_path=${match[3]}" target="_blank">OK</a>` + `<pre>${text.substring(match.index + match[0].length)}</pre>`;
+                text = `<pre>${text.substring(0, match.index)}</pre>` + `<a href="/development/learning?user_id=${user.id}&material_id=${match[1]}&lesson_id=${match[2]}&file_path=${match[3]}" target="_blank">教材へのリンク</a>` + `<pre>${text.substring(match.index + match[0].length)}</pre>`;
                 match = regex.exec(text);
             }
             return text;
@@ -135,8 +140,22 @@ new Vue({
             });
         },
         selectLesson(lesson) {
+            // const loading = this.$loading({
+            //     lock: true,
+            //     text: "Loading...",
+            //     spinner: "el-icon-loading",
+            //     background: "rgba(0, 0, 0, 0.7)"
+            // });
             this.appendingMaterialLinkDialog.lesson = lesson;
+            // const root = {
+            //     path: "/",
+            //     children: [],
+            // };
             this.appendingMaterialLinkDialog.step = 3;
+            // this.fetchChildFiles(lesson.docker_container_id, root, () => {
+            //     this.appendingMaterialLinkDialog.fileTree = root.children;
+            // this.appendingMaterialLinkDialog.step = 3;
+            // });
         },
         appendMaterialLink() {
             this.text += `@{${this.appendingMaterialLinkDialog.material.id}:${this.appendingMaterialLinkDialog.lesson.id}:${this.appendingMaterialLinkDialog.filePath}}`;
@@ -157,6 +176,43 @@ new Vue({
         },
         toggleMessageComposerMenu() {
             this.messageComposer.menu.isVisible = !this.messageComposer.menu.isVisible;
+        },
+        fetchChildFiles(node, resolve) {
+            const dockerContainerId = this.appendingMaterialLinkDialog.lesson.docker_container_id;
+            const path = node.level === 0 ? "/" : node.data.path;
+            Axios.get(`/folders/children?docker_container_id=${dockerContainerId}&root=${path}`).then(response => {
+                if (response.status !== 200) {
+                    return;
+                }
+                if (!response.data) {
+                    return;
+                }
+                const children = [];
+                if (response.data.childFolders) {
+                    response.data.childFolders.forEach(childFolder => {
+                        children.push({
+                            path: childFolder.path,
+                            name: childFolder.name,
+                        });
+                    });
+                }
+                if (response.data.childFiles) {
+                    response.data.childFiles.forEach(childFile => {
+                        children.push({
+                            path: childFile.path,
+                            name: childFile.name,
+                            leaf: true
+                        });
+                    });
+                }
+                resolve(children);
+            });
+        },
+        fileTreeNodeClick(data) {
+            if (data.leaf) {
+                this.appendingMaterialLinkDialog.filePath = data.path;
+                this.appendMaterialLink();
+            }
         }
     }
 });

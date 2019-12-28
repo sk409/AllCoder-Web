@@ -186,6 +186,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "material-form",
@@ -282,6 +283,10 @@ var render = function() {
               },
               [
                 _c("input", {
+                  attrs: { type: "hidden", name: "price", value: "0" }
+                }),
+                _vm._v(" "),
+                _c("input", {
                   attrs: { name: "_method", type: "hidden" },
                   domProps: { value: _vm.method }
                 }),
@@ -334,35 +339,7 @@ var render = function() {
                   ])
                 ]),
                 _vm._v(" "),
-                _c("div", {}, [
-                  _c("label", { staticClass: "material-form-label" }, [
-                    _c("span", { staticClass: "material-form-label-text" }, [
-                      _vm._v("価格:")
-                    ]),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.material.price,
-                          expression: "material.price"
-                        }
-                      ],
-                      staticClass: "material-form-control",
-                      attrs: { type: "number", name: "price", required: "" },
-                      domProps: { value: _vm.material.price },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(_vm.material, "price", $event.target.value)
-                        }
-                      }
-                    })
-                  ])
-                ]),
+                _c("div", {}),
                 _vm._v(" "),
                 _c("div", {}, [
                   _c("label", { staticClass: "material-form-label" }, [

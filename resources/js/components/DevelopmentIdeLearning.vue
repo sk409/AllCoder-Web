@@ -6,6 +6,7 @@
       url-title="説明文"
       :container-ports="containerPorts"
       :host-ports="hostPorts"
+      @show-markdown="showBlackout(); showMarkdownPreview();"
     ></development-ide-header>
     <div id="development-body">
       <file-tree id="file-tree-view" :docker-container-id="info.docker_container_id"></file-tree>
@@ -13,15 +14,31 @@
         <source-code-editor-learning
           id="source-code-editor-learning"
           mode="learning"
+          :active-question-ids="activeQuestionIds"
           :questions="questions"
           :user-id="userId"
           :material-id="materialId"
-          :lesson-id="lessonId"
+          :lesson-id="lesson.id"
           @show-context-menu="showContextMenu"
         ></source-code-editor-learning>
         <development-ide-console :console-port="consolePort"></development-ide-console>
       </div>
     </div>
+    <transition-group>
+      <div
+        v-if="markdownPreview.isVisible"
+        class="blackout"
+        key="blackout"
+        @click="hideBlackout(); hideMarkdownPreview()"
+      ></div>
+      <MarkdownPreview
+        v-if="markdownPreview.isVisible"
+        :text="lesson.book"
+        key="markdown-preview"
+        class="markdown-preview"
+        @click-question-button="clickQuestionButton"
+      ></MarkdownPreview>
+    </transition-group>
     <source-code-editor-learning-context-menu
       v-show="contextMenu.isShown"
       :style="contextMenu.style"
@@ -45,6 +62,7 @@ import DevelopmentIdeConsole from "./DevelopmentIdeConsole.vue";
 import DevelopmentIdeHeader from "./DevelopmentIdeHeader.vue";
 import File from "../models/file.js";
 import FileTree from "./molecules/FileTree.vue";
+import MarkdownPreview from "./MarkdownPreview.vue";
 import SourceCodeEditorLearning from "./SourceCodeEditorLearning.vue";
 import SourceCodeEditorLearningContextMenu from "./SourceCodeEditorLearningContextMenu.vue";
 import store from "../stores/development.js";
@@ -55,6 +73,10 @@ export default {
   store,
   props: {
     info: {
+      type: Object,
+      required: true
+    },
+    lesson: {
       type: Object,
       required: true
     },
@@ -89,10 +111,6 @@ export default {
       type: Number,
       required: true
     },
-    lessonId: {
-      type: Number,
-      required: true
-    },
     filePath: {
       type: String,
       default: ""
@@ -102,17 +120,25 @@ export default {
     DevelopmentIdeConsole,
     DevelopmentIdeHeader,
     FileTree,
+    MarkdownPreview,
     SourceCodeEditorLearning,
     SourceCodeEditorLearningContextMenu
   },
   data() {
     return {
+      activeQuestionIds: [],
+      blackout: {
+        isVisible: false
+      },
       contextMenu: {
         isShown: false,
         style: {
           left: 0,
           top: 0
         }
+      },
+      markdownPreview: {
+        isVisible: false
       },
       questionList: {
         isShown: false
@@ -141,6 +167,24 @@ export default {
     onclick() {
       this.contextMenu.isShown = false;
     },
+    clickQuestionButton(questionId) {
+      const question = this.questions.find(
+        question => question.id == questionId
+      );
+      if (!question) {
+        return;
+      }
+      if (question.answer && question.text === question.answer.text) {
+        this.$notify.warning({
+          message: "この問題にはすでに解答しています",
+          duration: 3000
+        });
+      }
+      this.activeQuestionIds = [questionId];
+      this.hideBlackout();
+      this.hideMarkdownPreview();
+      this.openFile(question.file_path);
+    },
     openFile(path) {
       const parameters = {
         docker_container_id: this.info.docker_container_id,
@@ -160,6 +204,18 @@ export default {
     },
     showQuestionList() {
       this.questionList.isShown = true;
+    },
+    showBlackout() {
+      this.blackout.isVisible = true;
+    },
+    hideBlackout() {
+      this.blackout.isVisible = false;
+    },
+    showMarkdownPreview() {
+      this.markdownPreview.isVisible = true;
+    },
+    hideMarkdownPreview() {
+      this.markdownPreview.isVisible = false;
     }
   }
 };
@@ -201,5 +257,25 @@ export default {
   width: 100%;
   height: 60%;
   background: black;
+}
+
+.markdown-preview {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  height: 90vh;
+  z-index: 3;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s;
+}
+
+.v-enter,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

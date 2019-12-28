@@ -21,39 +21,40 @@
                 <i class="el-icon-download mr-1"></i>
                 <span>{{count($material->purchases)}}</span>
             </div>
-            <div id="material-price" class="mb-2">{{Helper::toAmountFormat($material->price)}}</div>
-            <div class="text-right">
-                @if(1 === count(Auth::user()->purchases->where("id", $material->id)->all()))
-                <button type="button" class="btn btn-success" disabled>ダウンロード済み</button>
-                @elseif(Auth::user()->id === $material->user->id)
-                <a href="{{route("materials.edit", ["material"=>$material->id])}}" class="btn btn-success">編集する</a>
-                @else
-                <button type="button" class="btn btn-primary"
-                    v-on:click="onClickPurchaseButton('{{route("material_purchase.purchase", $material->id)}}', {{Auth::user()->id}})">ダウンロード</button>
-                @endif
-            </div>
+            {{-- <div id="material-price" class="mb-2">{{Helper::toAmountFormat($material->price)}}
+        </div> --}}
+        <div class="text-right">
+            @if(1 === count(Auth::user()->purchases->where("id", $material->id)->all()))
+            <button type="button" class="btn btn-success" disabled>ダウンロード済み</button>
+            @elseif(Auth::user()->id === $material->user->id)
+            <a href="{{route("materials.edit", ["material"=>$material->id])}}" class="btn btn-success">編集する</a>
+            @else
+            <button type="button" class="btn btn-primary"
+                v-on:click="onClickPurchaseButton('{{route("material_purchase.purchase", $material->id)}}', {{Auth::user()->id}})">ダウンロード</button>
+            @endif
         </div>
     </div>
-    <hr>
-    <div id="material-author" class="d-flex">
-        <div id="material-author-profile-image-container">
-            <img id="material-author-profile-image"
-                src="{{url($material->user->profile_image_path ? $material->user->profile_image_path : 'storage/no-image.png')}}">
-        </div>
-        <div>
-            <div>{{$material->user->name}}</div>
-            <div>{{$material->user->bio_text}}</div>
-        </div>
+</div>
+<hr>
+<div id="material-author" class="d-flex">
+    <div id="material-author-profile-image-container">
+        <img id="material-author-profile-image"
+            src="{{url($material->user->profile_image_path ? $material->user->profile_image_path : 'storage/no-image.png')}}">
     </div>
-    <hr>
-    <div class="text-center mt-4 mb-4">
-        <h3>レッスン一覧</h3>
+    <div>
+        <div>{{$material->user->name}}</div>
+        <div>{{$material->user->bio_text}}</div>
     </div>
-    @foreach($material->lessons as $lesson)
-    <lesson-details-card :lesson="{{json_encode($lesson)}}" :ratings="{{json_encode($lesson->ratings)}}"
-        :rank="{{json_encode(Rating::rank($lesson))}}" class="mb-5">
-    </lesson-details-card>
-    @endforeach
-    {{-- <div id="material-comments"></div> --}}
+</div>
+<hr>
+<div class="text-center mt-4 mb-4">
+    <h3>レッスン一覧</h3>
+</div>
+@foreach($material->lessons as $lesson)
+<lesson-details-card :lesson="{{json_encode($lesson)}}" :ratings="{{json_encode($lesson->ratings)}}"
+    :rank="{{json_encode(Rating::rank($lesson))}}" class="mb-5">
+</lesson-details-card>
+@endforeach
+{{-- <div id="material-comments"></div> --}}
 </div>
 @endsection

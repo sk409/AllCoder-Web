@@ -9,9 +9,9 @@
             <el-form-item label="コード" class="m-0 mt-2">
               <el-input type="textarea" :value="answer" disabled></el-input>
             </el-form-item>
-            <el-form-item label="得点" class="m-0 mt-2">
+            <!-- <el-form-item label="得点" class="m-0 mt-2">
               <el-input type="number" v-model="question.correct.score"></el-input>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item label="コメント" class="m-0 mt-2">
               <el-input type="textarea" v-model="question.correct.comment"></el-input>
             </el-form-item>
@@ -24,7 +24,7 @@
             <el-input type="textarea" v-model="question.incorrect.comment"></el-input>
           </el-form-item>
         </div>
-        <div class="mt-5">
+        <!-- <div class="mt-5">
           <h4>中間点</h4>
           <el-divider class="mt-1 mb-3"></el-divider>
           <div v-for="(close, index) in question.closes" :key="index" class="mt-2 p-2 border">
@@ -44,7 +44,7 @@
           <div class="text-center mt-3">
             <el-button type="primary" @click="appendClose">追加</el-button>
           </div>
-        </div>
+        </div>-->
         <el-divider class="mt-3 mb-4"></el-divider>
         <div class="text-center">
           <el-button type="primary" @click="register">登録</el-button>
@@ -147,7 +147,7 @@ export default {
       );
       const that = this;
       question.store(response => {
-        console.log(response);
+        //console.log(response);
         if (response.status !== 200) {
           that.$notify.error({
             message: "問題の登録に失敗しました",
@@ -176,6 +176,17 @@ export default {
           this.$notify.success({
             message: "問題を登録しました",
             duration: 3000
+          });
+          this.$emit("added-question", {
+            id: question.id,
+            file_path: question.filePath,
+            start_index: question.startIndex,
+            end_index: question.endIndex,
+            text: question.text,
+            correct_comment: question.correctComment,
+            score: question.score,
+            incorrect_comment: question.incorrectComment,
+            lesson_id: question.lessonId
           });
         }
       });

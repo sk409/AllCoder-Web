@@ -2068,10 +2068,10 @@ new Vue({
   el: "#chat-room-show",
   data: {
     appendingMaterialLinkDialog: {
-      isVisible: false,
-      material: null,
-      lesson: null,
       filePath: "",
+      isVisible: false,
+      lesson: null,
+      material: null,
       step: 1
     },
     invitationDialog: {
@@ -2085,6 +2085,11 @@ new Vue({
     messages: [],
     room: null,
     text: "",
+    treeProps: {
+      label: "name",
+      children: "children",
+      isLeaf: "leaf"
+    },
     user: null
   },
   mounted: function mounted() {
@@ -2173,7 +2178,7 @@ new Vue({
       var match = regex.exec(text);
 
       while (match) {
-        text = "<pre>".concat(text.substring(0, match.index), "</pre>") + "<a href=\"/development/learning?user_id=".concat(user.id, "&material_id=").concat(match[1], "&lesson_id=").concat(match[2], "&file_path=").concat(match[3], "\" target=\"_blank\">OK</a>") + "<pre>".concat(text.substring(match.index + match[0].length), "</pre>");
+        text = "<pre>".concat(text.substring(0, match.index), "</pre>") + "<a href=\"/development/learning?user_id=".concat(user.id, "&material_id=").concat(match[1], "&lesson_id=").concat(match[2], "&file_path=").concat(match[3], "\" target=\"_blank\">\u6559\u6750\u3078\u306E\u30EA\u30F3\u30AF</a>") + "<pre>".concat(text.substring(match.index + match[0].length), "</pre>");
         match = regex.exec(text);
       }
 
@@ -2211,8 +2216,21 @@ new Vue({
       });
     },
     selectLesson: function selectLesson(lesson) {
-      this.appendingMaterialLinkDialog.lesson = lesson;
-      this.appendingMaterialLinkDialog.step = 3;
+      // const loading = this.$loading({
+      //     lock: true,
+      //     text: "Loading...",
+      //     spinner: "el-icon-loading",
+      //     background: "rgba(0, 0, 0, 0.7)"
+      // });
+      this.appendingMaterialLinkDialog.lesson = lesson; // const root = {
+      //     path: "/",
+      //     children: [],
+      // };
+
+      this.appendingMaterialLinkDialog.step = 3; // this.fetchChildFiles(lesson.docker_container_id, root, () => {
+      //     this.appendingMaterialLinkDialog.fileTree = root.children;
+      // this.appendingMaterialLinkDialog.step = 3;
+      // });
     },
     appendMaterialLink: function appendMaterialLink() {
       this.text += "@{".concat(this.appendingMaterialLinkDialog.material.id, ":").concat(this.appendingMaterialLinkDialog.lesson.id, ":").concat(this.appendingMaterialLinkDialog.filePath, "}");
@@ -2233,6 +2251,48 @@ new Vue({
     },
     toggleMessageComposerMenu: function toggleMessageComposerMenu() {
       this.messageComposer.menu.isVisible = !this.messageComposer.menu.isVisible;
+    },
+    fetchChildFiles: function fetchChildFiles(node, resolve) {
+      var dockerContainerId = this.appendingMaterialLinkDialog.lesson.docker_container_id;
+      var path = node.level === 0 ? "/" : node.data.path;
+      axios__WEBPACK_IMPORTED_MODULE_3___default.a.get("/folders/children?docker_container_id=".concat(dockerContainerId, "&root=").concat(path)).then(function (response) {
+        if (response.status !== 200) {
+          return;
+        }
+
+        if (!response.data) {
+          return;
+        }
+
+        var children = [];
+
+        if (response.data.childFolders) {
+          response.data.childFolders.forEach(function (childFolder) {
+            children.push({
+              path: childFolder.path,
+              name: childFolder.name
+            });
+          });
+        }
+
+        if (response.data.childFiles) {
+          response.data.childFiles.forEach(function (childFile) {
+            children.push({
+              path: childFile.path,
+              name: childFile.name,
+              leaf: true
+            });
+          });
+        }
+
+        resolve(children);
+      });
+    },
+    fileTreeNodeClick: function fileTreeNodeClick(data) {
+      if (data.leaf) {
+        this.appendingMaterialLinkDialog.filePath = data.path;
+        this.appendMaterialLink();
+      }
     }
   }
 });

@@ -64,9 +64,14 @@
                 </td>
                 <td v-text="invitationRequest.room.name"></td>
                 <td>
-                    <el-button type="primary" v-on:click="attend(invitationRequest.id, invitationRequest.room.id)">
-                        参加</el-button>
-                    <el-button type="danger" v-on:click="destoryInvitationRequest(invitationRequest.id)">拒否</el-button>
+                    <div>
+                        <el-button type="primary" v-on:click="attend(invitationRequest.id, invitationRequest.room.id)">
+                            参加</el-button>
+                    </div>
+                    <div class="mt-1">
+                        <el-button type="danger" v-on:click="destoryInvitationRequest(invitationRequest.id)">拒否
+                        </el-button>
+                    </div>
                 </td>
             </tr>
         </table>

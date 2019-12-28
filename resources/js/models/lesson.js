@@ -9,45 +9,27 @@ export default class Lesson extends Model {
         return Model.index(Lesson.baseRoute(), parameters, completion);
     }
 
-    constructor(id, title, descriptions, book) {
+    constructor(title, description, book, dockerContainerId, userName, consolePort, userId) {
         super(Lesson.baseRoute());
-        this.id = id;
         this.title = title;
-        this.descriptions = descriptions;
+        this.description = description;
         this.book = book;
+        this.dockerContainerId = dockerContainerId;
+        this.userName = userName;
+        this.consolePort = consolePort;
+        this.userId = userId;
     }
 
     parameters() {
         return {
-            id: this.id,
             title: this.title,
-            descriptions: this.descriptions,
-            book: this.book
+            description: this.description,
+            book: this.book,
+            docker_container_id: this.dockerContainerId,
+            user_name: this.userName,
+            console_port: this.consolePort,
+            user_id: this.userId
         };
-    }
-
-    get title() {
-        return this._title;
-    }
-
-    set title(value) {
-        this._title = value;
-    }
-
-    get description() {
-        return this._description;
-    }
-
-    set description(value) {
-        this._description = value;
-    }
-
-    get book() {
-        return this._book;
-    }
-
-    set book(value) {
-        this._book = value;
     }
 
 

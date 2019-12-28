@@ -2,7 +2,7 @@ import Syntaxhilighter from "./syntaxhilighter.js";
 
 export default class PHPSyntaxhilighter extends Syntaxhilighter {
     check(text) {
-        const phpRegex = new RegExp(/<\?php/)
+        const phpRegex = new RegExp(/<\?php|\?>/);
         let result = this.exec(phpRegex, text, "rgb(86, 156, 214)");
         if (result) {
             return result;
