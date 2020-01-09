@@ -1,4 +1,4 @@
-import DevelopmentReading from "./components/atoms/DevelopmentReading.vue";
+import DevelopmentReading from "./components/DevelopmentReading.vue";
 new Vue({
     el: "#development-reading",
     components: {

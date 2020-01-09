@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center p-3">
       <h3>{{ title }}</h3>
       <div class="ml-auto">
-        <div class="header-button" @click="showMarkdown">{{urlTitle}}</div>
+        <a class="header-button" :href="url">{{urlTitle}}</a>
       </div>
       <el-divider direction="vertical"></el-divider>
       <el-dropdown @command="handlePortDropdownCommand">
@@ -53,7 +53,7 @@ export default {
       open(`http://localhost:${command}`);
     },
     showMarkdown() {
-      this.$emit("show-markdown");
+      // this.$emit("show-markdown");
     }
   }
 };

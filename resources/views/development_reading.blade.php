@@ -12,4 +12,7 @@
 
 <div id="development-reading" class="w-100 h-100">
     <development-reading markdown-text="{{$markdownText}}"></development-reading>
+    {{-- <markdown-editor></markdown-editor> --}}
+    {{-- <markdown-editor lesson-id="{{$lesson->id}}">
+    </markdown-editor> --}}
 </div>

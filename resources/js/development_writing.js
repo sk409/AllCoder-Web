@@ -1,8 +1,8 @@
-//import DevelopmentWriting from "./components/atoms/DevelopmentWriting.vue"
+import MarkdownEditor from "./components/MarkdownEditor.vue"
 
 new Vue({
     el: "#development-writing",
-    // components: {
-    //     DevelopmentWriting
-    // }
+    components: {
+        MarkdownEditor
+    }
 })

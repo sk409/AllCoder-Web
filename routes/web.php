@@ -30,11 +30,11 @@ Route::group(["middleware" => ["auth"]], function () {
     Route::get("/dashboard/chat_rooms", "DashboardController@chatRooms")->name("dashboard.chat_rooms");
     Route::get("/dashboard/review", "DashboardController@review")->name("dashboard.review");
 
-    //Route::resource("lessons", "LessonsController");
-    Route::get("lessons", "LessonsController@index")->name("lessons.index");
-    Route::get("lessons/create", "LessonsController@create")->name("lessons.create");
-    Route::post("lessons", "LessonsController@store")->name("lessons.store");
-    Route::put("lessons/{lesson}", "LessonsController@update")->name("lessons.update");
+    Route::resource("lessons", "LessonsController");
+    // Route::get("lessons", "LessonsController@index")->name("lessons.index");
+    // Route::get("lessons/create", "LessonsController@create")->name("lessons.create");
+    // Route::post("lessons", "LessonsController@store")->name("lessons.store");
+    // Route::put("lessons/{lesson}", "LessonsController@update")->name("lessons.update");
 
     Route::resource("materials", "MaterialsController");
 

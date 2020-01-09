@@ -221,8 +221,8 @@ class DevelopmentController extends Controller
     public function reading(Request $requst)
     {
         $requst->validate([
-            "user_id" => "required",
-            "material_id" => "required",
+            // "user_id" => "required",
+            // "material_id" => "required",
             "lesson_id" => "required"
         ]);
         /****************/

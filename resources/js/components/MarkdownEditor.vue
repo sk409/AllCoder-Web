@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex bg-white text-dark" @click="onclick">
+  <!-- <div class="d-flex bg-white text-dark" @click="onclick">
     <div class="w-50 h-100 p-1 d-flex flex-column">
       <div class="d-flex border-bottom position-relative">
         <div class="ml-auto fs-4" @click.stop="toggleMenu">...</div>
@@ -33,161 +33,170 @@
           </div>
         </div>
       </el-card>
-    </el-dialog>
-    <!-- <mavon-editor
+  </el-dialog>-->
+  <!-- </div> -->
+  <div>
+    <mavon-editor
       class="w-100 h-100"
       language="ja"
       placeholder="執筆を始めよう!"
       :value="lesson ? lesson.book : ''"
       :toolbars="toolbars"
       @change="change"
-    ></mavon-editor>-->
+    ></mavon-editor>
   </div>
 </template>
 
 <script>
 import Lesson from "../models/lesson.js";
-import MarkdownPreview from "./MarkdownPreview.vue";
+// import MarkdownPreview from "./MarkdownPreview.vue";
+
+// export default {
+//   name: "MarkdownEditor",
+//   props: {
+//     text: {
+//       type: String,
+//       required: true
+//     },
+//     questions: {
+//       type: Array,
+//       required: true
+//     }
+//   },
+//   components: {
+//     MarkdownPreview
+//   },
+//   data() {
+//     return {
+//       appendingQuestionLinkDialog: {
+//         isVisible: false
+//       },
+//       markdown: "",
+//       menu: {
+//         isVisible: false
+//       }
+//     };
+//   },
+//   computed: {
+//     questionGroups() {
+//       return this.questions.reduce((group, question) => {
+//         if (question.file_path in group) {
+//           group[question.file_path].push(question);
+//         } else {
+//           group[question.file_path] = [question];
+//         }
+//         return group;
+//       }, {});
+//     }
+//   },
+//   watch: {
+//     text: {
+//       immediate: true,
+//       handler(newValue) {
+//         this.markdown = newValue;
+//       }
+//     }
+//   },
+//   methods: {
+//     onclick() {
+//       this.menu.isVisible = false;
+//     },
+//     oninput() {
+//       this.$emit("input", this.markdown);
+//     },
+//     toggleMenu() {
+//       this.menu.isVisible = !this.menu.isVisible;
+//     },
+//     clickQuestionButton(questionId, button) {
+//       this.$emit("click-question-button", questionId, button);
+//     },
+//     close() {
+//       this.$emit("close");
+//     },
+//     appendQuestionLink(questionId) {
+//       this.markdown += `?{${questionId}}`;
+//       this.menu.isVisible = false;
+//       this.$emit("input", this.markdown);
+//     },
+//     showAppendingQuestionLinkDialog() {
+//       this.appendingQuestionLinkDialog.isVisible = true;
+//     }
+//   }
+// };
 
 export default {
   name: "MarkdownEditor",
   props: {
-    text: {
+    lessonId: {
       type: String,
       required: true
-    },
-    questions: {
-      type: Array,
-      required: true
     }
-  },
-  components: {
-    MarkdownPreview
   },
   data() {
     return {
-      appendingQuestionLinkDialog: {
-        isVisible: false
+      lesson: null,
+      toolbars: {
+        bold: true,
+        italic: true,
+        header: true,
+        strikethrough: true,
+        quote: true,
+        ol: true,
+        ul: true,
+        link: true,
+        code: true,
+        table: true,
+        readmodel: true,
+        htmlcode: true,
+        undo: true,
+        redo: true,
+        trash: true,
+        subfield: true,
+        preview: true
       },
-      markdown: "",
-      menu: {
-        isVisible: false
-      }
+      delayedUpdate: _.debounce(this.update, 1000),
+      updateQueue: Promise.resolve()
     };
   },
-  computed: {
-    questionGroups() {
-      return this.questions.reduce((group, question) => {
-        if (question.file_path in group) {
-          group[question.file_path].push(question);
-        } else {
-          group[question.file_path] = [question];
-        }
-        return group;
-      }, {});
-    }
-  },
-  watch: {
-    text: {
-      immediate: true,
-      handler(newValue) {
-        this.markdown = newValue;
-      }
-    }
+  mounted() {
+    const that = this;
+    console.log(this.lessonId);
+    Lesson.index({ id: this.lessonId }, response => {
+      // title, description, book, dockerContainerId, userName, consolePort, userId
+      that.lesson = new Lesson(
+        response.data[0].title,
+        response.data[0].description,
+        response.data[0].book,
+        response.data[0].docker_container_id,
+        response.data[0].userName,
+        response.data[0].console_port,
+        response.data[0].user_id
+      );
+      that.lesson.id = response.data[0].id;
+    });
   },
   methods: {
-    onclick() {
-      this.menu.isVisible = false;
+    change(value, render) {
+      const that = this;
+      this.lesson.book = value;
+      this.updateQueue.then(function() {
+        that.delayedUpdate();
+      });
     },
-    oninput() {
-      this.$emit("input", this.markdown);
-    },
-    toggleMenu() {
-      this.menu.isVisible = !this.menu.isVisible;
-    },
-    clickQuestionButton(questionId, button) {
-      this.$emit("click-question-button", questionId, button);
-    },
-    close() {
-      this.$emit("close");
-    },
-    appendQuestionLink(questionId) {
-      this.markdown += `?{${questionId}}`;
-      this.menu.isVisible = false;
-      this.$emit("input", this.markdown);
-    },
-    showAppendingQuestionLinkDialog() {
-      this.appendingQuestionLinkDialog.isVisible = true;
+    update() {
+      console.log(this.lesson.id);
+      this.lesson.update();
     }
   }
 };
-
-// export default {
-//   name: "development-writing",
-//   props: {
-//     lessonId: {
-//       type: String,
-//       required: true
-//     }
-//   },
-//   data() {
-//     return {
-//       lesson: null,
-//       toolbars: {
-//         bold: true,
-//         italic: true,
-//         header: true,
-//         strikethrough: true,
-//         quote: true,
-//         ol: true,
-//         ul: true,
-//         link: true,
-//         code: true,
-//         table: true,
-//         readmodel: true,
-//         htmlcode: true,
-//         undo: true,
-//         redo: true,
-//         trash: true,
-//         subfield: true,
-//         preview: true
-//       },
-// delayedUpdate: _.debounce(this.update, 1000),
-//       updateQueue: Promise.resolve()
-//     };
-//   },
-//   mounted() {
-//     const that = this;
-//     Lesson.index({ id: this.lessonId }, response => {
-//       that.lesson = new Lesson(
-//         response.data[0].id,
-//         response.data[0].title,
-//         response.data[0].description,
-//         response.data[0].book
-//       );
-//     });
-//   },
-//   methods: {
-//     change(value, render) {
-//       const that = this;
-//       this.lesson.book = value;
-//       this.updateQueue.then(function() {
-//         that.delayedUpdate();
-//       });
-//     },
-//     update() {
-//       this.lesson.update();
-//     }
-//   }
-// };
 </script>
 
 <style scoped>
-.menu {
+/* .menu {
   position: absolute;
   right: 0;
   bottom: 0;
   transform: translate(0, 105%);
   border: 1px solid lightgray;
-}
+} */
 </style>

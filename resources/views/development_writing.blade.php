@@ -5,6 +5,6 @@
 @endsection
 
 <div id="development-writing">
-    <development-writing lesson-id="{{$lesson->id}}" :questions="{{json_encode($lesson->codeQuestions->all())}}">
-    </development-writing>
+    <markdown-editor lesson-id="{{$lesson->id}}">
+    </markdown-editor>
 </div>
