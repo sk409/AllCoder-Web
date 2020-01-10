@@ -1134,24 +1134,6 @@ var render = function() {
                       _c("div", { staticClass: "form-group" }, [
                         _c("label", [
                           _vm._v(
-                            "\n                ユーザ名\n                "
-                          ),
-                          _c("input", {
-                            staticClass: "form-control",
-                            attrs: {
-                              type: "text",
-                              name: "username",
-                              required: ""
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("el-divider"),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "form-group" }, [
-                        _c("label", [
-                          _vm._v(
                             "\n                コンソールポート\n                "
                           ),
                           _c("input", {
@@ -1216,46 +1198,9 @@ var render = function() {
                           )
                         ],
                         1
-                      ),
-                      _vm._v(" "),
-                      _c("el-divider"),
-                      _vm._v(" "),
-                      _c("div", [
-                        _vm._v("フレームワーク・ライブラリ・ミドルウェア")
-                      ]),
-                      _vm._v(" "),
-                      _vm._l(_vm.environments, function(environment) {
-                        return _c(
-                          "div",
-                          { key: environment },
-                          [
-                            _c("el-divider"),
-                            _vm._v(" "),
-                            _c("lesson-form-environment-item", {
-                              attrs: { environment: environment }
-                            })
-                          ],
-                          1
-                        )
-                      })
-                    ],
-                    2
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    { staticClass: "text-center mt-5" },
-                    [
-                      _c(
-                        "el-button",
-                        {
-                          attrs: { type: "success" },
-                          on: { click: _vm.showEnvironmentDialog }
-                        },
-                        [_vm._v("追加")]
                       )
                     ],
-                    1
+                    2
                   )
                 ])
               ])

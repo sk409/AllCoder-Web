@@ -19,7 +19,7 @@ class CreateLessonsTable extends Migration
             $table->string("description", 1024)->default("");
             $table->text("book");
             $table->char("docker_container_id", 64)->nullable();
-            $table->string("user_name", 32);
+            // $table->string("user_name", 32);
             $table->smallInteger("console_port")->unsigned();
             $table->bigInteger("user_id")->unsigned();
             $table->foreign("user_id")->references("id")->on("users")->onUpdate("cascade")->onDelete("cascade");

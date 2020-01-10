@@ -27,13 +27,13 @@
                 <el-button type="success" @click="showOSDialog">設定</el-button>
               </div>
               <el-divider></el-divider>
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label>
                   ユーザ名
                   <input class="form-control" type="text" name="username" required />
                 </label>
               </div>
-              <el-divider></el-divider>
+              <el-divider></el-divider>-->
               <div class="form-group">
                 <label>
                   コンソールポート
@@ -48,16 +48,16 @@
               <div class="text-center">
                 <el-button type="success" @click="appendPort">追加</el-button>
               </div>
-              <el-divider></el-divider>
+              <!-- <el-divider></el-divider>
               <div>フレームワーク・ライブラリ・ミドルウェア</div>
               <div v-for="environment in environments" :key="environment">
                 <el-divider></el-divider>
                 <lesson-form-environment-item :environment="environment"></lesson-form-environment-item>
-              </div>
+              </div>-->
             </div>
-            <div class="text-center mt-5">
+            <!-- <div class="text-center mt-5">
               <el-button type="success" @click="showEnvironmentDialog">追加</el-button>
-            </div>
+            </div>-->
           </div>
         </el-card>
       </div>

@@ -32,7 +32,7 @@ class Lesson extends Model
         "book",
         "console_port",
         "docker_container_id",
-        "user_name",
+        // "user_name",
         // "docker_image_name",
         // "container_name",
         // "preview_port_number",

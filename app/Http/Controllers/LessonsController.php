@@ -38,12 +38,12 @@ class LessonsController extends Controller
             "title" => "required",
             "description" => "required",
             "os" => "required",
-            "username" => "required",
+            // "username" => "required",
             "console_port" => "required"
         ]);
         $parameters = $request->all();
         $parameters["book"] = "";
-        $parameters["user_name"] = $request->username;
+        // $parameters["user_name"] = $request->username;
         $lesson = Lesson::create($parameters);
         $lessonDirectoryPath = Path::lesson("$lesson->id");
         $dockerDirectoryPath = Path::append($lessonDirectoryPath, "docker");
@@ -58,7 +58,8 @@ class LessonsController extends Controller
             }
             LessonPort::create(["port" => $port, "lesson_id" => $lesson->id]);
         }
-        $environmentBuilder = new EnvironmentBuilder($request->username, $request->os, $ports);
+        $user = Auth::user();
+        $environmentBuilder = new EnvironmentBuilder($user->name, $request->os, $ports);
         if ($request->environments) {
             $php = "PHP";
             $laravel = "Laravel";
